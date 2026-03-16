@@ -65,11 +65,11 @@ fun AboutScreen(onBack: () -> Unit) {
                     append("Kado is open to contributions! Visit our repository at:\n")
                     withLink(
                         LinkAnnotation.Url(
-                            "https://github.com/LisandroDiMeo/kado",
+                            "https://github.com/LisandroDiMeo/kado-app",
                             TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary))
                         )
                     ) {
-                        append("https://github.com/LisandroDiMeo/kado")
+                        append("https://github.com/LisandroDiMeo/kado-app")
                     }
                 },
                 style = MaterialTheme.typography.bodyMedium

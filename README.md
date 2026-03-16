@@ -18,6 +18,11 @@ Kado is an open-source spaced repetition flashcard app built with Kotlin Multipl
 - Create and manage flashcard decks
 - Spaced repetition scheduling (SM2-like algorithm)
 - Import Anki `.apkg` decks
+- Deck partitioning and cloning — split large decks or duplicate them for focused study
+- Learning stats — track your review progress and retention over time
+- Text-to-speech for card pronunciation (Android only at the moment)
+- Dark theme support
+- Tablet-friendly layout
 - Sync decks to an ESP32 device over WiFi
 - Kotlin Multiplatform — shared logic across Android and iOS
 
@@ -76,10 +81,22 @@ front_text\tback_text
 
 This makes it straightforward to generate deck files from any source and upload them to a compatible device.
 
-## Donations
+## Support the Project
 
-<!-- TODO: Add donation links -->
+If Kado is useful to you, consider supporting its development:
+
+<p align="center">
+  <a href="https://github.com/sponsors/lisandrodimeo">
+    <img src="https://img.shields.io/badge/GitHub_Sponsors-E30074?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="GitHub Sponsors" />
+  </a>
+  <a href="https://ko-fi.com/lisandrodimeo">
+    <img src="https://img.shields.io/badge/Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white" alt="Ko-fi" />
+  </a>
+  <a href="https://cafecito.app/lisandrodimeo">
+    <img src="https://img.shields.io/badge/Cafecito-6F4E37?style=for-the-badge&logo=buymeacoffee&logoColor=white" alt="Cafecito" />
+  </a>
+</p>
 
 ## License
 
-This project is open source. See the [LICENSE](LICENSE) file for details.
+This project follows GLP v3. See the [LICENSE](LICENSE) file for details.

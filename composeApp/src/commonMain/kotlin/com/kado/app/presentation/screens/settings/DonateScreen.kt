@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.util.openUrl
 
-private const val DONATE_URL = "https://example.com/donate"
+private const val DONATE_URL = "https://github.com/LisandroDiMeo/kado-app?tab=readme-ov-file#donations"
 
 @Composable
 fun DonateScreen(onBack: () -> Unit) {
