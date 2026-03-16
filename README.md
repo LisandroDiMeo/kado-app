@@ -92,7 +92,7 @@ If Kado is useful to you, consider supporting its development:
   <a href="https://ko-fi.com/lisandrodimeo">
     <img src="https://img.shields.io/badge/Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white" alt="Ko-fi" />
   </a>
-  <a href="https://cafecito.app/lisandrodimeo">
+  <a href="https://cafecito.app/eldiem-dev">
     <img src="https://img.shields.io/badge/Cafecito-6F4E37?style=for-the-badge&logo=buymeacoffee&logoColor=white" alt="Cafecito" />
   </a>
 </p>
