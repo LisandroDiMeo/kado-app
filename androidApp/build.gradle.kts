@@ -22,6 +22,17 @@ android {
         versionCode = buildDest * 100_000_000 + major * 1_000_000 + minor * 10_000 + patch * 100 + buildOffset
         versionName = "$major.$minor.$patch"
     }
+    signingConfigs {
+        create("release") {
+            val ciKeystore = System.getenv("KEYSTORE_PATH")
+            if (ciKeystore != null) {
+                storeFile = file(ciKeystore)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -32,6 +43,7 @@ android {
             isMinifyEnabled = true
             isDebuggable = false
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
