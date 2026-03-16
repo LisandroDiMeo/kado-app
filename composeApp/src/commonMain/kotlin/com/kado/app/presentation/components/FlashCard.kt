@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
@@ -52,7 +53,9 @@ fun FlashCard(
 
     Card(
         modifier = modifier
+            .widthIn(max = 384.dp)
             .fillMaxWidth()
+            .padding(horizontal = 8.dp)
             .height(280.dp)
             .pointerInput(Unit) {
                 detectVerticalDragGestures(

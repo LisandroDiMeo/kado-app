@@ -2,10 +2,14 @@ package com.kado.app.presentation.screens.stats
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -60,7 +64,8 @@ fun StatsScreen(
                     "After rating a card \"Good\" for the first time, it moves here with a 1-day interval.\n\n" +
                     "Mature — Cards with an interval of 21+ days. These are well-known.\n\n" +
                     "Due Now — Total cards ready for review right now (new + overdue).",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.verticalScroll(rememberScrollState())
                 )
             },
             confirmButton = {
@@ -77,7 +82,7 @@ fun StatsScreen(
                 title = "Statistics",
                 onBack = onBack,
                 actions = {
-                    androidx.compose.material3.IconButton(onClick = { showHelpDialog = true }) {
+                    IconButton(onClick = { showHelpDialog = true }) {
                         Text("?", style = MaterialTheme.typography.titleMedium)
                     }
                 }
@@ -90,7 +95,11 @@ fun StatsScreen(
         }
 
         Column(
-            modifier = Modifier.padding(padding).padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(padding)
+                .padding(16.dp)
         ) {
             Text(
                 uiState.deck?.name ?: "",

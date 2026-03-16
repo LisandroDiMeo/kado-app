@@ -139,22 +139,20 @@ fun DeckDetailScreen(
             }
 
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                OutlinedButton(
+                    onClick = onTransfer,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    OutlinedButton(
-                        onClick = onTransfer,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Transfer to Device")
-                    }
-                    OutlinedButton(
-                        onClick = onPartition,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Partition Deck")
-                    }
+                    Text("Transfer to Device")
+                }
+            }
+
+            item {
+                OutlinedButton(
+                    onClick = onPartition,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Partition Deck")
                 }
             }
 

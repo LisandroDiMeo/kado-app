@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -58,22 +61,20 @@ fun ReviewScreen(
             uiState.currentCard != null -> {
                 val card = uiState.currentCard!!
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(padding)
+                        .padding(16.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    AnimatedContent(
-                        targetState = card.card.id,
-                        transitionSpec = { fadeIn(initialAlpha = 0.3f) togetherWith fadeOut(targetAlpha = 0.3f) }
-                    ) { cardId ->
-                        // Capture card for this animation state
-                        val animCard = if (cardId == card.card.id) card else card
-                        FlashCard(
-                            front = animCard.card.front,
-                            back = animCard.card.back,
-                            isFlipped = uiState.isFlipped,
-                            onFlip = vm::flip
-                        )
-                    }
+                    FlashCard(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        front = card.card.front,
+                        back = card.card.back,
+                        isFlipped = uiState.isFlipped,
+                        onFlip = vm::flip
+                    )
                     if (uiState.hasBeenFlipped) {
                         RatingBar(
                             onRate = vm::rate,
