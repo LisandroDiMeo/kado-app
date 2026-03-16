@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "668577165079",
+    "project_id": "kado-319be",
+    "storage_bucket": "kado-319be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668577165079:android:ab6475692bb14eac179152",
+        "android_client_info": {
+          "package_name": "com.eldiem.kado.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD36Ezmo-bY2JPo7KuLZ9NXJ2Z4-4XcyW8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
