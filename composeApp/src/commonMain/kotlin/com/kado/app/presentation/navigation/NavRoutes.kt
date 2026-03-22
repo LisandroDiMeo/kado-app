@@ -40,3 +40,6 @@ data class PartitionRoute(val deckId: Long)
 
 @Serializable
 object DonateRoute
+
+@Serializable
+object HelpRoute

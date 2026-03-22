@@ -35,9 +35,15 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
     }
 }
 
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE settings ADD COLUMN language TEXT NOT NULL DEFAULT 'en'")
+    }
+}
+
 @Database(
     entities = [DeckEntity::class, CardEntity::class, CardStateEntity::class, SettingsEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @ConstructedBy(KadoDatabaseConstructor::class)

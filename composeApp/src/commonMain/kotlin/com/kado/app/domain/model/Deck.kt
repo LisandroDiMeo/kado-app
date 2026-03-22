@@ -10,8 +10,8 @@ data class Deck(
 data class Card(
     val id: Long = 0,
     val deckId: Long,
-    val front: String,
-    val back: String,
+    val front: CardContent,
+    val back: CardContent,
     val position: Int = 0,
     val createdAt: Long = 0,
     val subDeckIndex: Int? = null

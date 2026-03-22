@@ -7,9 +7,11 @@ import com.kado.app.data.repository.DeckRepositoryImpl
 import com.kado.app.data.repository.DeviceRepositoryImpl
 import com.kado.app.data.repository.SettingsRepositoryImpl
 import com.kado.app.data.wifi.WifiConnector
+import com.kado.app.domain.parser.CardContentParser
 import com.kado.app.domain.repository.DeckRepository
 import com.kado.app.domain.repository.DeviceRepository
 import com.kado.app.domain.repository.SettingsRepository
+import com.kado.app.presentation.renderer.HtmlRenderer
 
 object AppDependencies {
     lateinit var database: KadoDatabase
@@ -20,7 +22,8 @@ object AppDependencies {
         DeckRepositoryImpl(
             deckDao = database.deckDao(),
             cardDao = database.cardDao(),
-            cardStateDao = database.cardStateDao()
+            cardStateDao = database.cardStateDao(),
+            contentParser = cardContentParser
         )
     }
 
@@ -35,6 +38,10 @@ object AppDependencies {
     val settingsRepository: SettingsRepository by lazy {
         SettingsRepositoryImpl(database.settingsDao())
     }
+
+    val cardContentParser by lazy { CardContentParser() }
+
+    val htmlRenderer by lazy { HtmlRenderer() }
 
     lateinit var wifiConnector: WifiConnector
 

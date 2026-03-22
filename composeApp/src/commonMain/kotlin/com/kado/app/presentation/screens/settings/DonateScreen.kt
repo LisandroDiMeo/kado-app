@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kado.app.presentation.components.KadoTopBar
+import com.kado.app.presentation.localization.S
 import com.kado.app.util.openUrl
 
 private const val DONATE_URL = "https://github.com/LisandroDiMeo/kado-app?tab=readme-ov-file#donations"
@@ -23,7 +24,7 @@ private const val DONATE_URL = "https://github.com/LisandroDiMeo/kado-app?tab=re
 @Composable
 fun DonateScreen(onBack: () -> Unit) {
     Scaffold(
-        topBar = { KadoTopBar(title = "Donate", onBack = onBack) }
+        topBar = { KadoTopBar(title = S().donate, onBack = onBack) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -33,21 +34,17 @@ fun DonateScreen(onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = "Support Kado",
+                text = S().supportKado,
                 style = MaterialTheme.typography.headlineSmall
             )
             Spacer(Modifier.height(12.dp))
             Text(
-                text = "Kado is a free and open source project. " +
-                        "If you find it useful and would like to support its continued development, " +
-                        "you can make a voluntary donation.",
+                text = S().donateDescription,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "Please note: donations are entirely voluntary and do not grant " +
-                        "any digital content, features, services, or advantages within the app. " +
-                        "All app features are and will remain free for everyone.",
+                text = S().donateDisclaimer,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -56,7 +53,7 @@ fun DonateScreen(onBack: () -> Unit) {
                 onClick = { openUrl(DONATE_URL) },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Donate")
+                Text(S().donate)
             }
         }
     }

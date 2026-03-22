@@ -2,6 +2,7 @@ package com.kado.app.data.repository
 
 import com.kado.app.data.local.dao.SettingsDao
 import com.kado.app.data.local.entity.SettingsEntity
+import com.kado.app.domain.model.AppLanguage
 import com.kado.app.domain.model.AppSettings
 import com.kado.app.domain.model.ThemeMode
 import com.kado.app.domain.repository.SettingsRepository
@@ -32,6 +33,11 @@ class SettingsRepositoryImpl(
         settingsDao.upsert(current.copy(appFontScale = scale))
     }
 
+    override suspend fun updateLanguage(language: AppLanguage) {
+        val current = settingsDao.getSettings() ?: SettingsEntity()
+        settingsDao.upsert(current.copy(language = language.tag))
+    }
+
     private fun SettingsEntity.toDomain() = AppSettings(
         themeMode = when (themeMode) {
             "light" -> ThemeMode.Light
@@ -39,7 +45,8 @@ class SettingsRepositoryImpl(
             else -> ThemeMode.System
         },
         cardFontScale = cardFontScale,
-        appFontScale = appFontScale
+        appFontScale = appFontScale,
+        language = AppLanguage.fromTag(language)
     )
 
     private fun ThemeMode.toEntity() = when (this) {

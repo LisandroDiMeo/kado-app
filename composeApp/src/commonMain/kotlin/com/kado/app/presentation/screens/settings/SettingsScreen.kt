@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kado.app.AppInfo
 import com.kado.app.presentation.components.KadoTopBar
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun SettingsScreen(
@@ -27,17 +28,17 @@ fun SettingsScreen(
     onDonateClick: () -> Unit
 ) {
     Scaffold(
-        topBar = { KadoTopBar(title = "Settings", onBack = onBack) }
+        topBar = { KadoTopBar(title = S().settings, onBack = onBack) }
     ) { padding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(padding)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                SettingsRow(label = "About", onClick = onAboutClick)
+                SettingsRow(label = S().about, onClick = onAboutClick)
                 HorizontalDivider()
-                SettingsRow(label = "App Settings", onClick = onAppSettingsClick)
+                SettingsRow(label = S().appSettings, onClick = onAppSettingsClick)
                 HorizontalDivider()
-                SettingsRow(label = "Donate", onClick = onDonateClick)
+                SettingsRow(label = S().donate, onClick = onDonateClick)
                 HorizontalDivider()
             }
             Box(
@@ -45,7 +46,7 @@ fun SettingsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Version ${AppInfo.VERSION}",
+                    text = S().versionLabel(AppInfo.VERSION),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

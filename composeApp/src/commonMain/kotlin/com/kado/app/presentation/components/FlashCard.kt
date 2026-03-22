@@ -7,7 +7,6 @@ import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +14,6 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,19 +23,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kado.app.presentation.model.DisplayableCardContent
 import com.kado.app.ui.theme.LocalCardFontScale
 import kotlin.math.abs
 
 @Composable
 fun FlashCard(
-    front: String,
-    back: String,
+    front: DisplayableCardContent,
+    back: DisplayableCardContent,
     isFlipped: Boolean,
     onFlip: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    deckId: Long = 0
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
@@ -56,7 +55,6 @@ fun FlashCard(
             .widthIn(max = 384.dp)
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
-            .height(280.dp)
             .pointerInput(Unit) {
                 detectVerticalDragGestures(
                     onDragStart = { swipeFired = false },
@@ -84,24 +82,25 @@ fun FlashCard(
     ) {
         SelectionContainer {
             Box(
-                modifier = Modifier.fillMaxSize().padding(24.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
                 contentAlignment = Alignment.Center
             ) {
                 if (rotation <= 90f) {
-                    Text(
-                        text = front,
-                        style = cardTextStyle,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurface
+                    CardContentRenderer(
+                        content = front,
+                        deckId = deckId,
+                        textStyle = cardTextStyle
                     )
                 } else {
-                    Text(
-                        text = back,
-                        style = cardTextStyle,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.graphicsLayer { rotationX = 180f }
-                    )
+                    Box(modifier = Modifier.graphicsLayer { rotationX = 180f }) {
+                        CardContentRenderer(
+                            content = back,
+                            deckId = deckId,
+                            textStyle = cardTextStyle
+                        )
+                    }
                 }
             }
         }

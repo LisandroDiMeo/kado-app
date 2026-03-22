@@ -21,8 +21,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kado.app.domain.model.AppLanguage
 import com.kado.app.domain.model.ThemeMode
 import com.kado.app.presentation.components.KadoTopBar
+import com.kado.app.presentation.localization.S
 import kotlin.math.roundToInt
 
 @Composable
@@ -33,7 +35,7 @@ fun AppSettingsScreen(
     val settings by vm.settings.collectAsState()
 
     Scaffold(
-        topBar = { KadoTopBar(title = "App Settings", onBack = onBack) }
+        topBar = { KadoTopBar(title = S().appSettings, onBack = onBack) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -43,7 +45,7 @@ fun AppSettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             // Theme mode
-            Text(text = "Theme", style = MaterialTheme.typography.titleMedium)
+            Text(text = S().theme, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(8.dp))
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -55,9 +57,9 @@ fun AppSettingsScreen(
                         label = {
                             Text(
                                 when (mode) {
-                                    ThemeMode.System -> "System"
-                                    ThemeMode.Light -> "Light"
-                                    ThemeMode.Dark -> "Dark"
+                                    ThemeMode.System -> S().system
+                                    ThemeMode.Light -> S().light
+                                    ThemeMode.Dark -> S().dark
                                 }
                             )
                         }
@@ -68,7 +70,7 @@ fun AppSettingsScreen(
             Spacer(Modifier.height(24.dp))
 
             // Card font scale
-            Text(text = "Card Font Size", style = MaterialTheme.typography.titleMedium)
+            Text(text = S().cardFontSize, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "${(settings.cardFontScale * 100).roundToInt()}%",
@@ -86,7 +88,7 @@ fun AppSettingsScreen(
             Spacer(Modifier.height(24.dp))
 
             // App font scale
-            Text(text = "App Font Size", style = MaterialTheme.typography.titleMedium)
+            Text(text = S().appFontSize, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "${(settings.appFontScale * 100).roundToInt()}%",
@@ -100,6 +102,23 @@ fun AppSettingsScreen(
                 steps = 6,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(Modifier.height(24.dp))
+
+            // Language
+            Text(text = S().language, style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AppLanguage.entries.forEach { lang ->
+                    FilterChip(
+                        selected = settings.language == lang,
+                        onClick = { vm.setLanguage(lang) },
+                        label = { Text(lang.displayName) }
+                    )
+                }
+            }
         }
     }
 }

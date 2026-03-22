@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kado.app.presentation.components.KadoTopBar
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun TransferScreen(
@@ -38,7 +39,7 @@ fun TransferScreen(
     val uiState by vm.uiState.collectAsState()
 
     Scaffold(
-        topBar = { KadoTopBar(title = "Transfer", onBack = onBack) }
+        topBar = { KadoTopBar(title = S().transfer, onBack = onBack) }
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
@@ -54,7 +55,7 @@ fun TransferScreen(
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(uiState.deckName, style = MaterialTheme.typography.titleMedium)
-                        Text("${uiState.cardCount} cards", style = MaterialTheme.typography.bodySmall)
+                        Text(S().cardsCount(uiState.cardCount), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -67,7 +68,7 @@ fun TransferScreen(
                             modifier = Modifier.fillMaxWidth(),
                             enabled = uiState.cardCount > 0
                         ) {
-                            Text("Upload to Device")
+                            Text(S().uploadToDevice)
                         }
                     }
                     is TransferState.Uploading -> {
@@ -77,12 +78,12 @@ fun TransferScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             CircularProgressIndicator()
-                            Text("  Uploading...", style = MaterialTheme.typography.bodyMedium)
+                            Text("  ${S().uploading}", style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                     is TransferState.Success -> {
                         Text(
-                            "Upload successful!",
+                            S().uploadSuccessful,
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium
                         )
@@ -94,7 +95,7 @@ fun TransferScreen(
                         )
                         Spacer(Modifier.height(8.dp))
                         Button(onClick = vm::upload, modifier = Modifier.fillMaxWidth()) {
-                            Text("Retry")
+                            Text(S().retry)
                         }
                     }
                 }
@@ -106,9 +107,9 @@ fun TransferScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Device Decks", style = MaterialTheme.typography.titleSmall)
+                    Text(S().deviceDecks, style = MaterialTheme.typography.titleSmall)
                     Text(
-                        "Free: ${uiState.freeMb.toInt()} MB",
+                        S().freeMb(uiState.freeMb.toInt()),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -139,10 +140,10 @@ fun TransferScreen(
                         ) {
                             Column {
                                 Text(deck.name, style = MaterialTheme.typography.bodyMedium)
-                                Text("${deck.cards} cards", style = MaterialTheme.typography.bodySmall)
+                                Text(S().cardsCount(deck.cards), style = MaterialTheme.typography.bodySmall)
                             }
                             TextButton(onClick = { vm.deleteDeviceDeck(index) }) {
-                                Text("Delete", color = MaterialTheme.colorScheme.error)
+                                Text(S().delete, color = MaterialTheme.colorScheme.error)
                             }
                         }
                     }

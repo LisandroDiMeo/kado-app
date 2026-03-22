@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kado.app.domain.model.Rating
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun RatingBar(
@@ -28,7 +30,7 @@ fun RatingBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         RatingButton(
-            "Again",
+            S().again,
             MaterialTheme.colorScheme.error,
             Rating.Again,
             onRate,
@@ -36,7 +38,7 @@ fun RatingBar(
             Modifier.weight(1f)
         )
         RatingButton(
-            "Hard",
+            S().hard,
             MaterialTheme.colorScheme.secondary,
             Rating.Hard,
             onRate,
@@ -44,7 +46,7 @@ fun RatingBar(
             Modifier.weight(1f)
         )
         RatingButton(
-            "Good",
+            S().good,
             MaterialTheme.colorScheme.tertiary,
             Rating.Good,
             onRate,
@@ -52,7 +54,7 @@ fun RatingBar(
             Modifier.weight(1f)
         )
         RatingButton(
-            "Easy",
+            S().easy,
             MaterialTheme.colorScheme.primary,
             Rating.Easy,
             onRate,
@@ -79,7 +81,8 @@ private fun RatingButton(
             Text(
                 text = interval,
                 style = MaterialTheme.typography.labelSmall,
-                color = color
+                color = color,
+                textAlign = TextAlign.Center
             )
         }
         Button(
@@ -87,7 +90,11 @@ private fun RatingButton(
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = color)
         ) {
-            Text(label.lowercase(), style = MaterialTheme.typography.labelSmall)
+            Text(
+                text = label.lowercase(),
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.presentation.components.NumberSelector
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun PartitionScreen(
@@ -44,7 +45,7 @@ fun PartitionScreen(
     }
 
     Scaffold(
-        topBar = { KadoTopBar(title = "Partition Deck", onBack = onBack) }
+        topBar = { KadoTopBar(title = S().partitionDeck, onBack = onBack) }
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
@@ -60,12 +61,12 @@ fun PartitionScreen(
                     FilterChip(
                         selected = uiState.mode == PartitionMode.Batch,
                         onClick = { vm.setMode(PartitionMode.Batch) },
-                        label = { Text("Batch") }
+                        label = { Text(S().batch) }
                     )
                     FilterChip(
                         selected = uiState.mode == PartitionMode.Manual,
                         onClick = { vm.setMode(PartitionMode.Manual) },
-                        label = { Text("Manual") }
+                        label = { Text(S().manual) }
                     )
                 }
             }
@@ -73,7 +74,7 @@ fun PartitionScreen(
             if (uiState.hasExistingPartitions) {
                 item {
                     Text(
-                        "Existing partitions will be replaced.",
+                        S().existingPartitionsWarning,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -87,7 +88,7 @@ fun PartitionScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text("Cards per sub-deck", style = MaterialTheme.typography.titleSmall)
+                            Text(S().cardsPerSubDeck, style = MaterialTheme.typography.titleSmall)
                             Spacer(Modifier.height(8.dp))
                             NumberSelector(
                                 value = uiState.batchSize,
@@ -99,8 +100,7 @@ fun PartitionScreen(
                             val last = vm.lastSubDeckSize
                             if (count > 0) {
                                 Text(
-                                    "$count sub-decks of ${uiState.batchSize} cards" +
-                                            if (last != uiState.batchSize) " (last has $last)" else "",
+                                    S().subDeckSummary(count, uiState.batchSize, last),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -111,7 +111,7 @@ fun PartitionScreen(
                                 enabled = !uiState.isSaving && uiState.cards.isNotEmpty(),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(if (uiState.isSaving) "Partitioning..." else "Partition")
+                                Text(if (uiState.isSaving) S().partitioning else S().partition)
                             }
                         }
                     }
@@ -130,7 +130,7 @@ fun PartitionScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = card.front,
+                                    text = card.front.rawText,
                                     style = MaterialTheme.typography.bodyMedium,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis,
@@ -151,7 +151,7 @@ fun PartitionScreen(
                             enabled = !uiState.isSaving && uiState.assignments.isNotEmpty(),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(if (uiState.isSaving) "Saving..." else "Save")
+                            Text(if (uiState.isSaving) S().saving else S().save)
                         }
                     }
                 }

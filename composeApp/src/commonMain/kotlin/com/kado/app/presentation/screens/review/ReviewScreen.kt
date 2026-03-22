@@ -1,14 +1,10 @@
 package com.kado.app.presentation.screens.review
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -22,12 +18,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kado.app.presentation.components.FlashCard
 import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.presentation.components.LoadingState
 import com.kado.app.presentation.components.RatingBar
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun ReviewScreen(
@@ -37,9 +35,10 @@ fun ReviewScreen(
     vm: ReviewViewModel = viewModel { ReviewViewModel(deckId, subDeckIndex) }
 ) {
     val uiState by vm.uiState.collectAsState()
+    val animatedAlpha by animateFloatAsState(if (uiState.hasBeenFlipped) 1f else 0f)
 
     Scaffold(
-        topBar = { KadoTopBar(title = "Review", onBack = onBack) }
+        topBar = { KadoTopBar(title = S().review, onBack = onBack) }
     ) { padding ->
         when {
             uiState.isLoading -> LoadingState(Modifier.padding(padding))
@@ -49,16 +48,17 @@ fun ReviewScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Session Complete", style = MaterialTheme.typography.headlineSmall)
+                    Text(S().sessionComplete, style = MaterialTheme.typography.headlineSmall)
                     Spacer(Modifier.height(16.dp))
-                    Text("Reviewed: ${uiState.summary.reviewed}")
-                    Text("Again: ${uiState.summary.again}  Hard: ${uiState.summary.hard}")
-                    Text("Good: ${uiState.summary.good}  Easy: ${uiState.summary.easy}")
+                    Text(S().reviewedCount(uiState.summary.reviewed))
+                    Text(S().againHardCount(uiState.summary.again, uiState.summary.hard))
+                    Text(S().goodEasyCount(uiState.summary.good, uiState.summary.easy))
                     Spacer(Modifier.height(24.dp))
-                    Button(onClick = onBack) { Text("Done") }
+                    Button(onClick = onBack) { Text(S().done) }
                 }
             }
-            uiState.currentCard != null -> {
+
+            uiState.currentCard != null && uiState.frontContent != null && uiState.backContent != null -> {
                 val card = uiState.currentCard!!
                 Column(
                     modifier = Modifier
@@ -69,20 +69,21 @@ fun ReviewScreen(
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     FlashCard(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        front = card.card.front,
-                        back = card.card.back,
+                        modifier = Modifier.align(Alignment.CenterHorizontally).weight(1f),
+                        front = uiState.frontContent!!,
+                        back = uiState.backContent!!,
                         isFlipped = uiState.isFlipped,
-                        onFlip = vm::flip
+                        onFlip = vm::flip,
+                        deckId = card.card.deckId
                     )
-                    if (uiState.hasBeenFlipped) {
-                        RatingBar(
-                            onRate = vm::rate,
-                            intervals = uiState.intervals
-                        )
-                    } else {
-                        Spacer(Modifier.height(1.dp))
-                    }
+                    Spacer(Modifier.weight(1f))
+                    RatingBar(
+                        onRate = vm::rate,
+                        intervals = uiState.intervals,
+                        modifier = Modifier.graphicsLayer {
+                            alpha = animatedAlpha
+                        }
+                    )
                 }
             }
         }

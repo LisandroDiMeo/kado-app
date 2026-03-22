@@ -33,6 +33,7 @@ import com.kado.app.presentation.components.ImportProgressDialog
 import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.presentation.components.LoadingState
 import com.kado.app.presentation.components.rememberApkgPickerLauncher
+import com.kado.app.presentation.localization.S
 import kotlinx.coroutines.launch
 
 @Composable
@@ -41,6 +42,7 @@ fun HomeScreen(
     onCreateDeck: () -> Unit,
     onConnectionClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onHelpClick: () -> Unit,
     vm: HomeViewModel = viewModel { HomeViewModel() }
 ) {
     val uiState by vm.uiState.collectAsState()
@@ -68,9 +70,9 @@ fun HomeScreen(
 
     deckToDelete?.let { id ->
         ConfirmDialog(
-            title = "Delete Deck",
-            message = "This will permanently delete this deck and all its cards.",
-            confirmLabel = "Delete",
+            title = S().deleteDeck,
+            message = S().deleteDeckMessage,
+            confirmLabel = S().delete,
             onConfirm = {
                 vm.deleteDeck(id)
                 deckToDelete = null
@@ -89,13 +91,16 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             KadoTopBar(
-                title = "Kado",
+                title = S().appName,
                 actions = {
+                    IconButton(onClick = onHelpClick) {
+                        Text("❓", style = MaterialTheme.typography.labelSmall)
+                    }
                     IconButton(onClick = onConnectionClick) {
-                        Text("WiFi", style = MaterialTheme.typography.labelSmall)
+                        Text("🛜", style = MaterialTheme.typography.labelSmall)
                     }
                     IconButton(onClick = onSettingsClick) {
-                        Text("\u2699", style = MaterialTheme.typography.labelSmall)
+                        Text("⚙️", style = MaterialTheme.typography.labelSmall)
                     }
                 }
             )
@@ -119,8 +124,8 @@ fun HomeScreen(
             when {
                 uiState.isLoading -> LoadingState(Modifier.padding(padding))
                 uiState.decks.isEmpty() -> EmptyState(
-                    title = "No decks yet",
-                    subtitle = "Tap + to create your first deck",
+                    title = S().noDecksTitle,
+                    subtitle = S().noDecksSubtitle,
                     modifier = Modifier.padding(padding)
                 )
                 else -> LazyColumn(

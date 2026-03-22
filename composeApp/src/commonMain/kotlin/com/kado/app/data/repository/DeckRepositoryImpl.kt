@@ -12,6 +12,8 @@ import com.kado.app.domain.model.Deck
 import com.kado.app.domain.model.DeckSummary
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SubDeckInfo
+import com.kado.app.data.importer.MediaStorage
+import com.kado.app.domain.parser.CardContentParser
 import com.kado.app.domain.repository.DeckRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -19,7 +21,8 @@ import kotlinx.coroutines.flow.map
 class DeckRepositoryImpl(
     private val deckDao: DeckDao,
     private val cardDao: CardDao,
-    private val cardStateDao: CardStateDao
+    private val cardStateDao: CardStateDao,
+    private val contentParser: CardContentParser
 ) : DeckRepository {
 
     override fun observeDecks(): Flow<List<Deck>> =
@@ -47,8 +50,10 @@ class DeckRepositoryImpl(
             createdAt = deck.createdAt
         ))
 
-    override suspend fun deleteDeck(id: Long) =
+    override suspend fun deleteDeck(id: Long) {
         deckDao.deleteById(id)
+        MediaStorage.deleteMediaDir(id)
+    }
 
     override suspend fun getDeckSummary(deckId: Long, now: Long): DeckSummary? {
         val deck = getDeck(deckId) ?: return null
@@ -84,8 +89,8 @@ class DeckRepositoryImpl(
         cardDao.update(CardEntity(
             id = card.id,
             deckId = card.deckId,
-            front = card.front,
-            back = card.back,
+            front = card.front.rawText,
+            back = card.back.rawText,
             position = card.position,
             createdAt = card.createdAt
         ))
@@ -266,8 +271,8 @@ class DeckRepositoryImpl(
     override suspend fun cloneSubDeckAsNewDeck(deckId: Long, subDeckIndex: Int, newName: String): Long {
         val now = kotlin.time.Clock.System.now().epochSeconds
         val newDeckId = deckDao.insert(DeckEntity(name = newName, dailyLimit = 20, createdAt = now))
-        val cards = cardDao.getByDeckIdAndSubDeck(deckId, subDeckIndex)
-        cards.forEachIndexed { i, card ->
+        val cardEntities = cardDao.getByDeckIdAndSubDeck(deckId, subDeckIndex)
+        cardEntities.forEachIndexed { i, card ->
             val newCardId = cardDao.insert(CardEntity(
                 deckId = newDeckId,
                 front = card.front,
@@ -281,6 +286,6 @@ class DeckRepositoryImpl(
     }
 
     private fun DeckEntity.toDomain() = Deck(id, name, dailyLimit, createdAt)
-    private fun CardEntity.toDomain() = Card(id, deckId, front, back, position, createdAt, subDeckIndex)
+    private fun CardEntity.toDomain() = Card(id, deckId, contentParser.detect(front), contentParser.detect(back), position, createdAt, subDeckIndex)
     private fun CardStateEntity.toDomain() = CardState(cardId, due, interval, ease, reps, lapses, queue)
 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kado.app.domain.model.ConnectionState
 import com.kado.app.presentation.components.KadoTopBar
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun ConnectionScreen(
@@ -31,14 +32,14 @@ fun ConnectionScreen(
     val ssid by vm.ssid.collectAsState()
 
     Scaffold(
-        topBar = { KadoTopBar(title = "Device Connection", onBack = onBack) }
+        topBar = { KadoTopBar(title = S().deviceConnection, onBack = onBack) }
     ) { padding ->
         Column(
             modifier = Modifier.padding(padding).padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Connect to your KadoLite device's WiFi network to transfer decks.",
+                S().connectionDescription,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(Modifier.height(24.dp))
@@ -47,8 +48,8 @@ fun ConnectionScreen(
                 value = ssid,
                 onValueChange = vm::onSsidChange,
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Device SSID") },
-                placeholder = { Text("KadoLite-XXYY") },
+                label = { Text(S().deviceSsid) },
+                placeholder = { Text(S().ssidPlaceholder) },
                 singleLine = true
             )
 
@@ -60,17 +61,17 @@ fun ConnectionScreen(
                         onClick = vm::connect,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Connect")
+                        Text(S().connect)
                     }
                 }
                 is ConnectionState.Connecting -> {
                     CircularProgressIndicator()
                     Spacer(Modifier.height(8.dp))
-                    Text("Connecting...")
+                    Text(S().connecting)
                 }
                 is ConnectionState.Connected -> {
                     Text(
-                        "Connected",
+                        S().connected,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -79,7 +80,7 @@ fun ConnectionScreen(
                         onClick = vm::disconnect,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Disconnect")
+                        Text(S().disconnect)
                     }
                 }
                 is ConnectionState.Error -> {
@@ -93,7 +94,7 @@ fun ConnectionScreen(
                         onClick = vm::connect,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Retry")
+                        Text(S().retry)
                     }
                 }
             }

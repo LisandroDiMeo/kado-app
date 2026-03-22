@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun ExpandableFab(
@@ -57,10 +58,10 @@ fun ExpandableFab(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    FabOption(label = "Import APKG", icon = "\u2191", onClick = {
+                    FabOption(label = S().importApkg, icon = "⬇️", onClick = {
                         onImportApkg()
                     })
-                    FabOption(label = "Create Deck", icon = "\u270E", onClick = {
+                    FabOption(label = S().createDeck, icon = "✏️", onClick = {
                         onCreateDeck()
                     })
                     Spacer(Modifier.height(8.dp))
@@ -101,7 +102,7 @@ private fun FabOption(
             onClick = onClick,
             containerColor = MaterialTheme.colorScheme.secondaryContainer
         ) {
-            Text(icon, style = MaterialTheme.typography.bodyLarge)
+            Text(icon, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

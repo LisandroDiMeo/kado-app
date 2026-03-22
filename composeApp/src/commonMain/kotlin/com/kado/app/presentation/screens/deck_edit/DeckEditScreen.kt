@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kado.app.presentation.components.ConfirmDialog
 import com.kado.app.presentation.components.KadoTopBar
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun DeckEditScreen(
@@ -45,9 +46,9 @@ fun DeckEditScreen(
 
     if (showDeleteDialog) {
         ConfirmDialog(
-            title = "Delete Deck",
-            message = "Are you sure you want to delete this deck? All cards and progress will be permanently lost.",
-            confirmLabel = "Delete",
+            title = S().deleteDeck,
+            message = S().deleteDeckEditMessage,
+            confirmLabel = S().delete,
             onConfirm = {
                 showDeleteDialog = false
                 vm.deleteDeck()
@@ -59,7 +60,7 @@ fun DeckEditScreen(
     Scaffold(
         topBar = {
             KadoTopBar(
-                title = if (uiState.isNew) "New Deck" else "Edit Deck",
+                title = if (uiState.isNew) S().newDeck else S().editDeck,
                 onBack = onBack
             )
         }
@@ -69,17 +70,17 @@ fun DeckEditScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Text("Deck Name", style = MaterialTheme.typography.labelMedium)
+            Text(S().deckName, style = MaterialTheme.typography.labelMedium)
             Spacer(Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.name,
                 onValueChange = vm::onNameChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("e.g. Japanese N5") },
+                placeholder = { Text(S().deckNamePlaceholder) },
                 singleLine = true
             )
             Spacer(Modifier.height(16.dp))
-            Text("Daily New Card Limit", style = MaterialTheme.typography.labelMedium)
+            Text(S().dailyNewCardLimit, style = MaterialTheme.typography.labelMedium)
             Spacer(Modifier.height(4.dp))
             OutlinedTextField(
                 value = uiState.dailyLimit,
@@ -93,7 +94,7 @@ fun DeckEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = uiState.name.isNotBlank() && !uiState.isLoading
             ) {
-                Text(if (uiState.isNew) "Create Deck" else "Save Changes")
+                Text(if (uiState.isNew) S().createDeck else S().saveChanges)
             }
             if (!uiState.isNew) {
                 Spacer(Modifier.height(16.dp))
@@ -104,7 +105,7 @@ fun DeckEditScreen(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Delete Deck")
+                    Text(S().deleteDeckButton)
                 }
             }
         }

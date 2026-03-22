@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.kado.app.di.AppDependencies
 import com.kado.app.domain.model.AppSettings
 import com.kado.app.domain.model.ThemeMode
+import com.kado.app.presentation.localization.LocalAppLanguage
 import com.kado.app.presentation.navigation.KadoNavHost
 import com.kado.app.ui.theme.AppTheme
 import com.kado.app.ui.theme.LocalCardFontScale
@@ -26,7 +27,10 @@ fun App() {
     }
 
     AppTheme(darkTheme = darkTheme, appFontScale = settings.appFontScale) {
-        CompositionLocalProvider(LocalCardFontScale provides settings.cardFontScale) {
+        CompositionLocalProvider(
+            LocalCardFontScale provides settings.cardFontScale,
+            LocalAppLanguage provides settings.language
+        ) {
             val navController = rememberNavController()
             KadoNavHost(navController = navController)
         }

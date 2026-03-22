@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kado.app.data.importer.ImportPhase
 import com.kado.app.data.importer.ImportProgress
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun ImportProgressDialog(
@@ -31,9 +32,9 @@ fun ImportProgressDialog(
         title = {
             Text(
                 when {
-                    isDone -> "Import Complete"
-                    isError -> "Import Failed"
-                    else -> "Importing..."
+                    isDone -> S().importComplete
+                    isError -> S().importFailed
+                    else -> S().importing
                 }
             )
         },
@@ -42,20 +43,20 @@ fun ImportProgressDialog(
                 when {
                     isError -> {
                         Text(
-                            progress.error ?: "An unknown error occurred",
+                            progress.error ?: S().unknownError,
                             color = MaterialTheme.colorScheme.error
                         )
                     }
                     isDone -> {
-                        Text("Imported ${progress.cardCount} cards into \"${progress.deckName}\"")
+                        Text(S().importedCards(progress.cardCount, progress.deckName))
                     }
                     else -> {
                         Text(
                             when (progress.phase) {
-                                ImportPhase.Extracting -> "Extracting APKG file..."
-                                ImportPhase.Parsing -> "Reading Anki database..."
-                                ImportPhase.Inserting -> "Importing ${progress.cardCount} cards..."
-                                else -> "Processing..."
+                                ImportPhase.Extracting -> S().extracting
+                                ImportPhase.Parsing -> S().readingAnkiDb
+                                ImportPhase.Inserting -> S().importingCards(progress.cardCount)
+                                else -> S().processing
                             }
                         )
                         Spacer(Modifier.height(12.dp))
@@ -78,7 +79,7 @@ fun ImportProgressDialog(
         confirmButton = {
             if (isDone || isError) {
                 TextButton(onClick = onDismiss) {
-                    Text(if (isDone) "Done" else "Dismiss")
+                    Text(if (isDone) S().done else S().dismiss)
                 }
             }
         }

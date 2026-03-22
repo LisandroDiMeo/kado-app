@@ -8,5 +8,6 @@ data class SettingsEntity(
     @PrimaryKey val id: Int = 1,
     val themeMode: String = "system",
     val cardFontScale: Float = 1.0f,
-    val appFontScale: Float = 1.0f
+    val appFontScale: Float = 1.0f,
+    val language: String = "en"
 )

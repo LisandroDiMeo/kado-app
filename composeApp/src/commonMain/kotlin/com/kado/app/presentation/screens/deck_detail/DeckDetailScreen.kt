@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -31,6 +32,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,6 +40,7 @@ import com.kado.app.presentation.components.ConfirmDialog
 import com.kado.app.presentation.components.EmptyState
 import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.presentation.components.LoadingState
+import com.kado.app.presentation.localization.S
 
 @Composable
 fun DeckDetailScreen(
@@ -66,9 +69,9 @@ fun DeckDetailScreen(
 
     removeSubDeckConfirm?.let { index ->
         ConfirmDialog(
-            title = "Remove Sub-deck",
-            message = "Remove this sub-deck? Cards will become unassigned.",
-            confirmLabel = "Remove",
+            title = S().removeSubDeck,
+            message = S().removeSubDeckMessage,
+            confirmLabel = S().remove,
             onConfirm = { vm.removeSubDeck(index); removeSubDeckConfirm = null },
             onDismiss = { removeSubDeckConfirm = null }
         )
@@ -76,9 +79,9 @@ fun DeckDetailScreen(
 
     cloneSubDeckConfirm?.let { index ->
         ConfirmDialog(
-            title = "Clone Sub-deck",
-            message = "Create a new independent deck from this sub-deck?",
-            confirmLabel = "Clone",
+            title = S().cloneSubDeck,
+            message = S().cloneSubDeckMessage,
+            confirmLabel = S().clone,
             onConfirm = { vm.cloneSubDeck(index); cloneSubDeckConfirm = null },
             onDismiss = { cloneSubDeckConfirm = null }
         )
@@ -90,8 +93,8 @@ fun DeckDetailScreen(
                 title = uiState.deck?.name ?: "Deck",
                 onBack = onBack,
                 actions = {
-                    androidx.compose.material3.IconButton(onClick = onEditDeck) {
-                        Text("Edit", style = MaterialTheme.typography.labelSmall)
+                    IconButton(onClick = onEditDeck) {
+                        Text(S().edit, style = MaterialTheme.typography.labelSmall)
                     }
                 }
             )
@@ -127,13 +130,16 @@ fun DeckDetailScreen(
                         modifier = Modifier.weight(1f),
                         enabled = uiState.dueCount > 0 || uiState.newCount > 0
                     ) {
-                        Text("Review (${uiState.dueCount})")
+                        Text(
+                            text = S().reviewCount(uiState.dueCount),
+                            textAlign = TextAlign.Center
+                        )
                     }
                     OutlinedButton(
                         onClick = onStats,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Stats")
+                        Text(S().stats)
                     }
                 }
             }
@@ -143,7 +149,7 @@ fun DeckDetailScreen(
                     onClick = onTransfer,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Transfer to Device")
+                    Text(S().transferToDevice)
                 }
             }
 
@@ -152,7 +158,7 @@ fun DeckDetailScreen(
                     onClick = onPartition,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Partition Deck")
+                    Text(S().partitionDeck)
                 }
             }
 
@@ -161,7 +167,7 @@ fun DeckDetailScreen(
                 item {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Sub-decks",
+                        S().subDecks,
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -181,11 +187,11 @@ fun DeckDetailScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    "Part ${displayIndex + 1}",
+                                    S().partLabel(displayIndex),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                                 Text(
-                                    "${subDeck.cardCount} cards | ${subDeck.dueCount} due | ${subDeck.newCount} new",
+                                    S().cardStats(subDeck.cardCount, subDeck.dueCount, subDeck.newCount),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
@@ -196,7 +202,7 @@ fun DeckDetailScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 enabled = subDeck.dueCount > 0 || subDeck.newCount > 0
                             ) {
-                                Text("Review")
+                                Text(S().review)
                             }
                             Spacer(Modifier.height(8.dp))
                             Row(
@@ -204,13 +210,13 @@ fun DeckDetailScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 OutlinedButton(modifier = Modifier.weight(1f), onClick = { onTransferSubDeck(subDeck.index) }) {
-                                    Text("Send")
+                                    Text(S().send)
                                 }
                                 OutlinedButton(modifier = Modifier.weight(1f), onClick = { cloneSubDeckConfirm = subDeck.index }) {
-                                    Text("Clone")
+                                    Text(S().clone)
                                 }
                                 OutlinedButton(modifier = Modifier.weight(1f), onClick = { removeSubDeckConfirm = subDeck.index }) {
-                                    Text("Remove")
+                                    Text(S().remove)
                                 }
                             }
                         }
@@ -221,7 +227,7 @@ fun DeckDetailScreen(
             item {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "${uiState.cards.size} cards",
+                    S().cardsCount(uiState.cards.size),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -230,8 +236,8 @@ fun DeckDetailScreen(
             if (uiState.cards.isEmpty()) {
                 item {
                     EmptyState(
-                        title = "No cards yet",
-                        subtitle = "Tap + to add your first card"
+                        title = S().noCardsTitle,
+                        subtitle = S().noCardsSubtitle
                     )
                 }
             } else {
@@ -247,14 +253,14 @@ fun DeckDetailScreen(
                     ) {
                         Column(Modifier.padding(12.dp)) {
                             Text(
-                                text = card.front,
+                                text = card.front.rawText,
                                 style = MaterialTheme.typography.bodyMedium,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                text = card.back,
+                                text = card.back.rawText,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,

@@ -4,8 +4,12 @@ import com.kado.app.domain.repository.DeckRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
-enum class ImportPhase { Extracting, Parsing, Inserting, Done, Error }
+enum class ImportPhase { Extracting, Parsing, ExtractingMedia, Inserting, Done, Error }
 
 data class ImportProgress(
     val phase: ImportPhase,
@@ -17,12 +21,14 @@ data class ImportProgress(
 
 class ApkgImporter(private val repository: DeckRepository) {
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     suspend fun import(
         fileBytes: ByteArray,
         onProgress: (ImportProgress) -> Unit
     ): Long = withContext(Dispatchers.IO) {
         try {
-            // Phase 1: Extract ZIP (0-20%)
+            // Phase 1: Extract ZIP (0-15%)
             onProgress(ImportProgress(ImportPhase.Extracting, 0f))
             val entries = ZipExtractor.listEntries(fileBytes)
             val dbEntryName = entries.firstOrNull {
@@ -31,31 +37,43 @@ class ApkgImporter(private val repository: DeckRepository) {
 
             val dbBytes = ZipExtractor.extractEntry(fileBytes, dbEntryName)
                 ?: throw IllegalArgumentException("Failed to extract database from APKG")
-            onProgress(ImportProgress(ImportPhase.Extracting, 0.2f))
+            onProgress(ImportProgress(ImportPhase.Extracting, 0.15f))
 
-            // Phase 2: Parse Anki DB (20-40%)
-            onProgress(ImportProgress(ImportPhase.Parsing, 0.2f))
+            // Phase 2: Parse Anki DB (15-35%)
+            onProgress(ImportProgress(ImportPhase.Parsing, 0.15f))
             val importData = ApkgParser.parse(dbBytes)
             if (importData.cards.isEmpty()) {
                 throw IllegalArgumentException("No cards found in APKG file")
             }
             onProgress(ImportProgress(
-                ImportPhase.Parsing, 0.4f,
+                ImportPhase.Parsing, 0.35f,
                 deckName = importData.deckName,
                 cardCount = importData.cards.size
             ))
 
-            // Phase 3: Insert into Kado DB (40-100%)
+            // Phase 3: Insert into Kado DB (35-70%)
             val deckId = repository.importDeck(
                 name = importData.deckName,
                 cards = importData.cards
             ) { insertProgress ->
                 onProgress(ImportProgress(
                     ImportPhase.Inserting,
-                    0.4f + insertProgress * 0.6f,
+                    0.35f + insertProgress * 0.35f,
                     deckName = importData.deckName,
                     cardCount = importData.cards.size
                 ))
+            }
+
+            // Phase 4: Extract media files (70-95%)
+            if (importData.referencedMedia.isNotEmpty()) {
+                extractMedia(fileBytes, entries, deckId, importData.referencedMedia) { mediaProgress ->
+                    onProgress(ImportProgress(
+                        ImportPhase.ExtractingMedia,
+                        0.70f + mediaProgress * 0.25f,
+                        deckName = importData.deckName,
+                        cardCount = importData.cards.size
+                    ))
+                }
             }
 
             onProgress(ImportProgress(
@@ -71,6 +89,47 @@ class ApkgImporter(private val repository: DeckRepository) {
                 error = e.message ?: "Unknown error during import"
             ))
             throw e
+        }
+    }
+
+    private fun extractMedia(
+        fileBytes: ByteArray,
+        entries: List<String>,
+        deckId: Long,
+        referencedMedia: Set<String>,
+        onProgress: (Float) -> Unit
+    ) {
+        // Parse the media JSON mapping (numeric key -> filename)
+        val mediaJsonBytes = ZipExtractor.extractEntry(fileBytes, "media") ?: return
+        val mediaJson = mediaJsonBytes.decodeToString()
+        val mediaMap: Map<String, String> = try {
+            val obj = json.parseToJsonElement(mediaJson).jsonObject
+            obj.mapValues { it.value.jsonPrimitive.content }
+        } catch (_: Exception) {
+            return
+        }
+
+        // Build reverse map: filename -> numeric key in ZIP
+        val filenameToKey = mutableMapOf<String, String>()
+        for ((key, filename) in mediaMap) {
+            filenameToKey[filename] = key
+        }
+
+        val entrySet = entries.toSet()
+        val mediaList = referencedMedia.toList()
+        var extracted = 0
+
+        for (filename in mediaList) {
+            val key = filenameToKey[filename] ?: continue
+            if (key !in entrySet) continue
+
+            val mediaBytes = ZipExtractor.extractEntry(fileBytes, key)
+            if (mediaBytes != null) {
+                MediaStorage.saveMedia(deckId, filename, mediaBytes)
+            }
+
+            extracted++
+            onProgress(extracted.toFloat() / mediaList.size)
         }
     }
 }

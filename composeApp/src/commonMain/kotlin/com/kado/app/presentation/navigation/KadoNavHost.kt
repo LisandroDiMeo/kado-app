@@ -1,12 +1,7 @@
 package com.kado.app.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,6 +19,7 @@ import com.kado.app.presentation.screens.settings.SettingsScreen
 import com.kado.app.presentation.screens.stats.StatsScreen
 import com.kado.app.presentation.screens.partition.PartitionScreen
 import com.kado.app.presentation.screens.transfer.TransferScreen
+import com.kado.app.presentation.screens.help.HelpScreen
 
 @Composable
 fun KadoNavHost(
@@ -40,7 +36,8 @@ fun KadoNavHost(
                 onDeckClick = { deckId -> navController.navigate(DeckDetailRoute(deckId)) },
                 onCreateDeck = { navController.navigate(DeckEditRoute()) },
                 onConnectionClick = { navController.navigate(ConnectionRoute) },
-                onSettingsClick = { navController.navigate(SettingsRoute) }
+                onSettingsClick = { navController.navigate(SettingsRoute) },
+                onHelpClick = { navController.navigate(HelpRoute) }
             )
         }
 
@@ -81,9 +78,6 @@ fun KadoNavHost(
 
         composable<ReviewRoute> { backStackEntry ->
             val route = backStackEntry.toRoute<ReviewRoute>()
-            val lifecycleOwner = LocalLifecycleOwner.current
-            val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-            val isInteractive = lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
             val subDeckIndex = if (route.subDeckIndex == -1) null else route.subDeckIndex
             ReviewScreen(
                 deckId = route.deckId,
@@ -143,6 +137,10 @@ fun KadoNavHost(
 
         composable<DonateRoute> {
             DonateScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable<HelpRoute> {
+            HelpScreen(onBack = { navController.popBackStack() })
         }
     }
 }

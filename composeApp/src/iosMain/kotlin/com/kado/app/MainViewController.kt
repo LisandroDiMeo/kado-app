@@ -4,6 +4,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.kado.app.data.local.MIGRATION_1_2
 import com.kado.app.data.local.MIGRATION_2_3
+import com.kado.app.data.local.MIGRATION_3_4
 import com.kado.app.data.local.getDatabaseBuilder
 import com.kado.app.di.AppDependencies
 
@@ -12,7 +13,7 @@ private var databaseInitialized = false
 fun MainViewController() = ComposeUIViewController {
     if (!databaseInitialized) {
         AppDependencies.database = getDatabaseBuilder()
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .setDriver(BundledSQLiteDriver())
             .build()
         databaseInitialized = true

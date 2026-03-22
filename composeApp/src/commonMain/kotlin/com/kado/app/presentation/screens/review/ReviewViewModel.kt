@@ -7,6 +7,7 @@ import com.kado.app.domain.model.Rating
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SessionSummary
 import com.kado.app.domain.srs.SrsEngine
+import com.kado.app.presentation.model.DisplayableCardContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,8 @@ import kotlinx.coroutines.launch
 
 data class ReviewUiState(
     val currentCard: ReviewCard? = null,
+    val frontContent: DisplayableCardContent? = null,
+    val backContent: DisplayableCardContent? = null,
     val isFlipped: Boolean = false,
     val hasBeenFlipped: Boolean = false,
     val isFinished: Boolean = false,
@@ -25,6 +28,7 @@ data class ReviewUiState(
 
 class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? = null) : ViewModel() {
     private val repository = AppDependencies.deckRepository
+    private val htmlRenderer = AppDependencies.htmlRenderer
 
     private val _uiState = MutableStateFlow(ReviewUiState())
     val uiState: StateFlow<ReviewUiState> = _uiState
@@ -50,6 +54,8 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
         if (card == null) {
             _uiState.value = _uiState.value.copy(
                 currentCard = null,
+                frontContent = null,
+                backContent = null,
                 isFinished = true,
                 isLoading = false,
                 summary = summary
@@ -58,6 +64,8 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
             val intervals = SrsEngine.previewIntervals(card.state, now)
             _uiState.value = _uiState.value.copy(
                 currentCard = card,
+                frontContent = DisplayableCardContent.from(card.card.front, htmlRenderer),
+                backContent = DisplayableCardContent.from(card.card.back, htmlRenderer),
                 isFlipped = false,
                 hasBeenFlipped = false,
                 isLoading = false,
