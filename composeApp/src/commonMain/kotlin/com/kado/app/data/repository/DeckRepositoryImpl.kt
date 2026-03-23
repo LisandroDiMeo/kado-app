@@ -285,6 +285,23 @@ class DeckRepositoryImpl(
         return newDeckId
     }
 
+    override suspend fun createReversedDeck(deckId: Long, newName: String): Long {
+        val now = kotlin.time.Clock.System.now().epochSeconds
+        val newDeckId = deckDao.insert(DeckEntity(name = newName, dailyLimit = 20, createdAt = now))
+        val cardEntities = cardDao.getByDeckId(deckId)
+        cardEntities.forEachIndexed { i, card ->
+            val newCardId = cardDao.insert(CardEntity(
+                deckId = newDeckId,
+                front = card.back,
+                back = card.front,
+                position = i,
+                createdAt = now
+            ))
+            cardStateDao.upsert(CardStateEntity(cardId = newCardId))
+        }
+        return newDeckId
+    }
+
     private fun DeckEntity.toDomain() = Deck(id, name, dailyLimit, createdAt)
     private fun CardEntity.toDomain() = Card(id, deckId, contentParser.detect(front), contentParser.detect(back), position, createdAt, subDeckIndex)
     private fun CardStateEntity.toDomain() = CardState(cardId, due, interval, ease, reps, lapses, queue)

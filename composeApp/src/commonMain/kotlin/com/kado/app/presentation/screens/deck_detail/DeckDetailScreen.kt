@@ -2,6 +2,7 @@ package com.kado.app.presentation.screens.deck_detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -66,6 +69,8 @@ fun DeckDetailScreen(
 
     var removeSubDeckConfirm by remember { mutableStateOf<Int?>(null) }
     var cloneSubDeckConfirm by remember { mutableStateOf<Int?>(null) }
+    var showReversedDeckConfirm by remember { mutableStateOf(false) }
+    var showMoreMenu by remember { mutableStateOf(false) }
 
     removeSubDeckConfirm?.let { index ->
         ConfirmDialog(
@@ -87,6 +92,16 @@ fun DeckDetailScreen(
         )
     }
 
+    if (showReversedDeckConfirm) {
+        ConfirmDialog(
+            title = S().createReversedDeck,
+            message = S().createReversedDeckMessage,
+            confirmLabel = S().confirm,
+            onConfirm = { vm.createReversedDeck(); showReversedDeckConfirm = false },
+            onDismiss = { showReversedDeckConfirm = false }
+        )
+    }
+
     Scaffold(
         topBar = {
             KadoTopBar(
@@ -95,6 +110,28 @@ fun DeckDetailScreen(
                 actions = {
                     IconButton(onClick = onEditDeck) {
                         Text(S().edit, style = MaterialTheme.typography.labelSmall)
+                    }
+                    Box {
+                        IconButton(onClick = { showMoreMenu = true }) {
+                            Text("⚙️", style = MaterialTheme.typography.labelSmall)
+                        }
+                        DropdownMenu(
+                            expanded = showMoreMenu,
+                            onDismissRequest = { showMoreMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(S().createReversedDeck) },
+                                onClick = { showMoreMenu = false; showReversedDeckConfirm = true }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(S().partitionDeck) },
+                                onClick = { showMoreMenu = false; onPartition() }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(S().transferToDevice) },
+                                onClick = { showMoreMenu = false; onTransfer() }
+                            )
+                        }
                     }
                 }
             )
@@ -141,24 +178,6 @@ fun DeckDetailScreen(
                     ) {
                         Text(S().stats)
                     }
-                }
-            }
-
-            item {
-                OutlinedButton(
-                    onClick = onTransfer,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(S().transferToDevice)
-                }
-            }
-
-            item {
-                OutlinedButton(
-                    onClick = onPartition,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(S().partitionDeck)
                 }
             }
 

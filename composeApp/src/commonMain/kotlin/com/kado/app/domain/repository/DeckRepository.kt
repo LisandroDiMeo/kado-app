@@ -49,4 +49,5 @@ interface DeckRepository {
     suspend fun getSubDeckSummary(deckId: Long, subDeckIndex: Int, now: Long): SubDeckInfo
     suspend fun getNextSubDeckReviewCard(deckId: Long, subDeckIndex: Int, now: Long, newLimit: Int): ReviewCard?
     suspend fun cloneSubDeckAsNewDeck(deckId: Long, subDeckIndex: Int, newName: String): Long
+    suspend fun createReversedDeck(deckId: Long, newName: String): Long
 }

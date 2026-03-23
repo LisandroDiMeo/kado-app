@@ -52,6 +52,8 @@ interface AppStrings {
     val removeSubDeckMessage: String
     val cloneSubDeck: String
     val cloneSubDeckMessage: String
+    val createReversedDeck: String
+    val createReversedDeckMessage: String
 
     // Review
     val sessionComplete: String
@@ -246,6 +248,8 @@ object EnStrings : AppStrings {
     override val removeSubDeckMessage = "Remove this sub-deck? Cards will become unassigned."
     override val cloneSubDeck = "Clone Sub-deck"
     override val cloneSubDeckMessage = "Create a new independent deck from this sub-deck?"
+    override val createReversedDeck = "Create Reversed Deck"
+    override val createReversedDeckMessage = "Create a new deck with front and back sides swapped?"
 
     // Review
     override val sessionComplete = "Session Complete"
@@ -443,6 +447,8 @@ object EsStrings : AppStrings {
     override val removeSubDeckMessage = "¿Quitar este sub-mazo? Las tarjetas quedarán sin asignar."
     override val cloneSubDeck = "Clonar Sub-mazo"
     override val cloneSubDeckMessage = "¿Crear un nuevo mazo independiente de este sub-mazo?"
+    override val createReversedDeck = "Crear Mazo Invertido"
+    override val createReversedDeckMessage = "¿Crear un nuevo mazo con frente y dorso invertidos?"
 
     // Review
     override val sessionComplete = "Sesión Completa"

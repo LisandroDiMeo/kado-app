@@ -95,4 +95,11 @@ class DeckDetailViewModel(private val deckId: Long) : ViewModel() {
             repository.cloneSubDeckAsNewDeck(deckId, subDeckIndex, "$deckName - Part $displayIndex")
         }
     }
+
+    fun createReversedDeck() {
+        viewModelScope.launch {
+            val deckName = _uiState.value.deck?.name ?: "Deck"
+            repository.createReversedDeck(deckId, "$deckName (Reversed)")
+        }
+    }
 }
