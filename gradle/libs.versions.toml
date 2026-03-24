@@ -24,6 +24,8 @@ google-services = "4.4.4"
 firebase-bom = "34.10.0"
 firebase-crashlytics-plugin = "3.0.3"
 coil3 = "3.1.0"
+paging = "3.4.2"
+paging-compose = "3.5.0-alpha01"
 
 [libraries]
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
@@ -60,6 +62,8 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging-compose" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

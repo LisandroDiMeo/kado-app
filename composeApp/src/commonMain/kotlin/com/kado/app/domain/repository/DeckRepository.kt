@@ -1,5 +1,6 @@
 package com.kado.app.domain.repository
 
+import androidx.paging.PagingData
 import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Deck
@@ -19,6 +20,9 @@ interface DeckRepository {
     suspend fun getDeckSummary(deckId: Long, now: Long): DeckSummary?
 
     fun observeCards(deckId: Long): Flow<List<Card>>
+    fun observeCardsPaged(deckId: Long): Flow<PagingData<Card>>
+    fun observeCardCount(deckId: Long): Flow<Int>
+    suspend fun getCardCount(deckId: Long): Int
     suspend fun getCards(deckId: Long): List<Card>
     suspend fun getCard(id: Long): Card?
     suspend fun addCard(deckId: Long, front: String, back: String): Long
@@ -29,7 +33,7 @@ interface DeckRepository {
     suspend fun getCardStates(deckId: Long): List<CardState>
     suspend fun updateCardState(state: CardState)
     suspend fun resetProgress(deckId: Long)
-    suspend fun getNextReviewCard(deckId: Long, now: Long, newLimit: Int): ReviewCard?
+    suspend fun getNextReviewCard(deckId: Long, now: Long, newLimit: Int, excludeCardId: Long = -1): ReviewCard?
 
     suspend fun importDeck(
         name: String,
@@ -47,7 +51,7 @@ interface DeckRepository {
     suspend fun clearPartitions(deckId: Long)
     suspend fun removeSubDeck(deckId: Long, subDeckIndex: Int)
     suspend fun getSubDeckSummary(deckId: Long, subDeckIndex: Int, now: Long): SubDeckInfo
-    suspend fun getNextSubDeckReviewCard(deckId: Long, subDeckIndex: Int, now: Long, newLimit: Int): ReviewCard?
+    suspend fun getNextSubDeckReviewCard(deckId: Long, subDeckIndex: Int, now: Long, newLimit: Int, excludeCardId: Long = -1): ReviewCard?
     suspend fun cloneSubDeckAsNewDeck(deckId: Long, subDeckIndex: Int, newName: String): Long
     suspend fun createReversedDeck(deckId: Long, newName: String): Long
 }

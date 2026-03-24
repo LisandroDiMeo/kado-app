@@ -35,7 +35,9 @@ class ApkgImporter(private val repository: DeckRepository) {
                 it == "collection.anki21" || it == "collection.anki2" || it == "collection.anki21b"
             } ?: throw IllegalArgumentException("Not a valid APKG file — no Anki database found")
 
-            val dbBytes = ZipExtractor.extractEntry(fileBytes, dbEntryName)
+            // Extract DB and media manifest in a single pass
+            val initialEntries = ZipExtractor.extractEntries(fileBytes, setOf(dbEntryName, "media"))
+            val dbBytes = initialEntries[dbEntryName]
                 ?: throw IllegalArgumentException("Failed to extract database from APKG")
             onProgress(ImportProgress(ImportPhase.Extracting, 0.15f))
 
@@ -66,7 +68,7 @@ class ApkgImporter(private val repository: DeckRepository) {
 
             // Phase 4: Extract media files (70-95%)
             if (importData.referencedMedia.isNotEmpty()) {
-                extractMedia(fileBytes, entries, deckId, importData.referencedMedia) { mediaProgress ->
+                extractMedia(fileBytes, entries, deckId, importData.referencedMedia, initialEntries["media"]) { mediaProgress ->
                     onProgress(ImportProgress(
                         ImportPhase.ExtractingMedia,
                         0.70f + mediaProgress * 0.25f,
@@ -97,11 +99,11 @@ class ApkgImporter(private val repository: DeckRepository) {
         entries: List<String>,
         deckId: Long,
         referencedMedia: Set<String>,
+        mediaJsonBytes: ByteArray?,
         onProgress: (Float) -> Unit
     ) {
         // Parse the media JSON mapping (numeric key -> filename)
-        val mediaJsonBytes = ZipExtractor.extractEntry(fileBytes, "media") ?: return
-        val mediaJson = mediaJsonBytes.decodeToString()
+        val mediaJson = (mediaJsonBytes ?: return).decodeToString()
         val mediaMap: Map<String, String> = try {
             val obj = json.parseToJsonElement(mediaJson).jsonObject
             obj.mapValues { it.value.jsonPrimitive.content }
@@ -115,21 +117,29 @@ class ApkgImporter(private val repository: DeckRepository) {
             filenameToKey[filename] = key
         }
 
+        // Determine which ZIP keys to extract
         val entrySet = entries.toSet()
-        val mediaList = referencedMedia.toList()
-        var extracted = 0
-
-        for (filename in mediaList) {
+        val keyToFilename = mutableMapOf<String, String>()
+        for (filename in referencedMedia) {
             val key = filenameToKey[filename] ?: continue
-            if (key !in entrySet) continue
+            if (key in entrySet) {
+                keyToFilename[key] = filename
+            }
+        }
 
-            val mediaBytes = ZipExtractor.extractEntry(fileBytes, key)
+        // Single-pass extraction of all media files
+        val extractedMedia = ZipExtractor.extractEntries(fileBytes, keyToFilename.keys)
+
+        // Save extracted media to disk
+        var saved = 0
+        val total = keyToFilename.size
+        for ((key, filename) in keyToFilename) {
+            val mediaBytes = extractedMedia[key]
             if (mediaBytes != null) {
                 MediaStorage.saveMedia(deckId, filename, mediaBytes)
             }
-
-            extracted++
-            onProgress(extracted.toFloat() / mediaList.size)
+            saved++
+            onProgress(saved.toFloat() / total)
         }
     }
 }

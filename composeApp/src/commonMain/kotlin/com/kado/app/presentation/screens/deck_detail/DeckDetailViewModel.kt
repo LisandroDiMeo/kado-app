@@ -2,10 +2,13 @@ package com.kado.app.presentation.screens.deck_detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.kado.app.di.AppDependencies
 import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.Deck
 import com.kado.app.domain.model.SubDeckInfo
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -14,7 +17,7 @@ import kotlinx.coroutines.launch
 
 data class DeckDetailUiState(
     val deck: Deck? = null,
-    val cards: List<Card> = emptyList(),
+    val cardCount: Int = 0,
     val dueCount: Int = 0,
     val newCount: Int = 0,
     val isLoading: Boolean = true,
@@ -28,16 +31,19 @@ class DeckDetailViewModel(private val deckId: Long) : ViewModel() {
     private val _uiState = MutableStateFlow(DeckDetailUiState())
     val uiState: StateFlow<DeckDetailUiState> = _uiState
 
+    val pagedCards: Flow<PagingData<Card>> = repository.observeCardsPaged(deckId)
+        .cachedIn(viewModelScope)
+
     init {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(deck = repository.getDeck(deckId))
         }
-        repository.observeCards(deckId)
-            .onEach { cards ->
+        repository.observeCardCount(deckId)
+            .onEach { count ->
                 val now = kotlin.time.Clock.System.now().epochSeconds
                 val summary = repository.getDeckSummary(deckId, now)
                 _uiState.value = _uiState.value.copy(
-                    cards = cards,
+                    cardCount = count,
                     dueCount = summary?.dueCards ?: 0,
                     newCount = summary?.newCards ?: 0,
                     isLoading = false

@@ -1,11 +1,16 @@
 package com.kado.app.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.kado.app.data.local.dao.CardDao
 import com.kado.app.data.local.dao.CardStateDao
 import com.kado.app.data.local.dao.DeckDao
 import com.kado.app.data.local.entity.CardEntity
 import com.kado.app.data.local.entity.CardStateEntity
 import com.kado.app.data.local.entity.DeckEntity
+import com.kado.app.data.paging.CardPagingSource
 import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Deck
@@ -15,10 +20,14 @@ import com.kado.app.domain.model.SubDeckInfo
 import com.kado.app.data.importer.MediaStorage
 import com.kado.app.domain.parser.CardContentParser
 import com.kado.app.domain.repository.DeckRepository
+import androidx.room.RoomDatabase
+import androidx.room.immediateTransaction
+import androidx.room.useWriterConnection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class DeckRepositoryImpl(
+    private val database: RoomDatabase,
     private val deckDao: DeckDao,
     private val cardDao: CardDao,
     private val cardStateDao: CardStateDao,
@@ -65,6 +74,23 @@ class DeckRepositoryImpl(
 
     override fun observeCards(deckId: Long): Flow<List<Card>> =
         cardDao.observeByDeckId(deckId).map { entities -> entities.map { it.toDomain() } }
+
+    override fun observeCardsPaged(deckId: Long): Flow<PagingData<Card>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                prefetchDistance = PAGE_SIZE / 2,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { CardPagingSource(cardDao, deckId) }
+        ).flow.map { pagingData -> pagingData.map { it.toDomain() } }
+    }
+
+    override fun observeCardCount(deckId: Long): Flow<Int> =
+        cardDao.observeCountByDeckId(deckId)
+
+    override suspend fun getCardCount(deckId: Long): Int =
+        cardDao.countByDeckId(deckId)
 
     override suspend fun getCards(deckId: Long): List<Card> =
         cardDao.getByDeckId(deckId).map { it.toDomain() }
@@ -118,47 +144,25 @@ class DeckRepositoryImpl(
         ))
 
     override suspend fun resetProgress(deckId: Long) {
-        cardStateDao.deleteByDeckId(deckId)
-        // Re-create default states for all cards
-        val cards = cardDao.getByDeckId(deckId)
-        cards.forEach { card ->
-            cardStateDao.upsert(CardStateEntity(cardId = card.id))
-        }
-    }
-
-    override suspend fun getNextReviewCard(deckId: Long, now: Long, newLimit: Int): ReviewCard? {
-        val cards = cardDao.getByDeckId(deckId)
-        val states = cardStateDao.getByDeckId(deckId).associateBy { it.cardId }
-
-        // Priority: learning (due now) > review (due now) > new (up to limit)
-
-        // 1. Learning cards due now
-        for (card in cards) {
-            val state = states[card.id] ?: continue
-            if (state.queue == 1 && state.due <= now) {
-                return ReviewCard(card.toDomain(), state.toDomain())
-            }
-        }
-
-        // 2. Review cards due now
-        for (card in cards) {
-            val state = states[card.id] ?: continue
-            if (state.queue == 2 && state.due <= now) {
-                return ReviewCard(card.toDomain(), state.toDomain())
-            }
-        }
-
-        // 3. New cards (up to limit)
-        if (newLimit > 0) {
-            for (card in cards) {
-                val state = states[card.id] ?: CardStateEntity(cardId = card.id)
-                if (state.queue == 0) {
-                    return ReviewCard(card.toDomain(), state.toDomain())
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                cardStateDao.deleteByDeckId(deckId)
+                val cardIds = cardDao.getIdsByDeckId(deckId)
+                cardIds.chunked(CHUNK_SIZE).forEach { chunk ->
+                    cardStateDao.insertAll(chunk.map { CardStateEntity(cardId = it) })
                 }
             }
         }
+    }
 
-        return null
+    override suspend fun getNextReviewCard(deckId: Long, now: Long, newLimit: Int, excludeCardId: Long): ReviewCard? {
+        // Priority: learning (due now) > review (due now) > new (up to limit)
+        val state = cardStateDao.getNextLearningByDeckId(deckId, now, excludeCardId)
+            ?: cardStateDao.getNextReviewByDeckId(deckId, now, excludeCardId)
+            ?: (if (newLimit > 0) cardStateDao.getNextNewByDeckId(deckId, excludeCardId) else null)
+            ?: return null
+        val card = cardDao.getById(state.cardId) ?: return null
+        return ReviewCard(card.toDomain(), state.toDomain())
     }
 
     override suspend fun importDeck(
@@ -169,30 +173,33 @@ class DeckRepositoryImpl(
         val now = kotlin.time.Clock.System.now().epochSeconds
         val deckId = deckDao.insert(DeckEntity(name = name, dailyLimit = 20, createdAt = now))
 
-        val chunks = cards.chunked(100)
-        chunks.forEachIndexed { chunkIndex, chunk ->
-            val cardEntities = chunk.mapIndexed { i, (front, back) ->
-                CardEntity(
-                    deckId = deckId,
-                    front = front,
-                    back = back,
-                    position = chunkIndex * 100 + i,
-                    createdAt = now
-                )
-            }
-            cardDao.insertAll(cardEntities)
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                // Phase 1: Insert all cards in batches
+                val cardChunks = cards.chunked(CHUNK_SIZE)
+                cardChunks.forEachIndexed { chunkIndex, chunk ->
+                    val cardEntities = chunk.mapIndexed { i, (front, back) ->
+                        CardEntity(
+                            deckId = deckId,
+                            front = front,
+                            back = back,
+                            position = chunkIndex * CHUNK_SIZE + i,
+                            createdAt = now
+                        )
+                    }
+                    cardDao.insertAll(cardEntities)
+                    onProgress((chunkIndex + 1).toFloat() / cardChunks.size * 0.7f)
+                }
 
-            // Get inserted card IDs to create states
-            val allCards = cardDao.getByDeckId(deckId)
-            val existingStates = cardStateDao.getByDeckId(deckId).map { it.cardId }.toSet()
-            val newStates = allCards
-                .filter { it.id !in existingStates }
-                .map { CardStateEntity(cardId = it.id) }
-            if (newStates.isNotEmpty()) {
-                cardStateDao.insertAll(newStates)
+                // Phase 2: Create all card states in one pass
+                val allCardIds = cardDao.getIdsByDeckId(deckId)
+                val stateChunks = allCardIds.chunked(CHUNK_SIZE)
+                stateChunks.forEachIndexed { chunkIndex, idChunk ->
+                    val states = idChunk.map { cardId -> CardStateEntity(cardId = cardId) }
+                    cardStateDao.insertAll(states)
+                    onProgress(0.7f + (chunkIndex + 1).toFloat() / stateChunks.size * 0.3f)
+                }
             }
-
-            onProgress((chunkIndex + 1).toFloat() / chunks.size)
         }
 
         return deckId
@@ -240,32 +247,13 @@ class DeckRepositoryImpl(
         return SubDeckInfo(subDeckIndex, cardCount, dueCount, newCount)
     }
 
-    override suspend fun getNextSubDeckReviewCard(deckId: Long, subDeckIndex: Int, now: Long, newLimit: Int): ReviewCard? {
-        val cards = cardDao.getByDeckIdAndSubDeck(deckId, subDeckIndex)
-        val states = cardStateDao.getByDeckIdAndSubDeck(deckId, subDeckIndex).associateBy { it.cardId }
-
-        // Priority: learning (due now) > review (due now) > new (up to limit)
-        for (card in cards) {
-            val state = states[card.id] ?: continue
-            if (state.queue == 1 && state.due <= now) {
-                return ReviewCard(card.toDomain(), state.toDomain())
-            }
-        }
-        for (card in cards) {
-            val state = states[card.id] ?: continue
-            if (state.queue == 2 && state.due <= now) {
-                return ReviewCard(card.toDomain(), state.toDomain())
-            }
-        }
-        if (newLimit > 0) {
-            for (card in cards) {
-                val state = states[card.id] ?: CardStateEntity(cardId = card.id)
-                if (state.queue == 0) {
-                    return ReviewCard(card.toDomain(), state.toDomain())
-                }
-            }
-        }
-        return null
+    override suspend fun getNextSubDeckReviewCard(deckId: Long, subDeckIndex: Int, now: Long, newLimit: Int, excludeCardId: Long): ReviewCard? {
+        val state = cardStateDao.getNextLearningByDeckIdAndSubDeck(deckId, subDeckIndex, now, excludeCardId)
+            ?: cardStateDao.getNextReviewByDeckIdAndSubDeck(deckId, subDeckIndex, now, excludeCardId)
+            ?: (if (newLimit > 0) cardStateDao.getNextNewByDeckIdAndSubDeck(deckId, subDeckIndex, excludeCardId) else null)
+            ?: return null
+        val card = cardDao.getById(state.cardId) ?: return null
+        return ReviewCard(card.toDomain(), state.toDomain())
     }
 
     override suspend fun cloneSubDeckAsNewDeck(deckId: Long, subDeckIndex: Int, newName: String): Long {
@@ -305,4 +293,9 @@ class DeckRepositoryImpl(
     private fun DeckEntity.toDomain() = Deck(id, name, dailyLimit, createdAt)
     private fun CardEntity.toDomain() = Card(id, deckId, contentParser.detect(front), contentParser.detect(back), position, createdAt, subDeckIndex)
     private fun CardStateEntity.toDomain() = CardState(cardId, due, interval, ease, reps, lapses, queue)
+
+    companion object {
+        const val CHUNK_SIZE = 5000
+        const val PAGE_SIZE = 30
+    }
 }

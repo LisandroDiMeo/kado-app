@@ -68,6 +68,41 @@ actual object ZipExtractor {
         return null
     }
 
+    actual fun extractEntries(zipBytes: ByteArray, entryNames: Set<String>): Map<String, ByteArray> {
+        val results = mutableMapOf<String, ByteArray>()
+        val remaining = entryNames.toMutableSet()
+        var offset = 0
+        while (offset + 4 <= zipBytes.size && remaining.isNotEmpty()) {
+            val sig = readInt32LE(zipBytes, offset)
+            if (sig != LOCAL_FILE_HEADER_SIG) break
+
+            val method = readInt16LE(zipBytes, offset + 8)
+            val compressedSize = readInt32LE(zipBytes, offset + 18)
+            val uncompressedSize = readInt32LE(zipBytes, offset + 22)
+            val filenameLen = readInt16LE(zipBytes, offset + 26)
+            val extraLen = readInt16LE(zipBytes, offset + 28)
+            val filename = zipBytes.decodeToString(offset + 30, offset + 30 + filenameLen)
+
+            val dataOffset = offset + 30 + filenameLen + extraLen
+
+            if (filename in remaining) {
+                val compressedData = zipBytes.copyOfRange(dataOffset, dataOffset + compressedSize)
+                val extracted = when (method) {
+                    0 -> compressedData
+                    8 -> inflateData(compressedData, uncompressedSize)
+                    else -> null
+                }
+                if (extracted != null) {
+                    results[filename] = extracted
+                }
+                remaining.remove(filename)
+            }
+
+            offset = dataOffset + compressedSize
+        }
+        return results
+    }
+
     private fun inflateData(compressed: ByteArray, expectedSize: Int): ByteArray {
         val output = ByteArray(expectedSize)
 

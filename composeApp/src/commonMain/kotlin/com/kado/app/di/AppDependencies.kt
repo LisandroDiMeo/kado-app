@@ -20,6 +20,7 @@ object AppDependencies {
 
     val deckRepository: DeckRepository by lazy {
         DeckRepositoryImpl(
+            database = database,
             deckDao = database.deckDao(),
             cardDao = database.cardDao(),
             cardStateDao = database.cardStateDao(),

@@ -8,7 +8,6 @@ import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SessionSummary
 import com.kado.app.domain.srs.SrsEngine
 import com.kado.app.presentation.model.DisplayableCardContent
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -36,6 +35,13 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
     private var newLimit = 20
     private var summary = SessionSummary(0, 0, 0, 0, 0)
 
+    // Prefetched next card data, ready to display instantly on rate()
+    private var prefetchedCard: ReviewCard? = null
+    private var prefetchedFront: DisplayableCardContent? = null
+    private var prefetchedBack: DisplayableCardContent? = null
+    private var prefetchedIntervals: Map<Rating, String> = emptyMap()
+    private var hasPrefetch = false
+
     init {
         viewModelScope.launch {
             val deck = repository.getDeck(deckId)
@@ -44,13 +50,17 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
         }
     }
 
-    private suspend fun loadNextCard() {
+    private suspend fun fetchNextCard(excludeCardId: Long = -1): ReviewCard? {
         val now = kotlin.time.Clock.System.now().epochSeconds
-        val card = if (subDeckIndex != null) {
-            repository.getNextSubDeckReviewCard(deckId, subDeckIndex, now, newLimit)
+        return if (subDeckIndex != null) {
+            repository.getNextSubDeckReviewCard(deckId, subDeckIndex, now, newLimit, excludeCardId)
         } else {
-            repository.getNextReviewCard(deckId, now, newLimit)
+            repository.getNextReviewCard(deckId, now, newLimit, excludeCardId)
         }
+    }
+
+    private suspend fun loadNextCard() {
+        val card = fetchNextCard()
         if (card == null) {
             _uiState.value = _uiState.value.copy(
                 currentCard = null,
@@ -61,16 +71,36 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
                 summary = summary
             )
         } else {
-            val intervals = SrsEngine.previewIntervals(card.state, now)
-            _uiState.value = _uiState.value.copy(
-                currentCard = card,
-                frontContent = DisplayableCardContent.from(card.card.front, htmlRenderer),
-                backContent = DisplayableCardContent.from(card.card.back, htmlRenderer),
-                isFlipped = false,
-                hasBeenFlipped = false,
-                isLoading = false,
-                intervals = intervals
-            )
+            showCard(card)
+            prefetchNext(card.card.id)
+        }
+    }
+
+    private suspend fun showCard(card: ReviewCard) {
+        val now = kotlin.time.Clock.System.now().epochSeconds
+        val intervals = SrsEngine.previewIntervals(card.state, now)
+        _uiState.value = _uiState.value.copy(
+            currentCard = card,
+            frontContent = DisplayableCardContent.from(card.card.front, htmlRenderer),
+            backContent = DisplayableCardContent.from(card.card.back, htmlRenderer),
+            isFlipped = false,
+            hasBeenFlipped = false,
+            isLoading = false,
+            intervals = intervals
+        )
+    }
+
+    private suspend fun prefetchNext(currentCardId: Long) {
+        val card = fetchNextCard(excludeCardId = currentCardId)
+        if (card != null) {
+            val now = kotlin.time.Clock.System.now().epochSeconds
+            prefetchedCard = card
+            prefetchedFront = DisplayableCardContent.from(card.card.front, htmlRenderer)
+            prefetchedBack = DisplayableCardContent.from(card.card.back, htmlRenderer)
+            prefetchedIntervals = SrsEngine.previewIntervals(card.state, now)
+            hasPrefetch = true
+        } else {
+            hasPrefetch = false
         }
     }
 
@@ -84,7 +114,6 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
 
     fun rate(rating: Rating) {
         val card = _uiState.value.currentCard ?: return
-        val wasFlipped = _uiState.value.isFlipped
 
         // Immediately unflip and hide buttons
         _uiState.value = _uiState.value.copy(
@@ -95,7 +124,6 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
         viewModelScope.launch {
             val now = kotlin.time.Clock.System.now().epochSeconds
             val newState = SrsEngine.reviewCard(card.state, rating, now)
-            repository.updateCardState(newState)
 
             if (card.state.queue == 0) newLimit--
 
@@ -107,10 +135,27 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
                 easy = summary.easy + if (rating == Rating.Easy) 1 else 0
             )
 
-            // Wait for flip-back animation before transitioning
-            if (wasFlipped) delay(400)
+            if (hasPrefetch) {
+                // Show prefetched card instantly, persist and prefetch in background
+                val nextCard = prefetchedCard!!
+                _uiState.value = _uiState.value.copy(
+                    currentCard = nextCard,
+                    frontContent = prefetchedFront,
+                    backContent = prefetchedBack,
+                    isFlipped = false,
+                    hasBeenFlipped = false,
+                    isLoading = false,
+                    intervals = prefetchedIntervals
+                )
+                hasPrefetch = false
 
-            loadNextCard()
+                repository.updateCardState(newState)
+                prefetchNext(nextCard.card.id)
+            } else {
+                // No prefetch available — persist first, then load
+                repository.updateCardState(newState)
+                loadNextCard()
+            }
         }
     }
 }

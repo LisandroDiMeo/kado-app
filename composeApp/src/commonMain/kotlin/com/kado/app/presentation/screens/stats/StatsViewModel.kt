@@ -32,7 +32,7 @@ class StatsViewModel(private val deckId: Long) : ViewModel() {
 
     private suspend fun loadStats() {
         val deck = repository.getDeck(deckId)
-        val cards = repository.getCards(deckId)
+        val totalCards = repository.getCardCount(deckId)
         val states = repository.getCardStates(deckId)
         val now = kotlin.time.Clock.System.now().epochSeconds
 
@@ -46,7 +46,7 @@ class StatsViewModel(private val deckId: Long) : ViewModel() {
 
         _uiState.value = StatsUiState(
             deck = deck,
-            totalCards = cards.size,
+            totalCards = totalCards,
             newCards = newCount,
             learningCards = learningCount,
             youngCards = youngCount,
@@ -58,6 +58,7 @@ class StatsViewModel(private val deckId: Long) : ViewModel() {
 
     fun resetProgress() {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             repository.resetProgress(deckId)
             _uiState.value = _uiState.value.copy(isReset = true)
             loadStats()

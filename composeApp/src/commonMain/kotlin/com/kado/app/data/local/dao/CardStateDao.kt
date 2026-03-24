@@ -48,4 +48,57 @@ interface CardStateDao {
 
     @Query("SELECT * FROM card_states WHERE cardId IN (SELECT id FROM cards WHERE deckId = :deckId AND subDeckIndex = :subDeckIndex)")
     suspend fun getByDeckIdAndSubDeck(deckId: Long, subDeckIndex: Int): List<CardStateEntity>
+
+    // Next review card queries — push selection logic into SQL
+    // Priority 1: learning cards due now
+    @Query("""
+        SELECT cs.* FROM card_states cs
+        INNER JOIN cards c ON cs.cardId = c.id
+        WHERE c.deckId = :deckId AND cs.queue = 1 AND cs.due <= :now AND cs.cardId != :excludeCardId
+        ORDER BY c.position ASC LIMIT 1
+    """)
+    suspend fun getNextLearningByDeckId(deckId: Long, now: Long, excludeCardId: Long = -1): CardStateEntity?
+
+    // Priority 2: review cards due now
+    @Query("""
+        SELECT cs.* FROM card_states cs
+        INNER JOIN cards c ON cs.cardId = c.id
+        WHERE c.deckId = :deckId AND cs.queue = 2 AND cs.due <= :now AND cs.cardId != :excludeCardId
+        ORDER BY c.position ASC LIMIT 1
+    """)
+    suspend fun getNextReviewByDeckId(deckId: Long, now: Long, excludeCardId: Long = -1): CardStateEntity?
+
+    // Priority 3: new cards
+    @Query("""
+        SELECT cs.* FROM card_states cs
+        INNER JOIN cards c ON cs.cardId = c.id
+        WHERE c.deckId = :deckId AND cs.queue = 0 AND cs.cardId != :excludeCardId
+        ORDER BY c.position ASC LIMIT 1
+    """)
+    suspend fun getNextNewByDeckId(deckId: Long, excludeCardId: Long = -1): CardStateEntity?
+
+    // Sub-deck variants
+    @Query("""
+        SELECT cs.* FROM card_states cs
+        INNER JOIN cards c ON cs.cardId = c.id
+        WHERE c.deckId = :deckId AND c.subDeckIndex = :subDeckIndex AND cs.queue = 1 AND cs.due <= :now AND cs.cardId != :excludeCardId
+        ORDER BY c.position ASC LIMIT 1
+    """)
+    suspend fun getNextLearningByDeckIdAndSubDeck(deckId: Long, subDeckIndex: Int, now: Long, excludeCardId: Long = -1): CardStateEntity?
+
+    @Query("""
+        SELECT cs.* FROM card_states cs
+        INNER JOIN cards c ON cs.cardId = c.id
+        WHERE c.deckId = :deckId AND c.subDeckIndex = :subDeckIndex AND cs.queue = 2 AND cs.due <= :now AND cs.cardId != :excludeCardId
+        ORDER BY c.position ASC LIMIT 1
+    """)
+    suspend fun getNextReviewByDeckIdAndSubDeck(deckId: Long, subDeckIndex: Int, now: Long, excludeCardId: Long = -1): CardStateEntity?
+
+    @Query("""
+        SELECT cs.* FROM card_states cs
+        INNER JOIN cards c ON cs.cardId = c.id
+        WHERE c.deckId = :deckId AND c.subDeckIndex = :subDeckIndex AND cs.queue = 0 AND cs.cardId != :excludeCardId
+        ORDER BY c.position ASC LIMIT 1
+    """)
+    suspend fun getNextNewByDeckIdAndSubDeck(deckId: Long, subDeckIndex: Int, excludeCardId: Long = -1): CardStateEntity?
 }

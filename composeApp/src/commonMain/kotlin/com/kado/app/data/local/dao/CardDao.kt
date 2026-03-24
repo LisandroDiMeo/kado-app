@@ -21,6 +21,15 @@ interface CardDao {
     @Query("SELECT COUNT(*) FROM cards WHERE deckId = :deckId")
     suspend fun countByDeckId(deckId: Long): Int
 
+    @Query("SELECT COUNT(*) FROM cards WHERE deckId = :deckId")
+    fun observeCountByDeckId(deckId: Long): Flow<Int>
+
+    @Query("SELECT * FROM cards WHERE deckId = :deckId ORDER BY position ASC LIMIT :limit OFFSET :offset")
+    suspend fun getByDeckIdPaged(deckId: Long, limit: Int, offset: Int): List<CardEntity>
+
+    @Query("SELECT id FROM cards WHERE deckId = :deckId")
+    suspend fun getIdsByDeckId(deckId: Long): List<Long>
+
     @Insert
     suspend fun insert(card: CardEntity): Long
 
