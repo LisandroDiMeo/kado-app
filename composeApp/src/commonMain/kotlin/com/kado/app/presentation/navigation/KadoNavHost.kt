@@ -19,6 +19,7 @@ import com.kado.app.presentation.screens.settings.SettingsScreen
 import com.kado.app.presentation.screens.stats.StatsScreen
 import com.kado.app.presentation.screens.partition.PartitionScreen
 import com.kado.app.presentation.screens.transfer.TransferScreen
+import com.kado.app.presentation.screens.bulk_edit.BulkEditScreen
 import com.kado.app.presentation.screens.help.HelpScreen
 
 @Composable
@@ -53,6 +54,7 @@ fun KadoNavHost(
                 onStats = { navController.navigate(StatsRoute(route.deckId)) },
                 onTransfer = { navController.navigate(TransferRoute(route.deckId)) },
                 onPartition = { navController.navigate(PartitionRoute(route.deckId)) },
+                onBulkEdit = { navController.navigate(BulkEditRoute(route.deckId)) },
                 onReviewSubDeck = { subDeckIndex -> navController.navigate(ReviewRoute(route.deckId, subDeckIndex)) },
                 onTransferSubDeck = { subDeckIndex -> navController.navigate(TransferRoute(route.deckId, subDeckIndex)) }
             )
@@ -72,6 +74,14 @@ fun KadoNavHost(
             CardEditScreen(
                 deckId = route.deckId,
                 cardId = route.cardId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<BulkEditRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<BulkEditRoute>()
+            BulkEditScreen(
+                deckId = route.deckId,
                 onBack = { navController.popBackStack() }
             )
         }

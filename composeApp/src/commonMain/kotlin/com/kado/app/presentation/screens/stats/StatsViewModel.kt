@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kado.app.di.AppDependencies
 import com.kado.app.domain.model.Deck
+import com.kado.app.domain.usecase.CalculateDeckStatsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ data class StatsUiState(
 
 class StatsViewModel(private val deckId: Long) : ViewModel() {
     private val repository = AppDependencies.deckRepository
+    private val calculateDeckStats = CalculateDeckStatsUseCase(repository)
 
     private val _uiState = MutableStateFlow(StatsUiState())
     val uiState: StateFlow<StatsUiState> = _uiState
@@ -31,27 +33,17 @@ class StatsViewModel(private val deckId: Long) : ViewModel() {
     }
 
     private suspend fun loadStats() {
-        val deck = repository.getDeck(deckId)
-        val totalCards = repository.getCardCount(deckId)
-        val states = repository.getCardStates(deckId)
         val now = kotlin.time.Clock.System.now().epochSeconds
-
-        val newCount = states.count { it.queue == 0 }
-        val learningCount = states.count { it.queue == 1 }
-        val youngCount = states.count { it.queue == 2 && it.interval < 21 }
-        val matureCount = states.count { it.queue == 2 && it.interval >= 21 }
-        val dueCount = states.count {
-            it.queue == 0 || (it.queue != 0 && it.due <= now)
-        }
+        val stats = calculateDeckStats(deckId, now)
 
         _uiState.value = StatsUiState(
-            deck = deck,
-            totalCards = totalCards,
-            newCards = newCount,
-            learningCards = learningCount,
-            youngCards = youngCount,
-            matureCards = matureCount,
-            dueNow = dueCount,
+            deck = stats.deck,
+            totalCards = stats.totalCards,
+            newCards = stats.newCards,
+            learningCards = stats.learningCards,
+            youngCards = stats.youngCards,
+            matureCards = stats.matureCards,
+            dueNow = stats.dueNow,
             isLoading = false
         )
     }

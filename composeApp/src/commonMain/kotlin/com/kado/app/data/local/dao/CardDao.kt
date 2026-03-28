@@ -39,6 +39,9 @@ interface CardDao {
     @Update
     suspend fun update(card: CardEntity)
 
+    @Update
+    suspend fun updateAll(cards: List<CardEntity>)
+
     @Query("DELETE FROM cards WHERE id = :id")
     suspend fun deleteById(id: Long)
 

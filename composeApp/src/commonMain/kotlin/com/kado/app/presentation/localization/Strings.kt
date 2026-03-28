@@ -206,6 +206,28 @@ interface AppStrings {
     // DeckCard
     fun dueCount(count: Int): String
     fun newCount(count: Int): String
+
+    // Bulk Edit
+    val bulkEdit: String
+    val cardFrontRule: String
+    val cardBackRule: String
+    val findPattern: String
+    val replacePattern: String
+    val isRegex: String
+    val previewChanges: String
+    val saveRule: String
+    val savedRules: String
+    val commitChanges: String
+    val ruleName: String
+    val noSavedRules: String
+    val invalidRegex: String
+    fun cardsAffected(count: Int): String
+    val selectAll: String
+    val deselectAll: String
+    val changesSaved: String
+    val enabled: String
+    val noChangesFound: String
+    val regexMatchesEmpty: String
 }
 
 object EnStrings : AppStrings {
@@ -405,6 +427,28 @@ object EnStrings : AppStrings {
     // DeckCard
     override fun dueCount(count: Int) = "$count due"
     override fun newCount(count: Int) = "$count new"
+
+    // Bulk Edit
+    override val bulkEdit = "Bulk Edit"
+    override val cardFrontRule = "Replace on Front"
+    override val cardBackRule = "Replace on Back"
+    override val findPattern = "Find"
+    override val replacePattern = "Replace"
+    override val isRegex = "Regex"
+    override val previewChanges = "Preview Changes"
+    override val saveRule = "Save Rule"
+    override val savedRules = "Saved Rules"
+    override val commitChanges = "Commit Changes"
+    override val ruleName = "Rule Name"
+    override val noSavedRules = "No saved rules"
+    override val invalidRegex = "Invalid regex pattern"
+    override fun cardsAffected(count: Int) = "$count cards will be modified"
+    override val selectAll = "Select All"
+    override val deselectAll = "Deselect All"
+    override val changesSaved = "Changes saved"
+    override val enabled = "Enabled"
+    override val noChangesFound = "No cards matched the pattern"
+    override val regexMatchesEmpty = "Pattern must not match empty strings"
 }
 
 object EsStrings : AppStrings {
@@ -604,4 +648,26 @@ object EsStrings : AppStrings {
     // DeckCard
     override fun dueCount(count: Int) = "$count pendientes"
     override fun newCount(count: Int) = "$count nuevas"
+
+    // Bulk Edit
+    override val bulkEdit = "Edición Masiva"
+    override val cardFrontRule = "Reemplazar en el Frente"
+    override val cardBackRule = "Reemplazar en el Dorso"
+    override val findPattern = "Buscar"
+    override val replacePattern = "Reemplazar"
+    override val isRegex = "Regex"
+    override val previewChanges = "Vista Previa"
+    override val saveRule = "Guardar Regla"
+    override val savedRules = "Reglas Guardadas"
+    override val commitChanges = "Aplicar Cambios"
+    override val ruleName = "Nombre de la Regla"
+    override val noSavedRules = "No hay reglas guardadas"
+    override val invalidRegex = "Patrón regex inválido"
+    override fun cardsAffected(count: Int) = "$count tarjetas serán modificadas"
+    override val selectAll = "Seleccionar Todo"
+    override val deselectAll = "Deseleccionar Todo"
+    override val changesSaved = "Cambios guardados"
+    override val enabled = "Habilitado"
+    override val noChangesFound = "Ninguna tarjeta coincide con el patrón"
+    override val regexMatchesEmpty = "El patrón no debe coincidir con cadenas vacías"
 }

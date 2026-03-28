@@ -3,8 +3,8 @@ package com.kado.app.presentation.screens.transfer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kado.app.di.AppDependencies
-import com.kado.app.data.converter.AldConverter
 import com.kado.app.domain.repository.DeviceDeck
+import com.kado.app.domain.usecase.PrepareTransferDeckUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -28,6 +28,7 @@ data class TransferUiState(
 class TransferViewModel(private val deckId: Long, private val subDeckIndex: Int? = null) : ViewModel() {
     private val deckRepository = AppDependencies.deckRepository
     private val deviceRepository = AppDependencies.deviceRepository
+    private val prepareTransferDeck = PrepareTransferDeckUseCase(deckRepository)
 
     private val _uiState = MutableStateFlow(TransferUiState())
     val uiState: StateFlow<TransferUiState> = _uiState
@@ -40,8 +41,9 @@ class TransferViewModel(private val deckId: Long, private val subDeckIndex: Int?
             } else {
                 deckRepository.getCards(deckId)
             }
-            val baseName = deck?.name ?: "Unknown"
-            val displayName = if (subDeckIndex != null) "$baseName - Part ${subDeckIndex + 1}" else baseName
+            val displayName = PrepareTransferDeckUseCase.formatSubDeckName(
+                deck?.name ?: "Unknown", subDeckIndex
+            )
             _uiState.value = _uiState.value.copy(
                 deckName = displayName,
                 cardCount = cards.size
@@ -70,17 +72,8 @@ class TransferViewModel(private val deckId: Long, private val subDeckIndex: Int?
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(transferState = TransferState.Uploading)
             try {
-                val deck = deckRepository.getDeck(deckId) ?: throw Exception("Deck not found")
-                val cards = if (subDeckIndex != null) {
-                    deckRepository.getSubDeckCards(deckId, subDeckIndex)
-                } else {
-                    deckRepository.getCards(deckId)
-                }
-                val transferName = if (subDeckIndex != null) "${deck.name} - Part ${subDeckIndex + 1}" else deck.name
-                val transferDeck = deck.copy(name = transferName)
-                val aldBytes = AldConverter.toAld(transferDeck, cards)
-                val filename = AldConverter.toAldFilename(transferDeck.name)
-                val success = deviceRepository.uploadDeck(aldBytes, filename)
+                val payload = prepareTransferDeck(deckId, subDeckIndex)
+                val success = deviceRepository.uploadDeck(payload.aldBytes, payload.filename)
                 _uiState.value = _uiState.value.copy(
                     transferState = if (success) TransferState.Success else TransferState.Error("Upload failed")
                 )

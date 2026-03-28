@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -80,27 +79,25 @@ fun FlashCard(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         )
     ) {
-        SelectionContainer {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (rotation <= 90f) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (rotation <= 90f) {
+                CardContentRenderer(
+                    content = front,
+                    deckId = deckId,
+                    textStyle = cardTextStyle
+                )
+            } else {
+                Box(modifier = Modifier.graphicsLayer { rotationX = 180f }) {
                     CardContentRenderer(
-                        content = front,
+                        content = back,
                         deckId = deckId,
                         textStyle = cardTextStyle
                     )
-                } else {
-                    Box(modifier = Modifier.graphicsLayer { rotationX = 180f }) {
-                        CardContentRenderer(
-                            content = back,
-                            deckId = deckId,
-                            textStyle = cardTextStyle
-                        )
-                    }
                 }
             }
         }

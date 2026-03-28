@@ -7,6 +7,7 @@ import com.kado.app.domain.model.Rating
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SessionSummary
 import com.kado.app.domain.srs.SrsEngine
+import com.kado.app.domain.usecase.ReviewCardUseCase
 import com.kado.app.presentation.model.DisplayableCardContent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +29,7 @@ data class ReviewUiState(
 class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? = null) : ViewModel() {
     private val repository = AppDependencies.deckRepository
     private val htmlRenderer = AppDependencies.htmlRenderer
+    private val reviewCardUseCase = ReviewCardUseCase(repository)
 
     private val _uiState = MutableStateFlow(ReviewUiState())
     val uiState: StateFlow<ReviewUiState> = _uiState
@@ -123,20 +125,13 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
 
         viewModelScope.launch {
             val now = kotlin.time.Clock.System.now().epochSeconds
-            val newState = SrsEngine.reviewCard(card.state, rating, now)
+            val result = reviewCardUseCase(card, rating, now, newLimit, summary)
 
-            if (card.state.queue == 0) newLimit--
-
-            summary = summary.copy(
-                reviewed = summary.reviewed + 1,
-                again = summary.again + if (rating == Rating.Again) 1 else 0,
-                hard = summary.hard + if (rating == Rating.Hard) 1 else 0,
-                good = summary.good + if (rating == Rating.Good) 1 else 0,
-                easy = summary.easy + if (rating == Rating.Easy) 1 else 0
-            )
+            newLimit = result.updatedNewLimit
+            summary = result.updatedSummary
 
             if (hasPrefetch) {
-                // Show prefetched card instantly, persist and prefetch in background
+                // Show prefetched card instantly, prefetch next in background
                 val nextCard = prefetchedCard!!
                 _uiState.value = _uiState.value.copy(
                     currentCard = nextCard,
@@ -148,12 +143,9 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
                     intervals = prefetchedIntervals
                 )
                 hasPrefetch = false
-
-                repository.updateCardState(newState)
                 prefetchNext(nextCard.card.id)
             } else {
-                // No prefetch available — persist first, then load
-                repository.updateCardState(newState)
+                // No prefetch available — load next
                 loadNextCard()
             }
         }

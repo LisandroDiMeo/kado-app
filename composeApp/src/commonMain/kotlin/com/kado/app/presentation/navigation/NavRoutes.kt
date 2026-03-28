@@ -15,6 +15,9 @@ data class DeckEditRoute(val deckId: Long = -1L) // -1 = create new
 data class CardEditRoute(val deckId: Long, val cardId: Long = -1L) // -1 = create new
 
 @Serializable
+data class BulkEditRoute(val deckId: Long)
+
+@Serializable
 data class ReviewRoute(val deckId: Long, val subDeckIndex: Int = -1)
 
 @Serializable

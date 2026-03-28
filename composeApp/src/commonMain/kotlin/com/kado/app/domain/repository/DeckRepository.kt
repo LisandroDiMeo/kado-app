@@ -27,6 +27,7 @@ interface DeckRepository {
     suspend fun getCard(id: Long): Card?
     suspend fun addCard(deckId: Long, front: String, back: String): Long
     suspend fun updateCard(card: Card)
+    suspend fun bulkUpdateCards(cards: List<Card>)
     suspend fun deleteCard(id: Long)
 
     suspend fun getCardState(cardId: Long): CardState

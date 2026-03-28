@@ -57,6 +57,7 @@ fun DeckDetailScreen(
     onStats: () -> Unit,
     onTransfer: () -> Unit,
     onPartition: () -> Unit = {},
+    onBulkEdit: () -> Unit = {},
     onReviewSubDeck: (Int) -> Unit = {},
     onTransferSubDeck: (Int) -> Unit = {},
     vm: DeckDetailViewModel = viewModel { DeckDetailViewModel(deckId) }
@@ -128,6 +129,10 @@ fun DeckDetailScreen(
                             DropdownMenuItem(
                                 text = { Text(S().partitionDeck) },
                                 onClick = { showMoreMenu = false; onPartition() }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(S().bulkEdit) },
+                                onClick = { showMoreMenu = false; onBulkEdit() }
                             )
                             DropdownMenuItem(
                                 text = { Text(S().transferToDevice) },

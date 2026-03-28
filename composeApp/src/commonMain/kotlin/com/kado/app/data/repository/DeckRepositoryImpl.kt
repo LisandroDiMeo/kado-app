@@ -121,6 +121,26 @@ class DeckRepositoryImpl(
             createdAt = card.createdAt
         ))
 
+    override suspend fun bulkUpdateCards(cards: List<Card>) {
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                cards.chunked(CHUNK_SIZE).forEach { chunk ->
+                    cardDao.updateAll(chunk.map { card ->
+                        CardEntity(
+                            id = card.id,
+                            deckId = card.deckId,
+                            front = card.front.rawText,
+                            back = card.back.rawText,
+                            position = card.position,
+                            createdAt = card.createdAt,
+                            subDeckIndex = card.subDeckIndex
+                        )
+                    })
+                }
+            }
+        }
+    }
+
     override suspend fun deleteCard(id: Long) =
         cardDao.deleteById(id)
 

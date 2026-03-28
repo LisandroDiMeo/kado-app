@@ -59,10 +59,10 @@ object SrsEngine {
             when (rating) {
                 Rating.Hard -> state.copy(
                     ease = newEase,
-                    queue = 1,
+                    queue = 2,
                     reps = 1,
                     interval = 1,
-                    due = nowEpochSeconds + 600 // 10 minutes
+                    due = nowEpochSeconds + SECONDS_PER_DAY
                 )
                 Rating.Good -> state.copy(
                     ease = newEase,

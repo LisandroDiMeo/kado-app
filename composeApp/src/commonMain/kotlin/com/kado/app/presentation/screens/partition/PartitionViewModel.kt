@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kado.app.di.AppDependencies
 import com.kado.app.domain.model.Card
+import com.kado.app.domain.usecase.CalculatePartitionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ data class PartitionUiState(
 
 class PartitionViewModel(private val deckId: Long) : ViewModel() {
     private val repository = AppDependencies.deckRepository
+    private val calculatePartition = CalculatePartitionUseCase()
 
     private val _uiState = MutableStateFlow(PartitionUiState())
     val uiState: StateFlow<PartitionUiState> = _uiState
@@ -79,14 +81,12 @@ class PartitionViewModel(private val deckId: Long) : ViewModel() {
     val subDeckCount: Int
         get() {
             val state = _uiState.value
-            return if (state.cards.isEmpty()) 0
-            else (state.cards.size + state.batchSize - 1) / state.batchSize
+            return calculatePartition(state.cards.size, state.batchSize).subDeckCount
         }
 
     val lastSubDeckSize: Int
         get() {
             val state = _uiState.value
-            val remainder = state.cards.size % state.batchSize
-            return if (remainder == 0) state.batchSize else remainder
+            return calculatePartition(state.cards.size, state.batchSize).lastSubDeckSize
         }
 }

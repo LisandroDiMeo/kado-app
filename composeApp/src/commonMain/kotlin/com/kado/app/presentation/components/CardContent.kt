@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,25 +33,28 @@ fun CardContentRenderer(
     textStyle: TextStyle,
     modifier: Modifier = Modifier
 ) {
-    when (content) {
-        is DisplayableCardContent.PlainText -> {
-            Text(
-                text = content.text,
-                style = textStyle,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.verticalScroll(rememberScrollState())
-            )
-        }
+    SelectionContainer {
+        when (content) {
+            is DisplayableCardContent.PlainText -> {
+                Text(
+                    text = content.text,
+                    style = textStyle,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                )
+            }
 
-        is DisplayableCardContent.ImageMarker -> {
-            ImageMarkerContent(content.parts, deckId, textStyle, modifier)
-        }
+            is DisplayableCardContent.ImageMarker -> {
+                ImageMarkerContent(content.parts, deckId, textStyle, modifier)
+            }
 
-        is DisplayableCardContent.RichText -> {
-            RichTextContent(content.segments, deckId, textStyle, modifier)
+            is DisplayableCardContent.RichText -> {
+                RichTextContent(content.segments, deckId, textStyle, modifier)
+            }
         }
     }
+
 }
 
 @Composable

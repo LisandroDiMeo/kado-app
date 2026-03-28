@@ -25,7 +25,7 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<KadoDatabase> {
 fun initApp(context: Context) {
     initDatabase(context)
     AppDependencies.database = getDatabaseBuilder()
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
         .setDriver(BundledSQLiteDriver())
         .build()
     AppDependencies.wifiConnector = WifiConnector(context.applicationContext)
