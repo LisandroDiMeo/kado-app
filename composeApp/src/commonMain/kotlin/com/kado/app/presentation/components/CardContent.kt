@@ -1,5 +1,7 @@
 package com.kado.app.presentation.components
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,24 +35,29 @@ fun CardContentRenderer(
     textStyle: TextStyle,
     modifier: Modifier = Modifier
 ) {
-    SelectionContainer {
-        when (content) {
-            is DisplayableCardContent.PlainText -> {
-                Text(
-                    text = content.text,
-                    style = textStyle,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.verticalScroll(rememberScrollState())
-                )
-            }
+    Crossfade(
+        targetState = content,
+        animationSpec = tween(300)
+    ) { targetContent ->
+        SelectionContainer {
+            when (targetContent) {
+                is DisplayableCardContent.PlainText -> {
+                    Text(
+                        text = targetContent.text,
+                        style = textStyle,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.verticalScroll(rememberScrollState())
+                    )
+                }
 
-            is DisplayableCardContent.ImageMarker -> {
-                ImageMarkerContent(content.parts, deckId, textStyle, modifier)
-            }
+                is DisplayableCardContent.ImageMarker -> {
+                    ImageMarkerContent(targetContent.parts, deckId, textStyle, modifier)
+                }
 
-            is DisplayableCardContent.RichText -> {
-                RichTextContent(content.segments, deckId, textStyle, modifier)
+                is DisplayableCardContent.RichText -> {
+                    RichTextContent(targetContent.segments, deckId, textStyle, modifier)
+                }
             }
         }
     }

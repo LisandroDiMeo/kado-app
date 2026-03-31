@@ -9,6 +9,7 @@ import com.kado.app.domain.model.SessionSummary
 import com.kado.app.domain.srs.SrsEngine
 import com.kado.app.domain.usecase.ReviewCardUseCase
 import com.kado.app.presentation.model.DisplayableCardContent
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -129,7 +130,7 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
 
             newLimit = result.updatedNewLimit
             summary = result.updatedSummary
-
+            delay(400)
             if (hasPrefetch) {
                 // Show prefetched card instantly, prefetch next in background
                 val nextCard = prefetchedCard!!
