@@ -17,6 +17,8 @@ import com.kado.app.domain.model.Deck
 import com.kado.app.domain.model.DeckSummary
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SubDeckInfo
+import com.kado.app.domain.srs.FsrsParameters
+import com.kado.app.domain.srs.SchedulerType
 import com.kado.app.data.importer.MediaStorage
 import com.kado.app.domain.parser.CardContentParser
 import com.kado.app.domain.repository.DeckRepository
@@ -51,13 +53,25 @@ class DeckRepositoryImpl(
             createdAt = kotlin.time.Clock.System.now().epochSeconds
         ))
 
-    override suspend fun updateDeck(deck: Deck) =
+    override suspend fun updateDeck(deck: Deck) {
+        val fsrsParams = FsrsParameters.serialize(
+            FsrsParameters(
+                desiredRetention = deck.fsrsDesiredRetention,
+                learningStepsSeconds = FsrsParameters.parseStepsString(deck.fsrsLearningSteps),
+                relearningStepsSeconds = FsrsParameters.parseStepsString(deck.fsrsRelearningSteps),
+                maximumInterval = deck.fsrsMaxInterval,
+                enableFuzzing = deck.fsrsEnableFuzzing
+            )
+        )
         deckDao.update(DeckEntity(
             id = deck.id,
             name = deck.name,
             dailyLimit = deck.dailyLimit,
-            createdAt = deck.createdAt
+            createdAt = deck.createdAt,
+            schedulerType = deck.schedulerType.name,
+            fsrsParams = fsrsParams
         ))
+    }
 
     override suspend fun deleteDeck(id: Long) {
         deckDao.deleteById(id)
@@ -160,7 +174,12 @@ class DeckRepositoryImpl(
             ease = state.ease,
             reps = state.reps,
             lapses = state.lapses,
-            queue = state.queue
+            queue = state.queue,
+            stability = state.stability,
+            difficulty = state.difficulty,
+            fsrsState = state.fsrsState,
+            step = state.step,
+            lastReview = state.lastReview
         ))
 
     override suspend fun resetProgress(deckId: Long) {
@@ -310,9 +329,24 @@ class DeckRepositoryImpl(
         return newDeckId
     }
 
-    private fun DeckEntity.toDomain() = Deck(id, name, dailyLimit, createdAt)
+    private fun DeckEntity.toDomain(): Deck {
+        val parsedType = try { SchedulerType.valueOf(schedulerType) } catch (_: Exception) { SchedulerType.SM2 }
+        val params = FsrsParameters.deserialize(fsrsParams)
+        return Deck(
+            id = id,
+            name = name,
+            dailyLimit = dailyLimit,
+            createdAt = createdAt,
+            schedulerType = parsedType,
+            fsrsDesiredRetention = params.desiredRetention,
+            fsrsLearningSteps = FsrsParameters.formatStepsString(params.learningStepsSeconds),
+            fsrsRelearningSteps = FsrsParameters.formatStepsString(params.relearningStepsSeconds),
+            fsrsMaxInterval = params.maximumInterval,
+            fsrsEnableFuzzing = params.enableFuzzing
+        )
+    }
     private fun CardEntity.toDomain() = Card(id, deckId, contentParser.detect(front), contentParser.detect(back), position, createdAt, subDeckIndex)
-    private fun CardStateEntity.toDomain() = CardState(cardId, due, interval, ease, reps, lapses, queue)
+    private fun CardStateEntity.toDomain() = CardState(cardId, due, interval, ease, reps, lapses, queue, stability, difficulty, fsrsState, step, lastReview)
 
     companion object {
         const val CHUNK_SIZE = 5000

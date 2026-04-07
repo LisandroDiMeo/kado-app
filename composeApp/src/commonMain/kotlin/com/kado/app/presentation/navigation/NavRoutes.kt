@@ -46,3 +46,9 @@ object DonateRoute
 
 @Serializable
 object HelpRoute
+
+@Serializable
+data class AlgorithmDetailRoute(
+    val algorithmId: String,
+    val focusParameter: String = ""
+)

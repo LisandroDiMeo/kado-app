@@ -5,7 +5,7 @@ import com.kado.app.domain.model.Rating
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SessionSummary
 import com.kado.app.domain.repository.DeckRepository
-import com.kado.app.domain.srs.SrsEngine
+import com.kado.app.domain.srs.Scheduler
 
 data class ReviewResult(
     val newState: CardState,
@@ -13,7 +13,10 @@ data class ReviewResult(
     val updatedSummary: SessionSummary
 )
 
-class ReviewCardUseCase(private val repository: DeckRepository) {
+class ReviewCardUseCase(
+    private val repository: DeckRepository,
+    private val scheduler: Scheduler
+) {
 
     suspend operator fun invoke(
         card: ReviewCard,
@@ -22,7 +25,7 @@ class ReviewCardUseCase(private val repository: DeckRepository) {
         currentNewLimit: Int,
         currentSummary: SessionSummary
     ): ReviewResult {
-        val newState = SrsEngine.reviewCard(card.state, rating, now)
+        val newState = scheduler.reviewCard(card.state, rating, now)
 
         val updatedNewLimit = if (card.state.queue == 0) currentNewLimit - 1 else currentNewLimit
 

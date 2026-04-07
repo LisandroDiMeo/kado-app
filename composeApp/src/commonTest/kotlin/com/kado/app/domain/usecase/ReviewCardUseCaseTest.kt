@@ -6,6 +6,7 @@ import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Rating
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SessionSummary
+import com.kado.app.domain.srs.Sm2Scheduler
 import com.kado.app.test.fakes.FakeDeckRepository
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -31,7 +32,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateNewCard_decrementsNewLimit() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(queue = 0), Rating.Good, now, currentNewLimit = 20, emptySummary)
         assertEquals(19, result.updatedNewLimit)
@@ -40,7 +41,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateReviewCard_doesNotDecrementNewLimit() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(queue = 2, interval = 10), Rating.Good, now, currentNewLimit = 20, emptySummary)
         assertEquals(20, result.updatedNewLimit)
@@ -49,7 +50,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateLearningCard_doesNotDecrementNewLimit() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(queue = 1), Rating.Good, now, currentNewLimit = 15, emptySummary)
         assertEquals(15, result.updatedNewLimit)
@@ -58,7 +59,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateAgain_incrementsAgainCount() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(), Rating.Again, now, 20, emptySummary)
         assertEquals(1, result.updatedSummary.again)
@@ -70,7 +71,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateHard_incrementsHardCount() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(), Rating.Hard, now, 20, emptySummary)
         assertEquals(0, result.updatedSummary.again)
@@ -82,7 +83,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateGood_incrementsGoodCount() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(), Rating.Good, now, 20, emptySummary)
         assertEquals(1, result.updatedSummary.good)
@@ -91,7 +92,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateEasy_incrementsEasyCount() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(), Rating.Easy, now, 20, emptySummary)
         assertEquals(1, result.updatedSummary.easy)
@@ -100,7 +101,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateCard_incrementsReviewedCount() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(), Rating.Good, now, 20, emptySummary)
         assertEquals(1, result.updatedSummary.reviewed)
@@ -109,7 +110,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateCard_accumulatesSummary() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val existingSummary = SessionSummary(reviewed = 5, again = 1, hard = 1, good = 2, easy = 1)
         val result = useCase(reviewCard(), Rating.Good, now, 20, existingSummary)
@@ -124,7 +125,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateCard_persistsNewState() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         useCase(reviewCard(), Rating.Good, now, 20, emptySummary)
 
@@ -135,7 +136,7 @@ class ReviewCardUseCaseTest {
     @Test
     fun rateCard_returnsNewState() = runTest {
         val repo = FakeDeckRepository()
-        val useCase = ReviewCardUseCase(repo)
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
 
         val result = useCase(reviewCard(queue = 0), Rating.Good, now, 20, emptySummary)
         // SrsEngine for new card Good: interval=1, queue=2

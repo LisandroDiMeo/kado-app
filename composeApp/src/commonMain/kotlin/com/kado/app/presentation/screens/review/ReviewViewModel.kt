@@ -6,7 +6,11 @@ import com.kado.app.di.AppDependencies
 import com.kado.app.domain.model.Rating
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SessionSummary
-import com.kado.app.domain.srs.SrsEngine
+import com.kado.app.domain.srs.FsrsParameters
+import com.kado.app.domain.srs.FsrsScheduler
+import com.kado.app.domain.srs.Scheduler
+import com.kado.app.domain.srs.SchedulerType
+import com.kado.app.domain.srs.Sm2Scheduler
 import com.kado.app.domain.usecase.ReviewCardUseCase
 import com.kado.app.presentation.model.DisplayableCardContent
 import kotlinx.coroutines.delay
@@ -30,7 +34,8 @@ data class ReviewUiState(
 class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? = null) : ViewModel() {
     private val repository = AppDependencies.deckRepository
     private val htmlRenderer = AppDependencies.htmlRenderer
-    private val reviewCardUseCase = ReviewCardUseCase(repository)
+    private lateinit var scheduler: Scheduler
+    private lateinit var reviewCardUseCase: ReviewCardUseCase
 
     private val _uiState = MutableStateFlow(ReviewUiState())
     val uiState: StateFlow<ReviewUiState> = _uiState
@@ -49,6 +54,20 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
         viewModelScope.launch {
             val deck = repository.getDeck(deckId)
             newLimit = deck?.dailyLimit ?: 20
+            scheduler = when (deck?.schedulerType) {
+                SchedulerType.FSRS -> {
+                    val params = FsrsParameters(
+                        desiredRetention = deck.fsrsDesiredRetention,
+                        learningStepsSeconds = FsrsParameters.parseStepsString(deck.fsrsLearningSteps),
+                        relearningStepsSeconds = FsrsParameters.parseStepsString(deck.fsrsRelearningSteps),
+                        maximumInterval = deck.fsrsMaxInterval,
+                        enableFuzzing = deck.fsrsEnableFuzzing
+                    )
+                    FsrsScheduler(params)
+                }
+                else -> Sm2Scheduler
+            }
+            reviewCardUseCase = ReviewCardUseCase(repository, scheduler)
             loadNextCard()
         }
     }
@@ -81,7 +100,7 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
 
     private suspend fun showCard(card: ReviewCard) {
         val now = kotlin.time.Clock.System.now().epochSeconds
-        val intervals = SrsEngine.previewIntervals(card.state, now)
+        val intervals = scheduler.previewIntervals(card.state, now)
         _uiState.value = _uiState.value.copy(
             currentCard = card,
             frontContent = DisplayableCardContent.from(card.card.front, htmlRenderer),
@@ -100,7 +119,7 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
             prefetchedCard = card
             prefetchedFront = DisplayableCardContent.from(card.card.front, htmlRenderer)
             prefetchedBack = DisplayableCardContent.from(card.card.back, htmlRenderer)
-            prefetchedIntervals = SrsEngine.previewIntervals(card.state, now)
+            prefetchedIntervals = scheduler.previewIntervals(card.state, now)
             hasPrefetch = true
         } else {
             hasPrefetch = false

@@ -207,6 +207,50 @@ interface AppStrings {
     fun dueCount(count: Int): String
     fun newCount(count: Int): String
 
+    // Algorithm / Scheduler
+    val scheduler: String
+    val schedulerSm2: String
+    val schedulerFsrs: String
+    val sm2Algorithm: String
+    val fsrsAlgorithm: String
+
+    // FSRS Settings
+    val fsrsSettings: String
+    val desiredRetention: String
+    val desiredRetentionHint: String
+    val learningSteps: String
+    val learningStepsHint: String
+    val relearningSteps: String
+    val relearningStepsHint: String
+    val maxInterval: String
+    val maxIntervalHint: String
+    val enableFuzzing: String
+    val enableFuzzingHint: String
+    val resetToDefaults: String
+
+    // SM-2 Parameters
+    val ease: String
+    val easeDescription: String
+    val easeHint: String
+
+    // Algorithm Explanations
+    val sm2SimpleExplanation: String
+    val fsrsSimpleExplanation: String
+    val sm2TechnicalDetails: String
+    val fsrsTechnicalDetails: String
+
+    // Algorithm Parameter Explanations
+    val desiredRetentionExplanation: String
+    val learningStepsExplanation: String
+    val relearningStepsExplanation: String
+    val maxIntervalExplanation: String
+    val enableFuzzingExplanation: String
+
+    // Algorithm Detail UI
+    val howItWorks: String
+    val technicalDetails: String
+    val parameters: String
+
     // Bulk Edit
     val bulkEdit: String
     val cardFrontRule: String
@@ -428,6 +472,50 @@ object EnStrings : AppStrings {
     override fun dueCount(count: Int) = "$count due"
     override fun newCount(count: Int) = "$count new"
 
+    // Algorithm / Scheduler
+    override val scheduler = "Scheduler"
+    override val schedulerSm2 = "SM-2"
+    override val schedulerFsrs = "FSRS"
+    override val sm2Algorithm = "SM-2 Algorithm"
+    override val fsrsAlgorithm = "FSRS Algorithm"
+
+    // FSRS Settings
+    override val fsrsSettings = "FSRS Settings"
+    override val desiredRetention = "Desired Retention"
+    override val desiredRetentionHint = "Target recall rate (0.70 - 0.99)"
+    override val learningSteps = "Learning Steps"
+    override val learningStepsHint = "Intervals for new cards (e.g., 1m, 10m)"
+    override val relearningSteps = "Relearning Steps"
+    override val relearningStepsHint = "Intervals for forgotten cards (e.g., 10m)"
+    override val maxInterval = "Maximum Interval (days)"
+    override val maxIntervalHint = "Longest delay between reviews"
+    override val enableFuzzing = "Enable Fuzzing"
+    override val enableFuzzingHint = "Adds random variation to spread reviews"
+    override val resetToDefaults = "Reset to Defaults"
+
+    // SM-2 Parameters
+    override val ease = "Ease Factor"
+    override val easeDescription = "Controls how quickly intervals grow. Higher ease means longer intervals."
+    override val easeHint = "Range: 1.3 - 4.0 (default: 2.5)"
+
+    // Algorithm Explanations
+    override val sm2SimpleExplanation = "SM-2 is a classic spaced repetition algorithm. Each card has an ease factor that determines how quickly review intervals grow. When you rate a card Easy, the ease increases and intervals grow faster. When you rate Again, the card resets to a short interval. Hard slightly reduces the ease, while Good keeps it stable."
+    override val fsrsSimpleExplanation = "FSRS (Free Spaced Repetition Scheduler) uses a scientific model of memory to schedule reviews. It tracks two key properties for each card: stability (how long you'll remember it) and difficulty (how hard the card is for you). FSRS calculates the optimal review time to maintain your desired recall rate, adapting to your performance over time."
+    override val sm2TechnicalDetails = "SM-2 uses an ease factor (EF) that multiplies the previous interval:\n\n• New cards start with EF = 2.5\n• Again: resets interval, EF -= 0.2\n• Hard: interval × 1.2, EF -= 0.1\n• Good: interval × EF\n• Easy: interval × EF × 1.3, EF += 0.2\n\nEF is clamped to [1.3, 4.0]. Intervals are clamped to [1, 36500] days."
+    override val fsrsTechnicalDetails = "FSRS uses a memory model based on the forgetting curve:\n\nRetrievability: R = (1 + t/S × factor)^decay\n\nWhere S is stability (days until 90% recall), t is time elapsed.\n\nAfter each review, stability and difficulty are updated using 21 optimized parameters. The model accounts for:\n• Memory strength grows more when retrievability is low\n• Harder cards gain stability more slowly\n• Forgetting (Again) reduces stability based on current difficulty\n\nThe optimal interval is calculated to maintain your desired retention rate."
+
+    // Algorithm Parameter Explanations
+    override val desiredRetentionExplanation = "The probability of successfully recalling a card when it comes up for review. A value of 0.9 means you'll remember 90% of cards. Higher values lead to shorter intervals (more reviews), lower values lead to longer intervals (fewer reviews but more forgetting)."
+    override val learningStepsExplanation = "When you see a new card for the first time, it goes through learning steps before entering the regular review schedule. Each step defines how long to wait before showing the card again. For example, '1m, 10m' means show the card again after 1 minute, then after 10 minutes, before scheduling a full review."
+    override val relearningStepsExplanation = "When you forget a card (rate Again), it enters relearning. These steps work like learning steps but for cards you previously knew. After completing all relearning steps, the card returns to the regular review schedule with adjusted stability."
+    override val maxIntervalExplanation = "The maximum number of days between reviews. Even if the algorithm calculates a longer interval, it will be capped at this value. The default of 36500 days (~100 years) effectively means no limit."
+    override val enableFuzzingExplanation = "Adds a small random variation to review intervals. This prevents cards that were reviewed together from always coming due on the same day, spreading your workload more evenly. The variation is proportional to the interval length: ±15% for short intervals, ±5% for long ones."
+
+    // Algorithm Detail UI
+    override val howItWorks = "How It Works"
+    override val technicalDetails = "Technical Details"
+    override val parameters = "Parameters"
+
     // Bulk Edit
     override val bulkEdit = "Bulk Edit"
     override val cardFrontRule = "Replace on Front"
@@ -648,6 +736,50 @@ object EsStrings : AppStrings {
     // DeckCard
     override fun dueCount(count: Int) = "$count pendientes"
     override fun newCount(count: Int) = "$count nuevas"
+
+    // Algorithm / Scheduler
+    override val scheduler = "Planificador"
+    override val schedulerSm2 = "SM-2"
+    override val schedulerFsrs = "FSRS"
+    override val sm2Algorithm = "Algoritmo SM-2"
+    override val fsrsAlgorithm = "Algoritmo FSRS"
+
+    // FSRS Settings
+    override val fsrsSettings = "Ajustes de FSRS"
+    override val desiredRetention = "Retención Deseada"
+    override val desiredRetentionHint = "Tasa de recuerdo objetivo (0.70 - 0.99)"
+    override val learningSteps = "Pasos de Aprendizaje"
+    override val learningStepsHint = "Intervalos para tarjetas nuevas (ej. 1m, 10m)"
+    override val relearningSteps = "Pasos de Reaprendizaje"
+    override val relearningStepsHint = "Intervalos para tarjetas olvidadas (ej. 10m)"
+    override val maxInterval = "Intervalo Máximo (días)"
+    override val maxIntervalHint = "Retraso máximo entre revisiones"
+    override val enableFuzzing = "Habilitar Variación"
+    override val enableFuzzingHint = "Agrega variación aleatoria para distribuir revisiones"
+    override val resetToDefaults = "Restablecer Valores"
+
+    // SM-2 Parameters
+    override val ease = "Factor de Facilidad"
+    override val easeDescription = "Controla qué tan rápido crecen los intervalos. Mayor facilidad significa intervalos más largos."
+    override val easeHint = "Rango: 1.3 - 4.0 (predeterminado: 2.5)"
+
+    // Algorithm Explanations
+    override val sm2SimpleExplanation = "SM-2 es un algoritmo clásico de repetición espaciada. Cada tarjeta tiene un factor de facilidad que determina qué tan rápido crecen los intervalos de repaso. Cuando calificas una tarjeta como Fácil, la facilidad aumenta y los intervalos crecen más rápido. Cuando calificas Otra vez, la tarjeta se reinicia a un intervalo corto. Difícil reduce ligeramente la facilidad, mientras que Bien la mantiene estable."
+    override val fsrsSimpleExplanation = "FSRS (Free Spaced Repetition Scheduler) utiliza un modelo científico de la memoria para programar repasos. Rastrea dos propiedades clave de cada tarjeta: estabilidad (cuánto tiempo la recordarás) y dificultad (qué tan difícil es la tarjeta para ti). FSRS calcula el momento óptimo de repaso para mantener tu tasa de recuerdo deseada, adaptándose a tu rendimiento con el tiempo."
+    override val sm2TechnicalDetails = "SM-2 usa un factor de facilidad (EF) que multiplica el intervalo anterior:\n\n• Las tarjetas nuevas comienzan con EF = 2.5\n• Otra vez: reinicia el intervalo, EF -= 0.2\n• Difícil: intervalo × 1.2, EF -= 0.1\n• Bien: intervalo × EF\n• Fácil: intervalo × EF × 1.3, EF += 0.2\n\nEF se limita a [1.3, 4.0]. Los intervalos se limitan a [1, 36500] días."
+    override val fsrsTechnicalDetails = "FSRS usa un modelo de memoria basado en la curva del olvido:\n\nRecuperabilidad: R = (1 + t/S × factor)^decaimiento\n\nDonde S es la estabilidad (días hasta 90% de recuerdo), t es el tiempo transcurrido.\n\nDespués de cada repaso, la estabilidad y la dificultad se actualizan usando 21 parámetros optimizados. El modelo considera:\n• La fuerza de la memoria crece más cuando la recuperabilidad es baja\n• Las tarjetas más difíciles ganan estabilidad más lentamente\n• Olvidar (Otra vez) reduce la estabilidad según la dificultad actual\n\nEl intervalo óptimo se calcula para mantener tu tasa de retención deseada."
+
+    // Algorithm Parameter Explanations
+    override val desiredRetentionExplanation = "La probabilidad de recordar exitosamente una tarjeta cuando aparece para repaso. Un valor de 0.9 significa que recordarás el 90% de las tarjetas. Valores más altos generan intervalos más cortos (más repasos), valores más bajos generan intervalos más largos (menos repasos pero más olvido)."
+    override val learningStepsExplanation = "Cuando ves una tarjeta nueva por primera vez, pasa por pasos de aprendizaje antes de entrar al calendario regular de repasos. Cada paso define cuánto esperar antes de mostrar la tarjeta de nuevo. Por ejemplo, '1m, 10m' significa mostrar la tarjeta después de 1 minuto, luego después de 10 minutos, antes de programar un repaso completo."
+    override val relearningStepsExplanation = "Cuando olvidas una tarjeta (calificas Otra vez), entra en reaprendizaje. Estos pasos funcionan como los pasos de aprendizaje pero para tarjetas que ya conocías. Después de completar todos los pasos de reaprendizaje, la tarjeta vuelve al calendario regular de repasos con estabilidad ajustada."
+    override val maxIntervalExplanation = "El número máximo de días entre repasos. Incluso si el algoritmo calcula un intervalo más largo, se limitará a este valor. El valor predeterminado de 36500 días (~100 años) significa efectivamente sin límite."
+    override val enableFuzzingExplanation = "Agrega una pequeña variación aleatoria a los intervalos de repaso. Esto evita que tarjetas repasadas juntas siempre venzan el mismo día, distribuyendo tu carga de trabajo más uniformemente. La variación es proporcional a la longitud del intervalo: ±15% para intervalos cortos, ±5% para largos."
+
+    // Algorithm Detail UI
+    override val howItWorks = "Cómo Funciona"
+    override val technicalDetails = "Detalles Técnicos"
+    override val parameters = "Parámetros"
 
     // Bulk Edit
     override val bulkEdit = "Edición Masiva"

@@ -21,6 +21,7 @@ import com.kado.app.presentation.screens.partition.PartitionScreen
 import com.kado.app.presentation.screens.transfer.TransferScreen
 import com.kado.app.presentation.screens.bulk_edit.BulkEditScreen
 import com.kado.app.presentation.screens.help.HelpScreen
+import com.kado.app.presentation.screens.algorithm_detail.AlgorithmDetailScreen
 
 @Composable
 fun KadoNavHost(
@@ -65,7 +66,10 @@ fun KadoNavHost(
             DeckEditScreen(
                 deckId = route.deckId,
                 onBack = { navController.popBackStack() },
-                onDeleted = { navController.popBackStack(HomeRoute, inclusive = false) }
+                onDeleted = { navController.popBackStack(HomeRoute, inclusive = false) },
+                onAlgorithmDetail = { algorithmId, focusParam ->
+                    navController.navigate(AlgorithmDetailRoute(algorithmId, focusParam))
+                }
             )
         }
 
@@ -151,6 +155,16 @@ fun KadoNavHost(
 
         composable<HelpRoute> {
             HelpScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable<AlgorithmDetailRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<AlgorithmDetailRoute>()
+            val focusParameter = route.focusParameter.ifEmpty { null }
+            AlgorithmDetailScreen(
+                algorithmId = route.algorithmId,
+                focusParameter = focusParameter,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }

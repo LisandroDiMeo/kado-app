@@ -22,5 +22,10 @@ data class CardStateEntity(
     val ease: Int = 25,
     val reps: Int = 0,
     val lapses: Int = 0,
-    val queue: Int = 0 // 0=new, 1=learning, 2=review
+    val queue: Int = 0, // 0=new, 1=learning, 2=review
+    val stability: Double? = null,
+    val difficulty: Double? = null,
+    val fsrsState: Int? = null,
+    val step: Int? = null,
+    val lastReview: Long? = null
 )
