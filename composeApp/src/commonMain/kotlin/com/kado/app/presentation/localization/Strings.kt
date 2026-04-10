@@ -93,7 +93,8 @@ interface AppStrings {
     val resetProgressMessage: String
     val reset: String
     val statsGuide: String
-    val statsGuideBody: String
+    val statsGuideBodySm2: String
+    val statsGuideBodyFsrs: String
     val gotIt: String
     val newLabel: String
     val learning: String
@@ -272,6 +273,12 @@ interface AppStrings {
     val enabled: String
     val noChangesFound: String
     val regexMatchesEmpty: String
+
+    // Validation Errors
+    val errorRetentionRange: String
+    val errorInvalidNumber: String
+    val errorPositiveInteger: String
+    val errorInvalidStepsFormat: String
 }
 
 object EnStrings : AppStrings {
@@ -355,7 +362,8 @@ object EnStrings : AppStrings {
     override val resetProgressMessage = "All review progress for this deck will be erased. Cards will be treated as new."
     override val reset = "Reset"
     override val statsGuide = "Stats Guide"
-    override val statsGuideBody = "New — Cards you haven't studied yet.\n\nLearning — Cards you got wrong and are re-learning.\n\nYoung — Cards you've reviewed, but with an interval under 21 days. After rating a card \"Good\" for the first time, it moves here with a 1-day interval.\n\nMature — Cards with an interval of 21+ days. These are well-known.\n\nDue Now — Total cards ready for review right now (new + overdue)."
+    override val statsGuideBodySm2 = "New — Cards you haven't studied yet.\n\nLearning — Cards you got wrong and are re-learning.\n\nYoung — Cards you've reviewed, but with an interval under 21 days. After rating a card \"Good\" for the first time, it moves here with a 1-day interval.\n\nMature — Cards with an interval of 21+ days. These are well-known.\n\nDue Now — Total cards ready for review right now (new + overdue)."
+    override val statsGuideBodyFsrs = "New — Cards you haven't studied yet.\n\nLearning — Cards going through learning steps (e.g., 1m, 10m) before entering the regular review schedule, or relearning steps after being forgotten.\n\nYoung — Cards in the review state with an interval under 21 days. FSRS tracks each card's stability and difficulty to schedule optimal reviews.\n\nMature — Cards with an interval of 21+ days. These have high memory stability.\n\nDue Now — Total cards ready for review right now (new + overdue)."
     override val gotIt = "Got it"
     override val newLabel = "New"
     override val learning = "Learning"
@@ -537,6 +545,12 @@ object EnStrings : AppStrings {
     override val enabled = "Enabled"
     override val noChangesFound = "No cards matched the pattern"
     override val regexMatchesEmpty = "Pattern must not match empty strings"
+
+    // Validation Errors
+    override val errorRetentionRange = "Must be between 0.70 and 0.99"
+    override val errorInvalidNumber = "Must be a valid number"
+    override val errorPositiveInteger = "Must be a positive whole number"
+    override val errorInvalidStepsFormat = "Use comma-separated times (e.g., 1m, 10m)"
 }
 
 object EsStrings : AppStrings {
@@ -620,7 +634,8 @@ object EsStrings : AppStrings {
     override val resetProgressMessage = "Todo el progreso de repaso de este mazo será borrado. Las tarjetas serán tratadas como nuevas."
     override val reset = "Reiniciar"
     override val statsGuide = "Guía de Estadísticas"
-    override val statsGuideBody = "Nuevas — Tarjetas que aún no has estudiado.\n\nAprendiendo — Tarjetas que respondiste mal y estás re-aprendiendo.\n\nJóvenes — Tarjetas que has repasado, pero con un intervalo menor a 21 días. Después de calificar una tarjeta como \"Bien\" por primera vez, se mueve aquí con un intervalo de 1 día.\n\nMaduras — Tarjetas con un intervalo de 21+ días. Son las que conoces bien.\n\nPendientes — Total de tarjetas listas para repasar ahora (nuevas + atrasadas)."
+    override val statsGuideBodySm2 = "Nuevas — Tarjetas que aún no has estudiado.\n\nAprendiendo — Tarjetas que respondiste mal y estás re-aprendiendo.\n\nJóvenes — Tarjetas que has repasado, pero con un intervalo menor a 21 días. Después de calificar una tarjeta como \"Bien\" por primera vez, se mueve aquí con un intervalo de 1 día.\n\nMaduras — Tarjetas con un intervalo de 21+ días. Son las que conoces bien.\n\nPendientes — Total de tarjetas listas para repasar ahora (nuevas + atrasadas)."
+    override val statsGuideBodyFsrs = "Nuevas — Tarjetas que aún no has estudiado.\n\nAprendiendo — Tarjetas que están pasando por los pasos de aprendizaje (ej. 1m, 10m) antes de entrar al calendario regular de repasos, o por pasos de reaprendizaje después de ser olvidadas.\n\nJóvenes — Tarjetas en estado de repaso con un intervalo menor a 21 días. FSRS rastrea la estabilidad y dificultad de cada tarjeta para programar repasos óptimos.\n\nMaduras — Tarjetas con un intervalo de 21+ días. Tienen alta estabilidad de memoria.\n\nPendientes — Total de tarjetas listas para repasar ahora (nuevas + atrasadas)."
     override val gotIt = "Entendido"
     override val newLabel = "Nuevas"
     override val learning = "Aprendiendo"
@@ -802,4 +817,10 @@ object EsStrings : AppStrings {
     override val enabled = "Habilitado"
     override val noChangesFound = "Ninguna tarjeta coincide con el patrón"
     override val regexMatchesEmpty = "El patrón no debe coincidir con cadenas vacías"
+
+    // Validation Errors
+    override val errorRetentionRange = "Debe estar entre 0.70 y 0.99"
+    override val errorInvalidNumber = "Debe ser un número válido"
+    override val errorPositiveInteger = "Debe ser un número entero positivo"
+    override val errorInvalidStepsFormat = "Usa tiempos separados por comas (ej. 1m, 10m)"
 }

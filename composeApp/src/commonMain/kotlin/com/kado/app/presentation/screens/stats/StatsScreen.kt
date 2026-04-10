@@ -29,6 +29,7 @@ import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.presentation.components.LoadingState
 import com.kado.app.presentation.components.StatBar
 import com.kado.app.presentation.localization.S
+import com.kado.app.domain.srs.SchedulerType
 
 @Composable
 fun StatsScreen(
@@ -54,12 +55,16 @@ fun StatsScreen(
     }
 
     if (showHelpDialog) {
+        val guideBody = when (uiState.deck?.schedulerType) {
+            SchedulerType.FSRS -> S().statsGuideBodyFsrs
+            else -> S().statsGuideBodySm2
+        }
         AlertDialog(
             onDismissRequest = { showHelpDialog = false },
             title = { Text(S().statsGuide) },
             text = {
                 Text(
-                    S().statsGuideBody,
+                    guideBody,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.verticalScroll(rememberScrollState())
                 )

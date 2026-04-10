@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Button
@@ -31,12 +32,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kado.app.domain.srs.SchedulerType
 import com.kado.app.presentation.components.ConfirmDialog
 import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.presentation.localization.S
+
+@Composable
+private fun FieldError.toLocalizedString(): String = when (this) {
+    FieldError.RetentionRange -> S().errorRetentionRange
+    FieldError.InvalidNumber -> S().errorInvalidNumber
+    FieldError.PositiveInteger -> S().errorPositiveInteger
+    FieldError.InvalidStepsFormat -> S().errorInvalidStepsFormat
+}
 
 @Composable
 fun DeckEditScreen(
@@ -100,6 +110,11 @@ fun DeckEditScreen(
                 value = uiState.dailyLimit,
                 onValueChange = vm::onDailyLimitChange,
                 modifier = Modifier.fillMaxWidth(),
+                isError = uiState.dailyLimitError != null,
+                supportingText = uiState.dailyLimitError?.let { error ->
+                    { Text(error.toLocalizedString()) }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true
             )
 
@@ -158,11 +173,20 @@ fun DeckEditScreen(
                         onValueChange = vm::onDesiredRetentionChange,
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text(S().desiredRetention) },
-                        supportingText = { Text(S().desiredRetentionHint) },
+                        isError = uiState.desiredRetentionError != null,
+                        supportingText = {
+                            val error = uiState.desiredRetentionError
+                            if (error != null) {
+                                Text(error.toLocalizedString())
+                            } else {
+                                Text(S().desiredRetentionHint)
+                            }
+                        },
                         trailingIcon = {
                             Text("?", color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "desiredRetention") }.padding(8.dp))
                         },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true
                     )
                     Spacer(Modifier.height(12.dp))
@@ -173,7 +197,15 @@ fun DeckEditScreen(
                         onValueChange = vm::onLearningStepsChange,
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text(S().learningSteps) },
-                        supportingText = { Text(S().learningStepsHint) },
+                        isError = uiState.learningStepsError != null,
+                        supportingText = {
+                            val error = uiState.learningStepsError
+                            if (error != null) {
+                                Text(error.toLocalizedString())
+                            } else {
+                                Text(S().learningStepsHint)
+                            }
+                        },
                         trailingIcon = {
                             Text("?", color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "learningSteps") }.padding(8.dp))
@@ -188,7 +220,15 @@ fun DeckEditScreen(
                         onValueChange = vm::onRelearningStepsChange,
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text(S().relearningSteps) },
-                        supportingText = { Text(S().relearningStepsHint) },
+                        isError = uiState.relearningStepsError != null,
+                        supportingText = {
+                            val error = uiState.relearningStepsError
+                            if (error != null) {
+                                Text(error.toLocalizedString())
+                            } else {
+                                Text(S().relearningStepsHint)
+                            }
+                        },
                         trailingIcon = {
                             Text("?", color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "relearningSteps") }.padding(8.dp))
@@ -203,11 +243,20 @@ fun DeckEditScreen(
                         onValueChange = vm::onMaxIntervalChange,
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text(S().maxInterval) },
-                        supportingText = { Text(S().maxIntervalHint) },
+                        isError = uiState.maxIntervalError != null,
+                        supportingText = {
+                            val error = uiState.maxIntervalError
+                            if (error != null) {
+                                Text(error.toLocalizedString())
+                            } else {
+                                Text(S().maxIntervalHint)
+                            }
+                        },
                         trailingIcon = {
                             Text("?", color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "maxInterval") }.padding(8.dp))
                         },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true
                     )
                     Spacer(Modifier.height(12.dp))
@@ -251,7 +300,7 @@ fun DeckEditScreen(
             Button(
                 onClick = vm::save,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = uiState.name.isNotBlank() && !uiState.isLoading
+                enabled = uiState.name.isNotBlank() && !uiState.isLoading && !uiState.hasValidationErrors
             ) {
                 Text(if (uiState.isNew) S().createDeck else S().saveChanges)
             }
