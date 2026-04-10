@@ -9,29 +9,61 @@
   <img src="screenshots/settings_preview.png" alt="Settings" width="180" />
 </p>
 
+<p align="center">
+  <video src="screenshots/demo.webm" width="300" autoplay loop muted playsinline>
+    Your browser does not support the video tag.
+  </video>
+</p>
+
 # Kado
 
-Kado is an open-source spaced repetition flashcard app built with Kotlin Multiplatform for Android and iOS. It helps you learn and retain knowledge using an SM2-based spaced repetition algorithm, with support for importing Anki decks and syncing to a companion ESP32 hardware device.
+Kado is an open-source spaced repetition flashcard app built with Kotlin Multiplatform for Android and iOS. It helps you learn and retain knowledge using your choice of SM2 or FSRS scheduling algorithms, with support for rich text cards, Anki deck imports, and a companion ESP32 hardware device.
 
 ## Features
 
-- Create and manage flashcard decks
-- Spaced repetition scheduling (SM2-like algorithm)
-- Import Anki `.apkg` decks
-- Deck partitioning and cloning — split large decks or duplicate them for focused study
-- Learning stats — track your review progress and retention over time
-- Text-to-speech for card pronunciation (Android only at the moment)
-- Dark theme support
+**Spaced Repetition & Review**
+- SM2 and FSRS scheduling algorithms with per-deck selection
+- Four-button rating system (Again / Hard / Good / Easy) with interval preview
+- 3D card flip animation with crossfade content transitions
+
+**Deck Management**
+- Create and manage flashcard decks with daily new card limits
+- Deck partitioning — split large decks into sub-decks for focused study
+- Deck cloning and reversed deck creation
+- Bulk editing with saved find/replace rules (plain text and regex)
+
+**Card Content**
+- Rich text / HTML rendering (bold, italic, colors, headings, lists)
+- Image support in cards
+- Adjustable card font scaling
+- Import Anki `.apkg` decks with template rendering and media extraction
+
+**Customization & Platform**
+- Dark and light themes
+- Localization (English, Spanish)
+- Text-to-speech for card pronunciation (Android)
 - Tablet-friendly layout
-- Sync decks to an ESP32 device over WiFi
 - Kotlin Multiplatform — shared logic across Android and iOS
+
+**Analytics & Hardware**
+- Learning statistics — track review progress, card states, and retention
+- Sync decks to an [ESP32 hardware device](docs/esp32-guide.md) over WiFi
+
+## Documentation
+
+- [Getting Started](docs/getting-started.md) — Installation, creating decks, reviewing cards
+- [Feature Reference](docs/features.md) — Detailed documentation for all features
+- [ESP32 Hardware Guide](docs/esp32-guide.md) — Device setup, communication protocol, .ald format
 
 ## Download
 
 ### Stores
-
-<img src="apple_store_badge.svg" width="135" height="40"/>
+<a href="https://play.google.com/store/apps/details?id=com.eldiem.kado.app">
 <img src="google_playstore_badge.svg" width="135" height="40"/>
+</a>
+
+**Coming Soon**
+<img src="apple_store_badge.svg" width="135" height="40"/>
 
 You can download the latest Android APK from the [Releases](https://github.com/LisandroDiMeo/kado-app/releases) page.
 
@@ -59,27 +91,7 @@ Open the `iosApp/` directory in Xcode and run from there.
 
 ## ESP32 Hardware Module
 
-Kado supports syncing flashcard decks to an ESP32-based hardware device for offline review. The firmware for this module is kept in a private repository, but we provide an interface definition so anyone can build their own integration with ESP32-like microcontrollers.
-
-### Device Communication Protocol
-
-The device runs a WiFi access point with SSID prefix `KadoLite-`. Once connected, the app communicates via HTTP at `192.168.4.1`:
-
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/decks` | GET | List decks on the device |
-| `/upload` | POST | Upload a deck file (`.ald` format) |
-| `/api/delete?idx=<index>` | DELETE | Delete a deck by index |
-
-### `.ald` Deck Format
-
-The `.ald` file is a simple TSV format where each line represents a card:
-
-```
-front_text\tback_text
-```
-
-This makes it straightforward to generate deck files from any source and upload them to a compatible device.
+Kado supports syncing flashcard decks to an ESP32-based hardware device for offline review. See the [ESP32 Hardware Guide](docs/esp32-guide.md) for the device communication protocol, `.ald` format specification, and setup instructions.
 
 ## Support the Project
 
