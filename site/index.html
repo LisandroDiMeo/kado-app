@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kado - Community Decks</title>
+  <meta name="description" content="Kado is an open-source spaced repetition flashcard app. Browse and download community-created decks.">
+  <meta property="og:title" content="Kado - Community Decks">
+  <meta property="og:description" content="Browse and download community flashcard decks for the Kado spaced repetition app.">
+  <meta property="og:image" content="assets/kado_icon_512.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a href="#hero" class="nav-brand">
+        <img src="assets/kado_icon_512.png" alt="Kado" class="nav-logo">
+        <span class="nav-title">Kado</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#screenshots">Screenshots</a></li>
+        <li><a href="#decks">Decks</a></li>
+        <li><a href="#support">Support</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <a href="https://github.com/LisandroDiMeo/kado-app" class="nav-github" aria-label="GitHub" target="_blank" rel="noopener">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section id="hero" class="hero">
+      <div class="hero-content">
+        <img src="assets/kado_icon_512.png" alt="Kado App Icon" class="hero-icon">
+        <h1>Kado</h1>
+        <p class="hero-tagline">Open-source spaced repetition flashcards</p>
+        <p class="hero-description">
+          Learn and retain knowledge with your choice of SM2 or FSRS scheduling algorithms.
+          Import Anki decks, study rich text cards, track your progress, and even sync to an ESP32 hardware device.
+        </p>
+        <div class="hero-badges">
+          <a href="https://play.google.com/store/apps/details?id=com.eldiem.kado.app" target="_blank" rel="noopener">
+            <img src="assets/google_playstore_badge.svg" alt="Get it on Google Play" class="store-badge">
+          </a>
+          <span class="store-coming-soon">
+            <img src="assets/apple_store_badge.svg" alt="Download on the App Store" class="store-badge store-badge-disabled">
+            <span class="coming-soon-label">Coming Soon</span>
+          </span>
+        </div>
+        <a href="https://github.com/LisandroDiMeo/kado-app/releases" class="hero-releases" target="_blank" rel="noopener">
+          Or download the latest APK from GitHub Releases
+        </a>
+      </div>
+    </section>
+
+    <section id="features" class="features">
+      <div class="container">
+        <h2>Features</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3>Spaced Repetition</h3>
+            <p>SM2 and FSRS scheduling algorithms with per-deck selection. Four-button rating with interval preview.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            </div>
+            <h3>Anki Import</h3>
+            <p>Import .apkg decks with full template rendering, media extraction, and support for both legacy and modern formats.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            </div>
+            <h3>Rich Content</h3>
+            <p>HTML rendering with bold, italic, colors, headings, lists. Image support and adjustable font scaling.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            </div>
+            <h3>Deck Management</h3>
+            <p>Partition large decks, clone, create reversed decks, and bulk edit with saved find/replace rules.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <h3>Statistics</h3>
+            <p>Track review progress, card states, and retention. Visualize your learning with detailed analytics.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+            </div>
+            <h3>ESP32 Hardware</h3>
+            <p>Sync flashcard decks to an ESP32 device over WiFi for offline review on dedicated hardware.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenshots" class="screenshots">
+      <div class="container">
+        <h2>Screenshots</h2>
+        <div class="screenshots-scroll">
+          <img src="assets/screenshots/home_preview.png" alt="Home screen" loading="lazy">
+          <img src="assets/screenshots/deck_preview.png" alt="Deck detail" loading="lazy">
+          <img src="assets/screenshots/review_preview.png" alt="Card review" loading="lazy">
+          <img src="assets/screenshots/review_dark_theme.png" alt="Dark theme review" loading="lazy">
+          <img src="assets/screenshots/settings_preview.png" alt="Settings" loading="lazy">
+          <img src="assets/screenshots/stats.png" alt="Statistics" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section id="decks" class="decks">
+      <div class="container">
+        <h2>Community Decks</h2>
+        <p class="decks-subtitle">Browse and download flashcard decks created by the community. Import them into Kado with a single tap.</p>
+        <div id="category-filters" class="category-filters"></div>
+        <div id="deck-grid" class="deck-grid"></div>
+        <p id="no-results" class="no-results" hidden>No decks match this filter.</p>
+      </div>
+    </section>
+
+    <section id="support" class="support">
+      <div class="container">
+        <h2>Support the Project</h2>
+        <p class="support-subtitle">If Kado is useful to you, consider supporting its development.</p>
+        <div class="support-links">
+          <a href="https://github.com/sponsors/lisandrodimeo" class="support-btn support-github-sponsors" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            GitHub Sponsors
+          </a>
+          <a href="https://ko-fi.com/lisandrodimeo" class="support-btn support-kofi" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+            Ko-fi
+          </a>
+          <a href="https://cafecito.app/eldiem-dev" class="support-btn support-cafecito" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7v-1h.5c1.93 0 3.5-1.57 3.5-3.5S20.43 3 18.5 3zm0 5h-.5V5h.5c.83 0 1.5.67 1.5 1.5S19.33 8 18.5 8zM4 19h16v2H4v-2z"/></svg>
+            Cafecito
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-meaning">Kado comes from the Japanese word for card</p>
+      <p class="footer-license">Open source under <a href="https://github.com/LisandroDiMeo/kado-app/blob/main/LICENSE" target="_blank" rel="noopener">GPL v3</a></p>
+      <nav class="footer-links">
+        <a href="https://github.com/LisandroDiMeo/kado-app" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/LisandroDiMeo/kado-app/blob/main/PRIVACY_POLICY.md" target="_blank" rel="noopener">Privacy Policy</a>
+        <a href="https://play.google.com/store/apps/details?id=com.eldiem.kado.app" target="_blank" rel="noopener">Google Play</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
