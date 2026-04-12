@@ -35,11 +35,13 @@ fun CardContentRenderer(
     textStyle: TextStyle,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
     Crossfade(
+        modifier = Modifier.fillMaxWidth(),
         targetState = content,
-        animationSpec = tween(300)
+        animationSpec = tween(400)
     ) { targetContent ->
-        SelectionContainer {
+        SelectionContainer(modifier = Modifier.fillMaxWidth()) {
             when (targetContent) {
                 is DisplayableCardContent.PlainText -> {
                     Text(
@@ -47,7 +49,7 @@ fun CardContentRenderer(
                         style = textStyle,
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.verticalScroll(rememberScrollState())
+                        modifier = Modifier.verticalScroll(scrollState)
                     )
                 }
 

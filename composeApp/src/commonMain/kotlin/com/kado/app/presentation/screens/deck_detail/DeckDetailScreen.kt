@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -166,12 +168,12 @@ fun DeckDetailScreen(
             // Action buttons
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
                         onClick = onReview,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
                         enabled = uiState.dueCount > 0 || uiState.newCount > 0
                     ) {
                         Text(
@@ -181,7 +183,7 @@ fun DeckDetailScreen(
                     }
                     OutlinedButton(
                         onClick = onStats,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).fillMaxHeight()
                     ) {
                         Text(S().stats)
                     }
@@ -219,7 +221,8 @@ fun DeckDetailScreen(
                                 Text(
                                     S().cardStats(subDeck.cardCount, subDeck.dueCount, subDeck.newCount),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    textAlign = TextAlign.End
                                 )
                             }
                             Spacer(Modifier.height(8.dp))
@@ -236,13 +239,13 @@ fun DeckDetailScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 OutlinedButton(modifier = Modifier.weight(1f), onClick = { onTransferSubDeck(subDeck.index) }) {
-                                    Text(S().send)
+                                    Text(S().send, style = MaterialTheme.typography.labelSmall)
                                 }
                                 OutlinedButton(modifier = Modifier.weight(1f), onClick = { cloneSubDeckConfirm = subDeck.index }) {
-                                    Text(S().clone)
+                                    Text(S().clone, style = MaterialTheme.typography.labelSmall)
                                 }
                                 OutlinedButton(modifier = Modifier.weight(1f), onClick = { removeSubDeckConfirm = subDeck.index }) {
-                                    Text(S().remove)
+                                    Text(S().remove, style = MaterialTheme.typography.labelSmall)
                                 }
                             }
                         }

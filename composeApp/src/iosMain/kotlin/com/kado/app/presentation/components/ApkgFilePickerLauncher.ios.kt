@@ -3,6 +3,7 @@ package com.kado.app.presentation.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import com.kado.app.util.topViewController
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -13,13 +14,16 @@ import kotlinx.coroutines.withContext
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.Foundation.dataWithContentsOfURL
-import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UniformTypeIdentifiers.UTTypeData
 import platform.darwin.NSObject
 import platform.posix.memcpy
 import kotlin.coroutines.resume
+
+// Strong reference to prevent GC while picker is active.
+// UIDocumentPickerViewController.delegate is a weak property in UIKit.
+private var retainedDelegate: NSObject? = null
 
 @Composable
 actual fun rememberApkgPickerLauncher(onResult: (ByteArray?) -> Unit): () -> Unit {
@@ -46,33 +50,42 @@ private suspend fun pickFile(): ByteArray? = withContext(Dispatchers.Main) {
                 controller: UIDocumentPickerViewController,
                 didPickDocumentsAtURLs: List<*>
             ) {
+                retainedDelegate = null
                 val url = didPickDocumentsAtURLs.firstOrNull() as? NSURL
                 if (url == null) {
-                    continuation.resume(null)
+                    if (continuation.isActive) continuation.resume(null)
                     return
                 }
                 val accessing = url.startAccessingSecurityScopedResource()
                 try {
                     val data = NSData.dataWithContentsOfURL(url)
                     val bytes = data?.toByteArray()
-                    continuation.resume(bytes)
+                    if (continuation.isActive) continuation.resume(bytes)
                 } finally {
                     if (accessing) url.stopAccessingSecurityScopedResource()
                 }
             }
 
             override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
-                continuation.resume(null)
+                retainedDelegate = null
+                if (continuation.isActive) continuation.resume(null)
             }
         }
 
+        retainedDelegate = delegate
         picker.delegate = delegate
         picker.allowsMultipleSelection = false
 
-        val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
-        rootViewController?.presentViewController(picker, animated = true, completion = null)
+        val rootViewController = topViewController()
+        if (rootViewController == null) {
+            retainedDelegate = null
+            if (continuation.isActive) continuation.resume(null)
+            return@suspendCancellableCoroutine
+        }
+        rootViewController.presentViewController(picker, animated = true, completion = null)
 
         continuation.invokeOnCancellation {
+            retainedDelegate = null
             picker.dismissViewControllerAnimated(false, completion = null)
         }
     }

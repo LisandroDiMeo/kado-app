@@ -84,7 +84,7 @@ fun StatsScreen(
                 onBack = onBack,
                 actions = {
                     IconButton(onClick = { showHelpDialog = true }) {
-                        Text("❓", style = MaterialTheme.typography.titleMedium)
+                        Text("❓", style = MaterialTheme.typography.labelSmall)
                     }
                 }
             )
