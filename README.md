@@ -3,6 +3,13 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/LisandroDiMeo/kado-app/actions/workflows/ci.yml"><img src="https://github.com/LisandroDiMeo/kado-app/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://codecov.io/gh/LisandroDiMeo/kado-app"><img src="https://codecov.io/gh/LisandroDiMeo/kado-app/graph/badge.svg" alt="Coverage" /></a>
+  <a href="https://pinterest.github.io/ktlint/"><img src="https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg" alt="ktlint" /></a>
+  <a href="https://detekt.dev/"><img src="https://img.shields.io/badge/static%20analysis-detekt-4B32C3.svg" alt="detekt" /></a>
+</p>
+
+<p align="center">
   <img src="screenshots/home_preview.png" alt="Home" width="180" />
   <img src="screenshots/deck_preview.png" alt="Deck" width="180" />
   <img src="screenshots/review_preview.png" alt="Review" width="180" />

@@ -64,3 +64,10 @@ jobs:
 
       - name: Verify coverage threshold
         run: ./gradlew :composeApp:koverVerify
+
+      - name: Upload to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          files: composeApp/build/reports/kover/report.xml
+          flags: unittests
