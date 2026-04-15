@@ -2,11 +2,30 @@
   <img src="kado_icon_1024.png" alt="Kado" width="200" />
 </p>
 
+<!-- Build & Quality -->
 <p align="center">
   <a href="https://github.com/LisandroDiMeo/kado-app/actions/workflows/ci.yml"><img src="https://github.com/LisandroDiMeo/kado-app/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://github.com/LisandroDiMeo/kado-app/actions/workflows/ci.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FLisandroDiMeo%2Fkado-app%2Fbadges%2Fcoverage.json" alt="Coverage" /></a>
+  <a href="https://github.com/LisandroDiMeo/kado-app/actions/workflows/ci.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FLisandroDiMeo%2Fkado-app%2Fbadges%2Fcoverage.json&logo=kotlin&logoColor=white" alt="Coverage" /></a>
   <a href="https://pinterest.github.io/ktlint/"><img src="https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg" alt="ktlint" /></a>
   <a href="https://detekt.dev/"><img src="https://img.shields.io/badge/static%20analysis-detekt-4B32C3.svg" alt="detekt" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/LisandroDiMeo/kado-app?color=blue" alt="License" /></a>
+  <a href="https://github.com/LisandroDiMeo/kado-app/releases/latest"><img src="https://img.shields.io/github/v/release/LisandroDiMeo/kado-app?color=success&label=release" alt="Release" /></a>
+</p>
+
+<!-- Tech Stack -->
+<p align="center">
+  <a href="https://kotlinlang.org/"><img src="https://img.shields.io/badge/Kotlin-2.3.10-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin" /></a>
+  <a href="https://www.jetbrains.com/compose-multiplatform/"><img src="https://img.shields.io/badge/Compose_Multiplatform-1.10.2-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white" alt="Compose Multiplatform" /></a>
+  <img src="https://img.shields.io/badge/Android-24+-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android minSdk 24" />
+  <img src="https://img.shields.io/badge/iOS-Native-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS" />
+  <a href="firmware/"><img src="https://img.shields.io/badge/ESP32-E7352C?style=for-the-badge&logo=espressif&logoColor=white" alt="ESP32" /></a>
+</p>
+
+<!-- Get it -->
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.eldiem.kado.app"><img src="https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=google-play&logoColor=white" alt="Google Play" /></a>
+  <a href="https://decks.eldiem.xyz"><img src="https://img.shields.io/badge/decks.eldiem.xyz-FF7043?style=for-the-badge&logo=firefoxbrowser&logoColor=white" alt="Website" /></a>
+  <a href="https://github.com/sponsors/lisandrodimeo"><img src="https://img.shields.io/badge/Sponsor-%E2%9D%A4-E30074?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor" /></a>
 </p>
 
 <p align="center">
