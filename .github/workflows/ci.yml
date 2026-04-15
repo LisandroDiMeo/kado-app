@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   lint:
@@ -65,9 +65,42 @@ jobs:
       - name: Verify coverage threshold
         run: ./gradlew :composeApp:koverVerify
 
-      - name: Upload to Codecov
-        if: always()
-        uses: codecov/codecov-action@v5
-        with:
-          files: composeApp/build/reports/kover/report.xml
-          flags: unittests
+      - name: Extract coverage percentage
+        if: github.ref == 'refs/heads/main'
+        id: coverage
+        run: |
+          PERCENT=$(./gradlew :composeApp:koverLog -q | grep -oE '[0-9]+\.[0-9]+' | head -1)
+          echo "percent=$PERCENT" >> "$GITHUB_OUTPUT"
+          if awk -v c="$PERCENT" 'BEGIN{exit !(c<50)}'; then
+            echo "color=red" >> "$GITHUB_OUTPUT"
+          elif awk -v c="$PERCENT" 'BEGIN{exit !(c<75)}'; then
+            echo "color=yellow" >> "$GITHUB_OUTPUT"
+          else
+            echo "color=brightgreen" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish coverage badge to badges branch
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          TMPDIR=$(mktemp -d)
+          cat > "$TMPDIR/coverage.json" <<EOF
+          {"schemaVersion":1,"label":"coverage","message":"${{ steps.coverage.outputs.percent }}%","color":"${{ steps.coverage.outputs.color }}"}
+          EOF
+
+          if git ls-remote --exit-code --heads origin badges >/dev/null 2>&1; then
+            git fetch origin badges:badges
+            git checkout badges
+          else
+            git checkout --orphan badges
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+
+          cp "$TMPDIR/coverage.json" coverage.json
+          git add coverage.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update coverage badge [skip ci]"
+            git push origin badges
+          fi
