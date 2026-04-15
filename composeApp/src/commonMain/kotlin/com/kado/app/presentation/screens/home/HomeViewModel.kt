@@ -11,10 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-data class HomeUiState(
-    val decks: List<DeckSummary> = emptyList(),
-    val isLoading: Boolean = true
-)
+data class HomeUiState(val decks: List<DeckSummary> = emptyList(), val isLoading: Boolean = true)
 
 class HomeViewModel : ViewModel() {
     private val repository = AppDependencies.deckRepository

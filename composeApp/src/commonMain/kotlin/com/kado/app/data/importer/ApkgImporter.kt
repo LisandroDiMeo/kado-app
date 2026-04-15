@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -47,49 +46,67 @@ class ApkgImporter(private val repository: DeckRepository) {
             if (importData.cards.isEmpty()) {
                 throw IllegalArgumentException("No cards found in APKG file")
             }
-            onProgress(ImportProgress(
-                ImportPhase.Parsing, 0.35f,
-                deckName = importData.deckName,
-                cardCount = importData.cards.size
-            ))
+            onProgress(
+                ImportProgress(
+                    ImportPhase.Parsing,
+                    0.35f,
+                    deckName = importData.deckName,
+                    cardCount = importData.cards.size
+                )
+            )
 
             // Phase 3: Insert into Kado DB (35-70%)
             val deckId = repository.importDeck(
                 name = importData.deckName,
                 cards = importData.cards
             ) { insertProgress ->
-                onProgress(ImportProgress(
-                    ImportPhase.Inserting,
-                    0.35f + insertProgress * 0.35f,
-                    deckName = importData.deckName,
-                    cardCount = importData.cards.size
-                ))
+                onProgress(
+                    ImportProgress(
+                        ImportPhase.Inserting,
+                        0.35f + insertProgress * 0.35f,
+                        deckName = importData.deckName,
+                        cardCount = importData.cards.size
+                    )
+                )
             }
 
             // Phase 4: Extract media files (70-95%)
             if (importData.referencedMedia.isNotEmpty()) {
-                extractMedia(fileBytes, entries, deckId, importData.referencedMedia, initialEntries["media"]) { mediaProgress ->
-                    onProgress(ImportProgress(
-                        ImportPhase.ExtractingMedia,
-                        0.70f + mediaProgress * 0.25f,
-                        deckName = importData.deckName,
-                        cardCount = importData.cards.size
-                    ))
+                extractMedia(
+                    fileBytes,
+                    entries,
+                    deckId,
+                    importData.referencedMedia,
+                    initialEntries["media"]
+                ) { mediaProgress ->
+                    onProgress(
+                        ImportProgress(
+                            ImportPhase.ExtractingMedia,
+                            0.70f + mediaProgress * 0.25f,
+                            deckName = importData.deckName,
+                            cardCount = importData.cards.size
+                        )
+                    )
                 }
             }
 
-            onProgress(ImportProgress(
-                ImportPhase.Done, 1f,
-                deckName = importData.deckName,
-                cardCount = importData.cards.size
-            ))
+            onProgress(
+                ImportProgress(
+                    ImportPhase.Done,
+                    1f,
+                    deckName = importData.deckName,
+                    cardCount = importData.cards.size
+                )
+            )
 
             deckId
         } catch (e: Exception) {
-            onProgress(ImportProgress(
-                ImportPhase.Error,
-                error = e.message ?: "Unknown error during import"
-            ))
+            onProgress(
+                ImportProgress(
+                    ImportPhase.Error,
+                    error = e.message ?: "Unknown error during import"
+                )
+            )
             throw e
         }
     }

@@ -13,31 +13,30 @@ data class FindReplaceParams(
     val backEnabled: Boolean
 )
 
-data class CardChange(
-    val card: Card,
-    val newFront: String,
-    val newBack: String,
-    val isSelected: Boolean = true
-)
+data class CardChange(val card: Card, val newFront: String, val newBack: String, val isSelected: Boolean = true)
 
 class ApplyFindReplaceUseCase {
 
-    operator fun invoke(cards: List<Card>, params: FindReplaceParams): List<CardChange> {
-        return cards.mapNotNull { card ->
-            val originalFront = card.front.rawText
-            val originalBack = card.back.rawText
+    operator fun invoke(cards: List<Card>, params: FindReplaceParams): List<CardChange> = cards.mapNotNull { card ->
+        val originalFront = card.front.rawText
+        val originalBack = card.back.rawText
 
-            val newFront = if (params.frontEnabled && params.frontFind.isNotEmpty()) {
-                applyReplace(originalFront, params.frontFind, params.frontReplace, params.frontIsRegex)
-            } else originalFront
+        val newFront = if (params.frontEnabled && params.frontFind.isNotEmpty()) {
+            applyReplace(originalFront, params.frontFind, params.frontReplace, params.frontIsRegex)
+        } else {
+            originalFront
+        }
 
-            val newBack = if (params.backEnabled && params.backFind.isNotEmpty()) {
-                applyReplace(originalBack, params.backFind, params.backReplace, params.backIsRegex)
-            } else originalBack
+        val newBack = if (params.backEnabled && params.backFind.isNotEmpty()) {
+            applyReplace(originalBack, params.backFind, params.backReplace, params.backIsRegex)
+        } else {
+            originalBack
+        }
 
-            if (newFront != originalFront || newBack != originalBack) {
-                CardChange(card = card, newFront = newFront, newBack = newBack)
-            } else null
+        if (newFront != originalFront || newBack != originalBack) {
+            CardChange(card = card, newFront = newFront, newBack = newBack)
+        } else {
+            null
         }
     }
 

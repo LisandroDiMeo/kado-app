@@ -87,7 +87,8 @@ class FsrsSchedulerTest {
         }
 
         assertEquals(
-            expectedIntervals, actualIntervals,
+            expectedIntervals,
+            actualIntervals,
             "Interval sequence mismatch. Expected=$expectedIntervals Actual=$actualIntervals"
         )
     }
@@ -101,7 +102,12 @@ class FsrsSchedulerTest {
         var card = newCard()
 
         val ratings = listOf(
-            Rating.Again, Rating.Good, Rating.Good, Rating.Good, Rating.Good, Rating.Good
+            Rating.Again,
+            Rating.Good,
+            Rating.Good,
+            Rating.Good,
+            Rating.Good,
+            Rating.Good
         )
         val dayGaps = listOf(0, 0, 1, 3, 8, 21)
 
@@ -131,9 +137,9 @@ class FsrsSchedulerTest {
 
         val expectedStabilities = mapOf(
             Rating.Again to weights[0], // 0.2172
-            Rating.Hard to weights[1],  // 1.1771
-            Rating.Good to weights[2],  // 3.2602
-            Rating.Easy to weights[3]   // 16.1507
+            Rating.Hard to weights[1], // 1.1771
+            Rating.Good to weights[2], // 3.2602
+            Rating.Easy to weights[3] // 16.1507
         )
 
         for ((rating, expectedStability) in expectedStabilities) {
@@ -141,7 +147,9 @@ class FsrsSchedulerTest {
             val result = scheduler.reviewCard(card, rating, BASE_TIME)
             assertNotNull(result.stability, "stability should be set after first review with $rating")
             assertClose(
-                expectedStability, result.stability!!, 0.0001,
+                expectedStability,
+                result.stability!!,
+                0.0001,
                 "initial stability for $rating"
             )
         }
@@ -168,7 +176,9 @@ class FsrsSchedulerTest {
             val result = scheduler.reviewCard(card, rating, BASE_TIME)
             assertNotNull(result.difficulty, "difficulty should be set after first review with $rating")
             assertClose(
-                expectedDifficulty, result.difficulty!!, 0.0001,
+                expectedDifficulty,
+                result.difficulty!!,
+                0.0001,
                 "initial difficulty for $rating"
             )
         }
@@ -240,7 +250,9 @@ class FsrsSchedulerTest {
         // Due should be approximately BASE_TIME + 600s
         val expectedDue = BASE_TIME + 600L
         assertClose(
-            expectedDue.toDouble(), card.due.toDouble(), 5.0,
+            expectedDue.toDouble(),
+            card.due.toDouble(),
+            5.0,
             "due should be ~10 minutes from now"
         )
     }
@@ -276,7 +288,9 @@ class FsrsSchedulerTest {
         assertEquals(STATE_LEARNING, card.fsrsState, "should remain in LEARNING after AGAIN")
         assertEquals(0, card.step, "step should reset to 0 after AGAIN")
         assertClose(
-            (nowAtStep1 + 60L).toDouble(), card.due.toDouble(), 5.0,
+            (nowAtStep1 + 60L).toDouble(),
+            card.due.toDouble(),
+            5.0,
             "due should be ~1 minute from now after AGAIN"
         )
     }
@@ -518,7 +532,8 @@ class FsrsSchedulerTest {
         // Rate AGAIN from REVIEW state
         card = scheduler.reviewCard(card, Rating.Again, now)
         assertEquals(
-            lapsesBeforeAgain + 1, card.lapses,
+            lapsesBeforeAgain + 1,
+            card.lapses,
             "lapses should increment by 1 after AGAIN on a review card"
         )
     }

@@ -11,15 +11,31 @@ class ApplyFindReplaceUseCaseTest {
     private val useCase = ApplyFindReplaceUseCase()
 
     private fun card(id: Long, front: String, back: String) = Card(
-        id = id, deckId = 1,
+        id = id,
+        deckId = 1,
         front = CardContent.PlainText(front),
         back = CardContent.PlainText(back)
     )
 
     private fun params(
-        frontFind: String = "", frontReplace: String = "", frontIsRegex: Boolean = false, frontEnabled: Boolean = true,
-        backFind: String = "", backReplace: String = "", backIsRegex: Boolean = false, backEnabled: Boolean = true
-    ) = FindReplaceParams(frontFind, frontReplace, frontIsRegex, frontEnabled, backFind, backReplace, backIsRegex, backEnabled)
+        frontFind: String = "",
+        frontReplace: String = "",
+        frontIsRegex: Boolean = false,
+        frontEnabled: Boolean = true,
+        backFind: String = "",
+        backReplace: String = "",
+        backIsRegex: Boolean = false,
+        backEnabled: Boolean = true
+    ) = FindReplaceParams(
+        frontFind,
+        frontReplace,
+        frontIsRegex,
+        frontEnabled,
+        backFind,
+        backReplace,
+        backIsRegex,
+        backEnabled
+    )
 
     @Test
     fun plainTextReplace_findsAndReplaces() {
@@ -34,9 +50,14 @@ class ApplyFindReplaceUseCaseTest {
     @Test
     fun regexReplace_appliesPattern() {
         val cards = listOf(card(1, "abc123def", "test"))
-        val result = useCase(cards, params(
-            frontFind = "\\d+", frontReplace = "NUM", frontIsRegex = true
-        ))
+        val result = useCase(
+            cards,
+            params(
+                frontFind = "\\d+",
+                frontReplace = "NUM",
+                frontIsRegex = true
+            )
+        )
 
         assertEquals(1, result.size)
         assertEquals("abcNUMdef", result[0].newFront)
@@ -53,10 +74,14 @@ class ApplyFindReplaceUseCaseTest {
     @Test
     fun frontOnlyReplace_leavesBackUnchanged() {
         val cards = listOf(card(1, "find me", "find me"))
-        val result = useCase(cards, params(
-            frontFind = "find", frontReplace = "found",
-            backEnabled = false
-        ))
+        val result = useCase(
+            cards,
+            params(
+                frontFind = "find",
+                frontReplace = "found",
+                backEnabled = false
+            )
+        )
 
         assertEquals(1, result.size)
         assertEquals("found me", result[0].newFront)
@@ -66,10 +91,14 @@ class ApplyFindReplaceUseCaseTest {
     @Test
     fun backOnlyReplace_leavesFrontUnchanged() {
         val cards = listOf(card(1, "find me", "find me"))
-        val result = useCase(cards, params(
-            frontEnabled = false,
-            backFind = "find", backReplace = "found"
-        ))
+        val result = useCase(
+            cards,
+            params(
+                frontEnabled = false,
+                backFind = "find",
+                backReplace = "found"
+            )
+        )
 
         assertEquals(1, result.size)
         assertEquals("find me", result[0].newFront)
@@ -79,10 +108,17 @@ class ApplyFindReplaceUseCaseTest {
     @Test
     fun bothDisabled_returnsEmptyList() {
         val cards = listOf(card(1, "hello", "world"))
-        val result = useCase(cards, params(
-            frontFind = "hello", frontReplace = "hi", frontEnabled = false,
-            backFind = "world", backReplace = "earth", backEnabled = false
-        ))
+        val result = useCase(
+            cards,
+            params(
+                frontFind = "hello",
+                frontReplace = "hi",
+                frontEnabled = false,
+                backFind = "world",
+                backReplace = "earth",
+                backEnabled = false
+            )
+        )
 
         assertTrue(result.isEmpty())
     }
@@ -90,11 +126,16 @@ class ApplyFindReplaceUseCaseTest {
     @Test
     fun invalidRegex_returnsOriginalText() {
         val cards = listOf(card(1, "hello", "world"))
-        val result = useCase(cards, params(
-            frontFind = "[invalid", frontReplace = "x", frontIsRegex = true
-        ))
+        val result = useCase(
+            cards,
+            params(
+                frontFind = "[invalid",
+                frontReplace = "x",
+                frontIsRegex = true
+            )
+        )
 
-        assertTrue(result.isEmpty())  // no change since regex failed and returned original
+        assertTrue(result.isEmpty()) // no change since regex failed and returned original
     }
 
     @Test
@@ -114,10 +155,15 @@ class ApplyFindReplaceUseCaseTest {
     @Test
     fun bothFrontAndBack_replaced() {
         val cards = listOf(card(1, "old front", "old back"))
-        val result = useCase(cards, params(
-            frontFind = "old", frontReplace = "new",
-            backFind = "old", backReplace = "new"
-        ))
+        val result = useCase(
+            cards,
+            params(
+                frontFind = "old",
+                frontReplace = "new",
+                backFind = "old",
+                backReplace = "new"
+            )
+        )
 
         assertEquals(1, result.size)
         assertEquals("new front", result[0].newFront)

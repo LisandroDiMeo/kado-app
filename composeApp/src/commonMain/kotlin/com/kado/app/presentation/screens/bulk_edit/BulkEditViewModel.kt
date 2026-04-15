@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kado.app.di.AppDependencies
 import com.kado.app.domain.model.BulkEditRule
-import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.CardContent
 import com.kado.app.domain.usecase.ApplyFindReplaceUseCase
 import com.kado.app.domain.usecase.CardChange
@@ -173,8 +172,11 @@ class BulkEditViewModel(private val deckId: Long) : ViewModel() {
     fun toggleCardSelection(cardId: Long) {
         _uiState.value = _uiState.value.copy(
             changes = _uiState.value.changes.map { change ->
-                if (change.card.id == cardId) change.copy(isSelected = !change.isSelected)
-                else change
+                if (change.card.id == cardId) {
+                    change.copy(isSelected = !change.isSelected)
+                } else {
+                    change
+                }
             }
         )
     }

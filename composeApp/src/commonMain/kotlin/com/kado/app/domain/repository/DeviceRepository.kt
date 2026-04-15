@@ -6,12 +6,6 @@ interface DeviceRepository {
     suspend fun deleteDeck(index: Int): Boolean
 }
 
-data class DeviceDecksResponse(
-    val decks: List<DeviceDeck>,
-    val freeMb: Float
-)
+data class DeviceDecksResponse(val decks: List<DeviceDeck>, val freeMb: Float)
 
-data class DeviceDeck(
-    val name: String,
-    val cards: Int
-)
+data class DeviceDeck(val name: String, val cards: Int)

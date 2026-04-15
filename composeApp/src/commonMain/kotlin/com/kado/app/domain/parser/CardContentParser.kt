@@ -9,18 +9,16 @@ class CardContentParser {
         private val HTML_DETECT_REGEX = Regex("<[a-zA-Z][^>]*>")
     }
 
-    fun detect(raw: String): CardContent {
-        return when {
-            HTML_DETECT_REGEX.containsMatchIn(raw) -> CardContent.RichText(
-                rawText = raw,
-                imageFilenames = extractImageFilenames(raw)
-            )
-            IMG_MARKER_REGEX.containsMatchIn(raw) -> CardContent.ImageMarker(
-                rawText = raw,
-                parts = parse(raw)
-            )
-            else -> CardContent.PlainText(raw)
-        }
+    fun detect(raw: String): CardContent = when {
+        HTML_DETECT_REGEX.containsMatchIn(raw) -> CardContent.RichText(
+            rawText = raw,
+            imageFilenames = extractImageFilenames(raw)
+        )
+        IMG_MARKER_REGEX.containsMatchIn(raw) -> CardContent.ImageMarker(
+            rawText = raw,
+            parts = parse(raw)
+        )
+        else -> CardContent.PlainText(raw)
     }
 
     fun parse(text: String): List<ContentPart> {
@@ -44,9 +42,9 @@ class CardContentParser {
         return parts
     }
 
-    fun extractImageFilenames(text: String): List<String> {
-        return IMG_MARKER_REGEX.findAll(text).map { it.groupValues[1] }.toList()
-    }
+    fun extractImageFilenames(text: String): List<String> = IMG_MARKER_REGEX.findAll(text).map {
+        it.groupValues[1]
+    }.toList()
 
     fun insertMarker(text: String, cursorPosition: Int, filename: String): String {
         val marker = "[img:$filename]"

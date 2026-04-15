@@ -25,12 +25,7 @@ data class Card(
     val subDeckIndex: Int? = null
 )
 
-data class SubDeckInfo(
-    val index: Int,
-    val cardCount: Int,
-    val dueCount: Int,
-    val newCount: Int
-)
+data class SubDeckInfo(val index: Int, val cardCount: Int, val dueCount: Int, val newCount: Int)
 
 data class CardState(
     val cardId: Long,
@@ -43,14 +38,9 @@ data class CardState(
     // FSRS fields
     val stability: Double? = null,
     val difficulty: Double? = null,
-    val fsrsState: Int? = null,    // 1=LEARNING, 2=REVIEW, 3=RELEARNING
+    val fsrsState: Int? = null, // 1=LEARNING, 2=REVIEW, 3=RELEARNING
     val step: Int? = null,
     val lastReview: Long? = null
 )
 
-data class DeckSummary(
-    val deck: Deck,
-    val totalCards: Int,
-    val newCards: Int,
-    val dueCards: Int
-)
+data class DeckSummary(val deck: Deck, val totalCards: Int, val newCards: Int, val dueCards: Int)

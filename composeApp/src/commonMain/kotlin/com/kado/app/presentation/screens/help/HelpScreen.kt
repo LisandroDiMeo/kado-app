@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,7 +36,7 @@ private fun appTutorial(): Tutorial {
                 TutorialStep(title = s.tutorialAddCardsTitle, description = s.tutorialAddCardsDesc),
                 TutorialStep(title = s.tutorialImportAnkiTitle, description = s.tutorialImportAnkiDesc),
                 TutorialStep(title = s.tutorialReviewCardsTitle, description = s.tutorialReviewCardsDesc),
-                TutorialStep(title = s.tutorialRateRecallTitle, description = s.tutorialRateRecallDesc),
+                TutorialStep(title = s.tutorialRateRecallTitle, description = s.tutorialRateRecallDesc)
             )
         )
     }
@@ -54,7 +53,7 @@ private fun kadoLiteTutorial(): Tutorial {
                 TutorialStep(title = s.tutorialConnectTitle, description = s.tutorialConnectDesc),
                 TutorialStep(title = s.tutorialTransferDeckTitle, description = s.tutorialTransferDeckDesc),
                 TutorialStep(title = s.tutorialReviewDeviceTitle, description = s.tutorialReviewDeviceDesc),
-                TutorialStep(title = s.tutorialSyncBackTitle, description = s.tutorialSyncBackDesc),
+                TutorialStep(title = s.tutorialSyncBackTitle, description = s.tutorialSyncBackDesc)
             )
         )
     }

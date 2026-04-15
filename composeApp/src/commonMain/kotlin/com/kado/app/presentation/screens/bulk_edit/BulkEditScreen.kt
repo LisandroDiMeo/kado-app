@@ -463,7 +463,5 @@ private fun SavedRulesDialog(
     )
 }
 
-private fun hasInput(uiState: BulkEditUiState): Boolean {
-    return (uiState.frontEnabled && uiState.frontFind.isNotEmpty()) ||
-            (uiState.backEnabled && uiState.backFind.isNotEmpty())
-}
+private fun hasInput(uiState: BulkEditUiState): Boolean = (uiState.frontEnabled && uiState.frontFind.isNotEmpty()) ||
+    (uiState.backEnabled && uiState.backFind.isNotEmpty())

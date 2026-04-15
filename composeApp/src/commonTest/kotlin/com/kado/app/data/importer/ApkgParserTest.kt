@@ -10,7 +10,11 @@ class ApkgParserTest {
 
     private fun SQLiteConnection.exec(sql: String) {
         val stmt = prepare(sql)
-        try { stmt.step() } finally { stmt.close() }
+        try {
+            stmt.step()
+        } finally {
+            stmt.close()
+        }
     }
 
     @Test
@@ -225,8 +229,17 @@ class ApkgParserTest {
         )
 
         // Real templates from Ultimate Geography deck
-        val qfmt0 = "{{#Capital}}\n  <div class=\"value value--top\">{{Country}}</div>\n  {{#Country info}}<div class=\"info\">{{Country info}}</div>{{/Country info}}\n\n  <hr>\n\n  <div class=\"type\">Capital</div>\n  <div class=\"value\">?</div>\n{{/Capital}}"
-        val afmt0 = "<div class=\"value value--top\">{{Country}}</div>\n{{#Country info}}<div class=\"info\">{{Country info}}</div>{{/Country info}}\n\n<hr id=answer>\n\n<div class=\"type\">Capital</div>\n<div class=\"value\">{{Capital}}</div>\n{{#Capital info}}<div class=\"info\">{{Capital info}}</div>{{/Capital info}}\n"
+        val qfmt0 =
+            "{{#Capital}}\n  <div class=\"value value--top\">{{Country}}</div>\n  " +
+                "{{#Country info}}<div class=\"info\">{{Country info}}</div>{{/Country info}}" +
+                "\n\n  <hr>\n\n  <div class=\"type\">Capital</div>\n  " +
+                "<div class=\"value\">?</div>\n{{/Capital}}"
+        val afmt0 =
+            "<div class=\"value value--top\">{{Country}}</div>\n" +
+                "{{#Country info}}<div class=\"info\">{{Country info}}</div>{{/Country info}}" +
+                "\n\n<hr id=answer>\n\n<div class=\"type\">Capital</div>\n" +
+                "<div class=\"value\">{{Capital}}</div>\n" +
+                "{{#Capital info}}<div class=\"info\">{{Capital info}}</div>{{/Capital info}}\n"
 
         // Template 0: Country -> Capital
         val q0 = TemplateRenderer.render(qfmt0, fields)
@@ -306,11 +319,17 @@ class ApkgParserTest {
         assertEquals(setOf("flag.svg"), media)
     }
 
+    @Suppress("ktlint:standard:max-line-length")
     @Test
     fun parseConnectionWithRealAnkiSchema() {
-        // Create an in-memory SQLite database with real Anki schema and data
+        // BundledSQLiteDriver requires native JNI — skip on JVM host tests
         val driver = BundledSQLiteDriver()
-        val connection = driver.open(":memory:")
+        val connection = try {
+            driver.open(":memory:")
+        } catch (_: UnsatisfiedLinkError) {
+            return
+        }
+        // Create an in-memory SQLite database with real Anki schema and data
 
         try {
             // Create the col table with models JSON (same structure as real Anki DBs)
@@ -327,7 +346,11 @@ class ApkgParserTest {
             )
             insertCol.bindText(1, modelsJson)
             insertCol.bindText(2, decksJson)
-            try { insertCol.step() } finally { insertCol.close() }
+            try {
+                insertCol.step()
+            } finally {
+                insertCol.close()
+            }
 
             // Create notes table
             connection.exec(
@@ -365,7 +388,11 @@ class ApkgParserTest {
             insertNote.bindLong(1, 1001)
             insertNote.bindLong(2, 1574587964637)
             insertNote.bindText(3, englandFields)
-            try { insertNote.step() } finally { insertNote.close() }
+            try {
+                insertNote.step()
+            } finally {
+                insertNote.close()
+            }
 
             val insertNote2 = connection.prepare(
                 "INSERT INTO notes (id, mid, flds) VALUES (?, ?, ?)"
@@ -373,7 +400,11 @@ class ApkgParserTest {
             insertNote2.bindLong(1, 1002)
             insertNote2.bindLong(2, 1574587964637)
             insertNote2.bindText(3, japanFields)
-            try { insertNote2.step() } finally { insertNote2.close() }
+            try {
+                insertNote2.step()
+            } finally {
+                insertNote2.close()
+            }
 
             // Create cards table (4 templates per note)
             connection.exec(
@@ -381,10 +412,14 @@ class ApkgParserTest {
             )
 
             val cardData = listOf(
-                Triple(2001L, 1001L, 0), Triple(2002L, 1001L, 1),
-                Triple(2003L, 1001L, 2), Triple(2004L, 1001L, 3),
-                Triple(2005L, 1002L, 0), Triple(2006L, 1002L, 1),
-                Triple(2007L, 1002L, 2), Triple(2008L, 1002L, 3)
+                Triple(2001L, 1001L, 0),
+                Triple(2002L, 1001L, 1),
+                Triple(2003L, 1001L, 2),
+                Triple(2004L, 1001L, 3),
+                Triple(2005L, 1002L, 0),
+                Triple(2006L, 1002L, 1),
+                Triple(2007L, 1002L, 2),
+                Triple(2008L, 1002L, 3)
             )
             for ((id, nid, ord) in cardData) {
                 val stmt = connection.prepare(
@@ -393,7 +428,11 @@ class ApkgParserTest {
                 stmt.bindLong(1, id)
                 stmt.bindLong(2, nid)
                 stmt.bindLong(3, ord.toLong())
-                try { stmt.step() } finally { stmt.close() }
+                try {
+                    stmt.step()
+                } finally {
+                    stmt.close()
+                }
             }
 
             // Run the full parsing pipeline

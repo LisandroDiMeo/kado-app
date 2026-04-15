@@ -15,7 +15,9 @@ import platform.Foundation.writeToFile
 actual object MediaStorage {
     private fun mediaDir(deckId: Long): String {
         val docs = NSSearchPathForDirectoriesInDomains(
-            NSDocumentDirectory, NSUserDomainMask, true
+            NSDocumentDirectory,
+            NSUserDomainMask,
+            true
         ).first() as String
         return "$docs/media/$deckId"
     }
@@ -33,9 +35,7 @@ actual object MediaStorage {
         data.writeToFile(path, atomically = true)
     }
 
-    actual fun getMediaPath(deckId: Long, filename: String): String {
-        return "${mediaDir(deckId)}/$filename"
-    }
+    actual fun getMediaPath(deckId: Long, filename: String): String = "${mediaDir(deckId)}/$filename"
 
     actual fun deleteMediaDir(deckId: Long) {
         val dir = mediaDir(deckId)

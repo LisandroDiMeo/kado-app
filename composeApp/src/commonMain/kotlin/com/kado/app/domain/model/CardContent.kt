@@ -7,13 +7,7 @@ sealed class CardContent {
 
     data class PlainText(override val rawText: String) : CardContent()
 
-    data class RichText(
-        override val rawText: String,
-        val imageFilenames: List<String> = emptyList()
-    ) : CardContent()
+    data class RichText(override val rawText: String, val imageFilenames: List<String> = emptyList()) : CardContent()
 
-    data class ImageMarker(
-        override val rawText: String,
-        val parts: List<ContentPart>
-    ) : CardContent()
+    data class ImageMarker(override val rawText: String, val parts: List<ContentPart>) : CardContent()
 }

@@ -4,16 +4,17 @@ import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.CardContent
 import com.kado.app.domain.model.Deck
 import com.kado.app.test.fakes.FakeDeckRepository
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import kotlinx.coroutines.test.runTest
 
 class PrepareTransferDeckUseCaseTest {
 
     private fun card(id: Long, front: String, back: String) = Card(
-        id = id, deckId = 1,
+        id = id,
+        deckId = 1,
         front = CardContent.PlainText(front),
         back = CardContent.PlainText(back)
     )

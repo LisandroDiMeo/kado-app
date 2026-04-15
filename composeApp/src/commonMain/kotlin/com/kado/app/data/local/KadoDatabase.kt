@@ -22,10 +22,10 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(connection: SQLiteConnection) {
         connection.execSQL(
             "CREATE TABLE IF NOT EXISTS `settings` (" +
-                    "`id` INTEGER NOT NULL PRIMARY KEY, " +
-                    "`themeMode` TEXT NOT NULL DEFAULT 'system', " +
-                    "`cardFontScale` REAL NOT NULL DEFAULT 1.0, " +
-                    "`appFontScale` REAL NOT NULL DEFAULT 1.0)"
+                "`id` INTEGER NOT NULL PRIMARY KEY, " +
+                "`themeMode` TEXT NOT NULL DEFAULT 'system', " +
+                "`cardFontScale` REAL NOT NULL DEFAULT 1.0, " +
+                "`appFontScale` REAL NOT NULL DEFAULT 1.0)"
         )
     }
 }
@@ -47,17 +47,17 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(connection: SQLiteConnection) {
         connection.execSQL(
             "CREATE TABLE IF NOT EXISTS `bulk_edit_rules` (" +
-                    "`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-                    "`name` TEXT NOT NULL, " +
-                    "`frontFindPattern` TEXT NOT NULL, " +
-                    "`frontReplacePattern` TEXT NOT NULL, " +
-                    "`frontIsRegex` INTEGER NOT NULL DEFAULT 0, " +
-                    "`frontEnabled` INTEGER NOT NULL DEFAULT 1, " +
-                    "`backFindPattern` TEXT NOT NULL, " +
-                    "`backReplacePattern` TEXT NOT NULL, " +
-                    "`backIsRegex` INTEGER NOT NULL DEFAULT 0, " +
-                    "`backEnabled` INTEGER NOT NULL DEFAULT 1, " +
-                    "`createdAt` INTEGER NOT NULL)"
+                "`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "`name` TEXT NOT NULL, " +
+                "`frontFindPattern` TEXT NOT NULL, " +
+                "`frontReplacePattern` TEXT NOT NULL, " +
+                "`frontIsRegex` INTEGER NOT NULL DEFAULT 0, " +
+                "`frontEnabled` INTEGER NOT NULL DEFAULT 1, " +
+                "`backFindPattern` TEXT NOT NULL, " +
+                "`backReplacePattern` TEXT NOT NULL, " +
+                "`backIsRegex` INTEGER NOT NULL DEFAULT 0, " +
+                "`backEnabled` INTEGER NOT NULL DEFAULT 1, " +
+                "`createdAt` INTEGER NOT NULL)"
         )
     }
 }
@@ -75,7 +75,10 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
 }
 
 @Database(
-    entities = [DeckEntity::class, CardEntity::class, CardStateEntity::class, SettingsEntity::class, BulkEditRuleEntity::class],
+    entities = [
+        DeckEntity::class, CardEntity::class, CardStateEntity::class,
+        SettingsEntity::class, BulkEditRuleEntity::class
+    ],
     version = 6,
     exportSchema = false
 )

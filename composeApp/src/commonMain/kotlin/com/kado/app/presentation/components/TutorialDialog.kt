@@ -38,9 +38,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.kado.app.domain.model.Tutorial
 import com.kado.app.presentation.localization.S
-import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
+import kotlinx.coroutines.launch
 
 @Composable
 fun TutorialDialog(
@@ -140,10 +140,11 @@ fun TutorialDialog(
                 ) {
                     repeat(stepCount) { index ->
                         val color by animateColorAsState(
-                            targetValue = if (index == currentIndex)
+                            targetValue = if (index == currentIndex) {
                                 MaterialTheme.colorScheme.primary
-                            else
+                            } else {
                                 MaterialTheme.colorScheme.outlineVariant
+                            }
                         )
                         Box(
                             modifier = Modifier

@@ -9,9 +9,7 @@ import com.kado.app.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class SettingsRepositoryImpl(
-    private val settingsDao: SettingsDao
-) : SettingsRepository {
+class SettingsRepositoryImpl(private val settingsDao: SettingsDao) : SettingsRepository {
 
     override fun observeSettings(): Flow<AppSettings> =
         settingsDao.observeSettings().map { entity ->

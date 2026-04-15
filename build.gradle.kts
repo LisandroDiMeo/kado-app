@@ -12,6 +12,9 @@ plugins {
     alias(libs.plugins.room) apply false
     alias(libs.plugins.googleServices) apply false
     alias(libs.plugins.firebaseCrashlytics) apply false
+    alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.kover) apply false
 }
 
 tasks.register("updateIosVersion") {

@@ -7,9 +7,4 @@ data class AlgorithmInfo(
     val technicalDetails: String
 )
 
-data class ParameterInfo(
-    val key: String,
-    val name: String,
-    val description: String,
-    val hint: String
-)
+data class ParameterInfo(val key: String, val name: String, val description: String, val hint: String)

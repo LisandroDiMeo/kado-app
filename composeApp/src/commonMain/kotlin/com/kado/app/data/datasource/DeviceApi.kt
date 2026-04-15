@@ -28,16 +28,10 @@ class DeviceApi {
     }
 
     @Serializable
-    private data class DecksJson(
-        val decks: List<DeckJson>,
-        @SerialName("free_mb") val freeMb: Float
-    )
+    private data class DecksJson(val decks: List<DeckJson>, @SerialName("free_mb") val freeMb: Float)
 
     @Serializable
-    private data class DeckJson(
-        val name: String,
-        val cards: Int
-    )
+    private data class DeckJson(val name: String, val cards: Int)
 
     suspend fun getDecks(): DeviceDecksResponse {
         val response = client.get("$BASE_URL/api/decks").body<DecksJson>()
@@ -51,9 +45,13 @@ class DeviceApi {
         val response = client.submitFormWithBinaryData(
             url = "$BASE_URL/upload",
             formData = formData {
-                append("file", aldBytes, Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename=\"$filename\"")
-                })
+                append(
+                    "file",
+                    aldBytes,
+                    Headers.build {
+                        append(HttpHeaders.ContentDisposition, "filename=\"$filename\"")
+                    }
+                )
             }
         )
         return response.status.value in 200..299

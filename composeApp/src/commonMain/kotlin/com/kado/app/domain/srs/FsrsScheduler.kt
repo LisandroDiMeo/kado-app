@@ -17,9 +17,7 @@ import kotlin.random.Random
  *
  * State mapping: 1=LEARNING, 2=REVIEW, 3=RELEARNING
  */
-class FsrsScheduler(
-    private val params: FsrsParameters = FsrsParameters()
-) : Scheduler {
+class FsrsScheduler(private val params: FsrsParameters = FsrsParameters()) : Scheduler {
 
     companion object {
         private const val SECONDS_PER_DAY = 86400L
@@ -66,7 +64,7 @@ class FsrsScheduler(
 
     private fun shortTermStability(stability: Double, rating: Rating): Double {
         var increase = exp(params.weights[17] * (rating.fsrsValue - 3 + params.weights[18])) *
-                stability.pow(-params.weights[19])
+            stability.pow(-params.weights[19])
 
         if (rating == Rating.Good || rating == Rating.Easy) {
             increase = max(increase, 1.0)
@@ -90,9 +88,9 @@ class FsrsScheduler(
 
     private fun nextForgetStability(difficulty: Double, stability: Double, retrievability: Double): Double {
         val longTermParams = params.weights[11] *
-                difficulty.pow(-params.weights[12]) *
-                ((stability + 1).pow(params.weights[13]) - 1) *
-                exp((1 - retrievability) * params.weights[14])
+            difficulty.pow(-params.weights[12]) *
+            ((stability + 1).pow(params.weights[13]) - 1) *
+            exp((1 - retrievability) * params.weights[14])
 
         val shortTermParams = stability / exp(params.weights[17] * params.weights[18])
 
@@ -100,22 +98,30 @@ class FsrsScheduler(
     }
 
     private fun nextRecallStability(
-        difficulty: Double, stability: Double, retrievability: Double, rating: Rating
+        difficulty: Double,
+        stability: Double,
+        retrievability: Double,
+        rating: Rating
     ): Double {
         val hardPenalty = if (rating == Rating.Hard) params.weights[15] else 1.0
         val easyBonus = if (rating == Rating.Easy) params.weights[16] else 1.0
 
-        return stability * (1 +
+        return stability * (
+            1 +
                 exp(params.weights[8]) *
                 (11 - difficulty) *
                 stability.pow(-params.weights[9]) *
                 (exp((1 - retrievability) * params.weights[10]) - 1) *
                 hardPenalty *
-                easyBonus)
+                easyBonus
+            )
     }
 
     private fun nextStability(
-        difficulty: Double, stability: Double, retrievability: Double, rating: Rating
+        difficulty: Double,
+        stability: Double,
+        retrievability: Double,
+        rating: Rating
     ): Double {
         val ns = if (rating == Rating.Again) {
             nextForgetStability(difficulty, stability, retrievability)
@@ -133,7 +139,9 @@ class FsrsScheduler(
     }
 
     private fun getCardRetrievability(
-        stability: Double, lastReview: Long, nowEpochSeconds: Long
+        stability: Double,
+        lastReview: Long,
+        nowEpochSeconds: Long
     ): Double {
         val elapsedDays = max(0, (nowEpochSeconds - lastReview) / SECONDS_PER_DAY).toInt()
         return (1 + factor * elapsedDays / stability).pow(decay)
@@ -207,7 +215,9 @@ class FsrsScheduler(
 
         val daysSinceLastReview: Long? = if (state.lastReview != null) {
             (nowEpochSeconds - state.lastReview) / SECONDS_PER_DAY
-        } else null
+        } else {
+            null
+        }
 
         var nextIntervalSeconds = 0L
 
@@ -244,7 +254,10 @@ class FsrsScheduler(
                 // Calculate next interval
                 val learningSteps = params.learningStepsSeconds
                 if (learningSteps.isEmpty() ||
-                    (step!! >= learningSteps.size && (rating == Rating.Hard || rating == Rating.Good || rating == Rating.Easy))
+                    (
+                        step!! >= learningSteps.size &&
+                            (rating == Rating.Hard || rating == Rating.Good || rating == Rating.Easy)
+                        )
                 ) {
                     // Graduate to REVIEW
                     fsrsState = STATE_REVIEW
@@ -336,7 +349,10 @@ class FsrsScheduler(
                 // Calculate next interval
                 val relearningSteps = params.relearningStepsSeconds
                 if (relearningSteps.isEmpty() ||
-                    (step!! >= relearningSteps.size && (rating == Rating.Hard || rating == Rating.Good || rating == Rating.Easy))
+                    (
+                        step!! >= relearningSteps.size &&
+                            (rating == Rating.Hard || rating == Rating.Good || rating == Rating.Easy)
+                        )
                 ) {
                     // Graduate back to REVIEW
                     fsrsState = STATE_REVIEW
@@ -405,10 +421,12 @@ class FsrsScheduler(
         )
     }
 
-    override fun previewIntervals(state: CardState, nowEpochSeconds: Long): Map<Rating, String> {
-        return Rating.entries.associateWith { rating ->
+    override fun previewIntervals(
+        state: CardState,
+        nowEpochSeconds: Long
+    ): Map<Rating, String> =
+        Rating.entries.associateWith { rating ->
             val newState = reviewCard(state, rating, nowEpochSeconds)
             formatInterval(newState.due - nowEpochSeconds)
         }
-    }
 }

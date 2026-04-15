@@ -3,6 +3,7 @@ package com.kado.app.presentation.screens.deck_edit
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.clickable
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
@@ -183,8 +183,13 @@ fun DeckEditScreen(
                             }
                         },
                         trailingIcon = {
-                            Text("?", color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "desiredRetention") }.padding(8.dp))
+                            Text(
+                                "?",
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable {
+                                    onAlgorithmDetail("fsrs", "desiredRetention")
+                                }.padding(8.dp)
+                            )
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true
@@ -207,8 +212,13 @@ fun DeckEditScreen(
                             }
                         },
                         trailingIcon = {
-                            Text("?", color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "learningSteps") }.padding(8.dp))
+                            Text(
+                                "?",
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable {
+                                    onAlgorithmDetail("fsrs", "learningSteps")
+                                }.padding(8.dp)
+                            )
                         },
                         singleLine = true
                     )
@@ -230,8 +240,13 @@ fun DeckEditScreen(
                             }
                         },
                         trailingIcon = {
-                            Text("?", color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "relearningSteps") }.padding(8.dp))
+                            Text(
+                                "?",
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable {
+                                    onAlgorithmDetail("fsrs", "relearningSteps")
+                                }.padding(8.dp)
+                            )
                         },
                         singleLine = true
                     )
@@ -253,8 +268,13 @@ fun DeckEditScreen(
                             }
                         },
                         trailingIcon = {
-                            Text("?", color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "maxInterval") }.padding(8.dp))
+                            Text(
+                                "?",
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable {
+                                    onAlgorithmDetail("fsrs", "maxInterval")
+                                }.padding(8.dp)
+                            )
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true
@@ -270,8 +290,11 @@ fun DeckEditScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(S().enableFuzzing, style = MaterialTheme.typography.bodyLarge)
-                                Text(" ?", color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "enableFuzzing") })
+                                Text(
+                                    " ?",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.clickable { onAlgorithmDetail("fsrs", "enableFuzzing") }
+                                )
                             }
                             Text(
                                 S().enableFuzzingHint,

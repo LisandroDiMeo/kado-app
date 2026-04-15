@@ -32,28 +32,22 @@ object AldConverter {
         return "$safe.ald"
     }
 
-    internal fun toPlainText(raw: String): String {
-        return raw
-            .let { stripImages(it) }
-            .let { stripHtmlTags(it) }
-            .replace(Regex("\\n{3,}"), "\n\n")
-            .trim()
-    }
+    internal fun toPlainText(raw: String): String = raw
+        .let { stripImages(it) }
+        .let { stripHtmlTags(it) }
+        .replace(Regex("\\n{3,}"), "\n\n")
+        .trim()
 
-    internal fun stripImages(text: String): String {
-        return IMG_MARKER_REGEX.replace(text, "").trim()
-    }
+    internal fun stripImages(text: String): String = IMG_MARKER_REGEX.replace(text, "").trim()
 
-    internal fun stripHtmlTags(text: String): String {
-        return text
-            .replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
-            .replace(Regex("</(div|p|li|tr|blockquote|h[1-6])>", RegexOption.IGNORE_CASE), "\n")
-            .let { HTML_TAG_REGEX.replace(it, "") }
-            .replace("&nbsp;", " ")
-            .replace("&amp;", "&")
-            .replace("&lt;", "<")
-            .replace("&gt;", ">")
-            .replace("&quot;", "\"")
-            .replace("&#39;", "'")
-    }
+    internal fun stripHtmlTags(text: String): String = text
+        .replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
+        .replace(Regex("</(div|p|li|tr|blockquote|h[1-6])>", RegexOption.IGNORE_CASE), "\n")
+        .let { HTML_TAG_REGEX.replace(it, "") }
+        .replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
 }

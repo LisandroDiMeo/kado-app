@@ -1,0 +1,214 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:FsrsScheduler.kt$FsrsScheduler$learningSteps.isEmpty() || ( step!! &gt;= learningSteps.size &amp;&amp; (rating == Rating.Hard || rating == Rating.Good || rating == Rating.Easy) )</ID>
+    <ID>ComplexCondition:FsrsScheduler.kt$FsrsScheduler$relearningSteps.isEmpty() || ( step!! &gt;= relearningSteps.size &amp;&amp; (rating == Rating.Hard || rating == Rating.Good || rating == Rating.Easy) )</ID>
+    <ID>ComplexCondition:HtmlRenderer.kt$HtmlRenderer$ch == '\n' || ch == '\r' || ch == '\t' || (ch == ' ' &amp;&amp; afterBlockTag)</ID>
+    <ID>CyclomaticComplexMethod:DeckEditScreen.kt$@Composable fun DeckEditScreen( deckId: Long, onBack: () -&gt; Unit, onDeleted: () -&gt; Unit = {}, onAlgorithmDetail: (algorithmId: String, focusParameter: String) -&gt; Unit = { _, _ -&gt; }, vm: DeckEditViewModel = viewModel { DeckEditViewModel(deckId) } )</ID>
+    <ID>CyclomaticComplexMethod:FsrsScheduler.kt$FsrsScheduler$override fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
+    <ID>CyclomaticComplexMethod:HtmlRenderer.kt$HtmlRenderer$internal fun parseHtmlToAnnotatedString(html: String): AnnotatedString</ID>
+    <ID>CyclomaticComplexMethod:HtmlRenderer.kt$HtmlRenderer$private fun decodeEntity(entity: String): String</ID>
+    <ID>CyclomaticComplexMethod:ImportProgressDialog.kt$@Composable fun ImportProgressDialog( progress: ImportProgress, onDismiss: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:SrsEngine.kt$SrsEngine$fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
+    <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
+    <ID>LongMethod:AlgorithmDetailScreen.kt$@Composable fun AlgorithmDetailScreen( algorithmId: String, focusParameter: String?, onBack: () -&gt; Unit )</ID>
+    <ID>LongMethod:ApkgImporter.kt$ApkgImporter$suspend fun import( fileBytes: ByteArray, onProgress: (ImportProgress) -&gt; Unit ): Long</ID>
+    <ID>LongMethod:ApkgParser.kt$ApkgParser$private fun readNoteTypesFromTable(connection: SQLiteConnection): Map&lt;Long, NoteType&gt;</ID>
+    <ID>LongMethod:ApkgParserTest.kt$ApkgParserTest$@Suppress("ktlint:standard:max-line-length") @Test fun parseConnectionWithRealAnkiSchema()</ID>
+    <ID>LongMethod:AppSettingsScreen.kt$@Composable fun AppSettingsScreen( onBack: () -&gt; Unit, vm: AppSettingsViewModel = viewModel { AppSettingsViewModel() } )</ID>
+    <ID>LongMethod:BulkEditScreen.kt$@Composable private fun CardChangeItem( change: CardChange, onToggle: () -&gt; Unit )</ID>
+    <ID>LongMethod:BulkEditScreen.kt$@Composable private fun EditingPhase( uiState: BulkEditUiState, vm: BulkEditViewModel, onBack: () -&gt; Unit )</ID>
+    <ID>LongMethod:CardEditScreen.kt$@Composable fun CardEditScreen( deckId: Long, cardId: Long, onBack: () -&gt; Unit, vm: CardEditViewModel = viewModel { CardEditViewModel(deckId, cardId) } )</ID>
+    <ID>LongMethod:ConnectionScreen.kt$@Composable fun ConnectionScreen( onBack: () -&gt; Unit, vm: ConnectionViewModel = viewModel { ConnectionViewModel() } )</ID>
+    <ID>LongMethod:DeckDetailScreen.kt$@Composable fun DeckDetailScreen( deckId: Long, onBack: () -&gt; Unit, onEditDeck: () -&gt; Unit, onAddCard: () -&gt; Unit, onEditCard: (Long) -&gt; Unit, onReview: () -&gt; Unit, onStats: () -&gt; Unit, onTransfer: () -&gt; Unit, onPartition: () -&gt; Unit = {}, onBulkEdit: () -&gt; Unit = {}, onReviewSubDeck: (Int) -&gt; Unit = {}, onTransferSubDeck: (Int) -&gt; Unit = {}, vm: DeckDetailViewModel = viewModel { DeckDetailViewModel(deckId) } )</ID>
+    <ID>LongMethod:DeckEditScreen.kt$@Composable fun DeckEditScreen( deckId: Long, onBack: () -&gt; Unit, onDeleted: () -&gt; Unit = {}, onAlgorithmDetail: (algorithmId: String, focusParameter: String) -&gt; Unit = { _, _ -&gt; }, vm: DeckEditViewModel = viewModel { DeckEditViewModel(deckId) } )</ID>
+    <ID>LongMethod:FlashCard.kt$@Composable fun FlashCard( front: DisplayableCardContent, back: DisplayableCardContent, isFlipped: Boolean, onFlip: () -&gt; Unit, modifier: Modifier = Modifier, deckId: Long = 0 )</ID>
+    <ID>LongMethod:FsrsScheduler.kt$FsrsScheduler$override fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
+    <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onDeckClick: (Long) -&gt; Unit, onCreateDeck: () -&gt; Unit, onConnectionClick: () -&gt; Unit, onSettingsClick: () -&gt; Unit, onHelpClick: () -&gt; Unit, vm: HomeViewModel = viewModel { HomeViewModel() } )</ID>
+    <ID>LongMethod:HtmlRenderer.kt$HtmlRenderer$internal fun parseHtmlToAnnotatedString(html: String): AnnotatedString</ID>
+    <ID>LongMethod:ImportProgressDialog.kt$@Composable fun ImportProgressDialog( progress: ImportProgress, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:KadoNavHost.kt$@Composable fun KadoNavHost( navController: NavHostController, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:PartitionScreen.kt$@Composable fun PartitionScreen( deckId: Long, onBack: () -&gt; Unit, vm: PartitionViewModel = viewModel { PartitionViewModel(deckId) } )</ID>
+    <ID>LongMethod:SrsEngine.kt$SrsEngine$fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
+    <ID>LongMethod:StatsScreen.kt$@Composable fun StatsScreen( deckId: Long, onBack: () -&gt; Unit, vm: StatsViewModel = viewModel { StatsViewModel(deckId) } )</ID>
+    <ID>LongMethod:TransferScreen.kt$@Composable fun TransferScreen( deckId: Long, subDeckIndex: Int? = null, onBack: () -&gt; Unit, vm: TransferViewModel = viewModel { TransferViewModel(deckId, subDeckIndex) } )</ID>
+    <ID>LongMethod:TutorialDialog.kt$@Composable fun TutorialDialog( tutorial: Tutorial, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:Type.kt$@Composable fun AppTypography(scaleFactor: Float = 1.0f): Typography</ID>
+    <ID>LongParameterList:ApplyFindReplaceUseCaseTest.kt$ApplyFindReplaceUseCaseTest$( frontFind: String = "", frontReplace: String = "", frontIsRegex: Boolean = false, frontEnabled: Boolean = true, backFind: String = "", backReplace: String = "", backIsRegex: Boolean = false, backEnabled: Boolean = true )</ID>
+    <ID>LoopWithTooManyJumpStatements:ApkgParser.kt$ApkgParser$for</ID>
+    <ID>MagicNumber:ApkgImporter.kt$ApkgImporter$0.15f</ID>
+    <ID>MagicNumber:ApkgImporter.kt$ApkgImporter$0.25f</ID>
+    <ID>MagicNumber:ApkgImporter.kt$ApkgImporter$0.35f</ID>
+    <ID>MagicNumber:ApkgImporter.kt$ApkgImporter$0.70f</ID>
+    <ID>MagicNumber:ApkgParser.kt$ApkgParser$3</ID>
+    <ID>MagicNumber:CalculateDeckStatsUseCase.kt$CalculateDeckStatsUseCase.Companion$21</ID>
+    <ID>MagicNumber:CardEditViewModel.kt$CardEditViewModel$1000</ID>
+    <ID>MagicNumber:CardEditViewModel.kt$CardEditViewModel$9999</ID>
+    <ID>MagicNumber:DeckEditViewModel.kt$DeckEditViewModel$0.70</ID>
+    <ID>MagicNumber:DeckEditViewModel.kt$DeckEditViewModel$0.9</ID>
+    <ID>MagicNumber:DeckEditViewModel.kt$DeckEditViewModel$0.99</ID>
+    <ID>MagicNumber:DeckEditViewModel.kt$DeckEditViewModel$20</ID>
+    <ID>MagicNumber:DeckEditViewModel.kt$DeckEditViewModel$36500</ID>
+    <ID>MagicNumber:DeckRepositoryImpl.kt$DeckRepositoryImpl$0.3f</ID>
+    <ID>MagicNumber:DeckRepositoryImpl.kt$DeckRepositoryImpl$0.7f</ID>
+    <ID>MagicNumber:DeviceApi.kt$DeviceApi$200</ID>
+    <ID>MagicNumber:DeviceApi.kt$DeviceApi$299</ID>
+    <ID>MagicNumber:FsrsParameters.kt$FsrsParameters$600L</ID>
+    <ID>MagicNumber:FsrsParameters.kt$FsrsParameters$60L</ID>
+    <ID>MagicNumber:FsrsParameters.kt$FsrsParameters.Companion$3600</ID>
+    <ID>MagicNumber:FsrsParameters.kt$FsrsParameters.Companion$5</ID>
+    <ID>MagicNumber:FsrsParameters.kt$FsrsParameters.Companion$60</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$1.5</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$10</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$10.0</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$11</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$12</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$13</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$14</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$15</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$16</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$17</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$18</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$19</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$2.5</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$24</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$3</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$30</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$4</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$5</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$6</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$60</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$7</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$8</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$9</ID>
+    <ID>MagicNumber:FsrsScheduler.kt$FsrsScheduler$9.0</ID>
+    <ID>MagicNumber:HtmlRenderer.kt$HtmlRenderer$10</ID>
+    <ID>MagicNumber:HtmlRenderer.kt$HtmlRenderer$16</ID>
+    <ID>MagicNumber:HtmlRenderer.kt$HtmlRenderer$255f</ID>
+    <ID>MagicNumber:HtmlRenderer.kt$HtmlRenderer$3</ID>
+    <ID>MagicNumber:HtmlRenderer.kt$HtmlRenderer$4</ID>
+    <ID>MagicNumber:HtmlRenderer.kt$HtmlRenderer$5</ID>
+    <ID>MagicNumber:HtmlRenderer.kt$HtmlRenderer$6</ID>
+    <ID>MagicNumber:HtmlRenderer.kt$HtmlRenderer$7</ID>
+    <ID>MagicNumber:ImagePickerLauncher.ios.kt$&lt;no name provided&gt;$0.85</ID>
+    <ID>MagicNumber:PartitionViewModel.kt$PartitionViewModel$10</ID>
+    <ID>MagicNumber:ReviewViewModel.kt$ReviewViewModel$20</ID>
+    <ID>MagicNumber:ReviewViewModel.kt$ReviewViewModel$400</ID>
+    <ID>MagicNumber:SrsEngine.kt$SrsEngine$0.5f</ID>
+    <ID>MagicNumber:SrsEngine.kt$SrsEngine$1.2f</ID>
+    <ID>MagicNumber:SrsEngine.kt$SrsEngine$1.3f</ID>
+    <ID>MagicNumber:SrsEngine.kt$SrsEngine$10.0f</ID>
+    <ID>MagicNumber:SrsEngine.kt$SrsEngine$24</ID>
+    <ID>MagicNumber:SrsEngine.kt$SrsEngine$30</ID>
+    <ID>MagicNumber:SrsEngine.kt$SrsEngine$36500</ID>
+    <ID>MagicNumber:SrsEngine.kt$SrsEngine$60</ID>
+    <ID>MagicNumber:ZipExtractor.android.kt$ZipExtractor$8192</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$0xFF</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$15</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$16</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$18</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$22</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$24</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$26</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$28</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$3</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$30</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$4</ID>
+    <ID>MagicNumber:ZipExtractor.ios.kt$ZipExtractor$8</ID>
+    <ID>MatchingDeclarationName:ImageManagerDialog.kt$ImageInfo</ID>
+    <ID>MatchingDeclarationName:Platform.android.kt$AndroidPlatform : Platform</ID>
+    <ID>MatchingDeclarationName:Platform.ios.kt$IOSPlatform : Platform</ID>
+    <ID>MaxLineLength:ApkgParserTest.kt$ApkgParserTest$val modelsJson = """{"1574587964637":{"id":1574587964637,"name":"Ultimate Geography","flds":[{"name":"Country","ord":0},{"name":"Country info","ord":1},{"name":"Capital","ord":2},{"name":"Capital info","ord":3},{"name":"Capital hint","ord":4},{"name":"Flag","ord":5},{"name":"Flag similarity","ord":6},{"name":"Map","ord":7}],"tmpls":[{"ord":0,"name":"Country - Capital","qfmt":"{{#Capital}}\n &lt;div class=\"value value--top\"&gt;{{Country}}&lt;/div&gt;\n {{#Country info}}&lt;div class=\"info\"&gt;{{Country info}}&lt;/div&gt;{{/Country info}}\n\n &lt;hr&gt;\n\n &lt;div class=\"type\"&gt;Capital&lt;/div&gt;\n &lt;div class=\"value\"&gt;?&lt;/div&gt;\n{{/Capital}}","afmt":"&lt;div class=\"value value--top\"&gt;{{Country}}&lt;/div&gt;\n{{#Country info}}&lt;div class=\"info\"&gt;{{Country info}}&lt;/div&gt;{{/Country info}}\n\n&lt;hr id=answer&gt;\n\n&lt;div class=\"type\"&gt;Capital&lt;/div&gt;\n&lt;div class=\"value\"&gt;{{Capital}}&lt;/div&gt;\n{{#Capital info}}&lt;div class=\"info\"&gt;{{Capital info}}&lt;/div&gt;{{/Capital info}}\n"},{"ord":1,"name":"Capital - Country","qfmt":"{{#Capital}}\n &lt;div class=\"value value--top\"&gt;?&lt;/div&gt;\n\n &lt;hr&gt;\n\n &lt;div class=\"type\"&gt;Capital&lt;/div&gt;\n &lt;div class=\"value\"&gt;{{Capital}}&lt;/div&gt;\n {{#Capital hint}}&lt;div class=\"info\"&gt;Hint: {{Capital hint}}&lt;/div&gt;{{/Capital hint}}\n{{/Capital}}","afmt":"&lt;div id=answer class=\"value value--top\"&gt;{{Country}}&lt;/div&gt;\n{{#Country info}}&lt;div class=\"info\"&gt;{{Country info}}&lt;/div&gt;{{/Country info}}\n\n&lt;hr&gt;\n\n&lt;div class=\"type\"&gt;Capital&lt;/div&gt;\n&lt;div class=\"value\"&gt;{{Capital}}&lt;/div&gt;\n{{#Capital hint}}&lt;div class=\"info\"&gt;Hint: {{Capital hint}}&lt;/div&gt;{{/Capital hint}}\n"},{"ord":2,"name":"Flag - Country","qfmt":"{{#Flag}}\n &lt;div class=\"value value--top\"&gt;?&lt;/div&gt;\n\n &lt;hr&gt;\n\n &lt;div class=\"type\"&gt;Flag&lt;/div&gt;\n &lt;div class=\"value value--image value--front\"&gt;{{Flag}}&lt;/div&gt;\n{{/Flag}}","afmt":"&lt;div id=answer class=\"value value--top\"&gt;{{Country}}&lt;/div&gt;\n{{#Country info}}&lt;div class=\"info\"&gt;{{Country info}}&lt;/div&gt;{{/Country info}}\n\n&lt;hr&gt;\n\n&lt;div class=\"type\"&gt;Flag&lt;/div&gt;\n&lt;div class=\"value value--image value--back\"&gt;{{Flag}}&lt;/div&gt;\n"},{"ord":3,"name":"Map - Country","qfmt":"{{#Map}}\n &lt;div class=\"value value--top\"&gt;?&lt;/div&gt;\n\n &lt;hr&gt;\n\n &lt;div class=\"type\"&gt;Location&lt;/div&gt;\n &lt;div class=\"value value--image\"&gt;{{Map}}&lt;/div&gt;\n{{/Map}}","afmt":"&lt;div id=answer class=\"value value--top\"&gt;{{Country}}&lt;/div&gt;\n{{#Country info}}&lt;div class=\"info\"&gt;{{Country info}}&lt;/div&gt;{{/Country info}}\n\n&lt;hr&gt;\n\n&lt;div class=\"type\"&gt;Location&lt;/div&gt;\n&lt;div class=\"value value--image\"&gt;{{Map}}&lt;/div&gt;\n"}]}}"""</ID>
+    <ID>MaxLineLength:CardDao.kt$CardDao$"SELECT DISTINCT subDeckIndex FROM cards WHERE deckId = :deckId AND subDeckIndex IS NOT NULL ORDER BY subDeckIndex ASC"</ID>
+    <ID>MaxLineLength:CardStateDao.kt$CardStateDao$"SELECT * FROM card_states WHERE cardId IN (SELECT id FROM cards WHERE deckId = :deckId AND subDeckIndex = :subDeckIndex)"</ID>
+    <ID>MaxLineLength:CardStateDao.kt$CardStateDao$"SELECT COUNT(*) FROM card_states WHERE cardId IN (SELECT id FROM cards WHERE deckId = :deckId AND subDeckIndex = :subDeckIndex) AND (queue = 0 OR due &lt;= :now)"</ID>
+    <ID>MaxLineLength:CardStateDao.kt$CardStateDao$"SELECT COUNT(*) FROM card_states WHERE cardId IN (SELECT id FROM cards WHERE deckId = :deckId AND subDeckIndex = :subDeckIndex) AND queue = 0"</ID>
+    <ID>MaxLineLength:CardStateDao.kt$CardStateDao$"SELECT COUNT(*) FROM card_states WHERE cardId IN (SELECT id FROM cards WHERE deckId = :deckId) AND (queue = 0 OR due &lt;= :now)"</ID>
+    <ID>MaxLineLength:CardStateDao.kt$CardStateDao$"SELECT COUNT(*) FROM card_states WHERE cardId IN (SELECT id FROM cards WHERE deckId = :deckId) AND queue = 2 AND due &lt;= :now"</ID>
+    <ID>MaxLineLength:FsrsSimulationTest.kt$FsrsSimulationTest$"lower retention interval ($lowInterval) should be greater than higher retention interval ($highInterval)"</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val builtWithDescription = "This app is built using Compose Multiplatform, sharing a single codebase for both Android and iOS."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val contributeDescription = "Kado is open to contributions! Visit our repository at:\nhttps://github.com/LisandroDiMeo/kado-app"</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val deleteDeckEditMessage = "Are you sure you want to delete this deck? All cards and progress will be permanently lost."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val donateDescription = "Kado is a free and open source project. If you find it useful and would like to support its continued development, you can make a voluntary donation."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val donateDisclaimer = "Please note: donations are entirely voluntary and do not grant any digital content, features, services, or advantages within the app. All app features are and will remain free for everyone."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val enableFuzzingExplanation = "Adds a small random variation to review intervals. This prevents cards that were reviewed together from always coming due on the same day, spreading your workload more evenly. The variation is proportional to the interval length: ±15% for short intervals, ±5% for long ones."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val fsrsSimpleExplanation = "FSRS (Free Spaced Repetition Scheduler) uses a scientific model of memory to schedule reviews. It tracks two key properties for each card: stability (how long you'll remember it) and difficulty (how hard the card is for you). FSRS calculates the optimal review time to maintain your desired recall rate, adapting to your performance over time."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val fsrsTechnicalDetails = "FSRS uses a memory model based on the forgetting curve:\n\nRetrievability: R = (1 + t/S × factor)^decay\n\nWhere S is stability (days until 90% recall), t is time elapsed.\n\nAfter each review, stability and difficulty are updated using 21 optimized parameters. The model accounts for:\n• Memory strength grows more when retrievability is low\n• Harder cards gain stability more slowly\n• Forgetting (Again) reduces stability based on current difficulty\n\nThe optimal interval is calculated to maintain your desired retention rate."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val kadoLiteDescription = "We also developed a Lite version for ESP32 microcontrollers (specifically the ESP32-C6 with Waveshare 1.47\" Touch LCD) so you can study your flashcards on the go with a dedicated device."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val learningStepsExplanation = "When you see a new card for the first time, it goes through learning steps before entering the regular review schedule. Each step defines how long to wait before showing the card again. For example, '1m, 10m' means show the card again after 1 minute, then after 10 minutes, before scheduling a full review."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val maxIntervalExplanation = "The maximum number of days between reviews. Even if the algorithm calculates a longer interval, it will be capped at this value. The default of 36500 days (~100 years) effectively means no limit."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val relearningStepsExplanation = "When you forget a card (rate Again), it enters relearning. These steps work like learning steps but for cards you previously knew. After completing all relearning steps, the card returns to the regular review schedule with adjusted stability."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val resetProgressMessage = "All review progress for this deck will be erased. Cards will be treated as new."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val sm2TechnicalDetails = "SM-2 uses an ease factor (EF) that multiplies the previous interval:\n\n• New cards start with EF = 2.5\n• Again: resets interval, EF -= 0.2\n• Hard: interval × 1.2, EF -= 0.1\n• Good: interval × EF\n• Easy: interval × EF × 1.3, EF += 0.2\n\nEF is clamped to [1.3, 4.0]. Intervals are clamped to [1, 36500] days."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val statsGuideBodyFsrs = "New — Cards you haven't studied yet.\n\nLearning — Cards going through learning steps (e.g., 1m, 10m) before entering the regular review schedule, or relearning steps after being forgotten.\n\nYoung — Cards in the review state with an interval under 21 days. FSRS tracks each card's stability and difficulty to schedule optimal reviews.\n\nMature — Cards with an interval of 21+ days. These have high memory stability.\n\nDue Now — Total cards ready for review right now (new + overdue)."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val statsGuideBodySm2 = "New — Cards you haven't studied yet.\n\nLearning — Cards you got wrong and are re-learning.\n\nYoung — Cards you've reviewed, but with an interval under 21 days. After rating a card \"Good\" for the first time, it moves here with a 1-day interval.\n\nMature — Cards with an interval of 21+ days. These are well-known.\n\nDue Now — Total cards ready for review right now (new + overdue)."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialAddCardsDesc = "Open a deck and tap \"Add Card\" to create flashcards with a front and back side."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialConnectDesc = "Go to the home screen and tap \"WiFi\" to connect your phone to the KadoLite device."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialCreateDeckDesc = "Tap the + button on the home screen and select \"Create Deck\" to make a new flashcard deck."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialImportAnkiDesc = "Tap the + button and select \"Import .apkg\" to import an existing Anki deck."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialPowerOnDesc = "Turn on your KadoLite device. It will create a WiFi network starting with \"KadoLite-\"."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialRateRecallDesc = "After revealing the answer, rate how well you remembered it. This adjusts when you'll see the card again."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialReviewCardsDesc = "Open a deck and tap \"Review\" to start studying. Cards are scheduled using spaced repetition."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialReviewDeviceDesc = "Use the KadoLite buttons to flip cards and rate your recall directly on the e-ink screen."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val tutorialTransferDeckDesc = "Open a deck, tap \"Transfer\" and select the deck or sub-deck you want to send to the device."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val builtWithDescription = "Esta app está construida usando Compose Multiplatform, compartiendo una única base de código para Android e iOS."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val contributeDescription = "¡Kado está abierto a contribuciones! Visita nuestro repositorio en:\nhttps://github.com/LisandroDiMeo/kado-app"</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val deleteDeckEditMessage = "¿Estás seguro de que quieres eliminar este mazo? Todas las tarjetas y el progreso se perderán permanentemente."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val donateDescription = "Kado es un proyecto gratuito y de código abierto. Si te resulta útil y deseas apoyar su desarrollo continuo, puedes hacer una donación voluntaria."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val donateDisclaimer = "Nota: las donaciones son completamente voluntarias y no otorgan ningún contenido digital, funcionalidad, servicio o ventaja dentro de la app. Todas las funciones de la app son y seguirán siendo gratuitas para todos."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val easeDescription = "Controla qué tan rápido crecen los intervalos. Mayor facilidad significa intervalos más largos."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val enableFuzzingExplanation = "Agrega una pequeña variación aleatoria a los intervalos de repaso. Esto evita que tarjetas repasadas juntas siempre venzan el mismo día, distribuyendo tu carga de trabajo más uniformemente. La variación es proporcional a la longitud del intervalo: ±15% para intervalos cortos, ±5% para largos."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val fsrsSimpleExplanation = "FSRS (Free Spaced Repetition Scheduler) utiliza un modelo científico de la memoria para programar repasos. Rastrea dos propiedades clave de cada tarjeta: estabilidad (cuánto tiempo la recordarás) y dificultad (qué tan difícil es la tarjeta para ti). FSRS calcula el momento óptimo de repaso para mantener tu tasa de recuerdo deseada, adaptándose a tu rendimiento con el tiempo."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val fsrsTechnicalDetails = "FSRS usa un modelo de memoria basado en la curva del olvido:\n\nRecuperabilidad: R = (1 + t/S × factor)^decaimiento\n\nDonde S es la estabilidad (días hasta 90% de recuerdo), t es el tiempo transcurrido.\n\nDespués de cada repaso, la estabilidad y la dificultad se actualizan usando 21 parámetros optimizados. El modelo considera:\n• La fuerza de la memoria crece más cuando la recuperabilidad es baja\n• Las tarjetas más difíciles ganan estabilidad más lentamente\n• Olvidar (Otra vez) reduce la estabilidad según la dificultad actual\n\nEl intervalo óptimo se calcula para mantener tu tasa de retención deseada."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val kadoLiteDescription = "También desarrollamos una versión Lite para microcontroladores ESP32 (específicamente el ESP32-C6 con pantalla táctil Waveshare 1.47\") para que puedas estudiar tus tarjetas con un dispositivo dedicado."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val learningStepsExplanation = "Cuando ves una tarjeta nueva por primera vez, pasa por pasos de aprendizaje antes de entrar al calendario regular de repasos. Cada paso define cuánto esperar antes de mostrar la tarjeta de nuevo. Por ejemplo, '1m, 10m' significa mostrar la tarjeta después de 1 minuto, luego después de 10 minutos, antes de programar un repaso completo."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val maxIntervalExplanation = "El número máximo de días entre repasos. Incluso si el algoritmo calcula un intervalo más largo, se limitará a este valor. El valor predeterminado de 36500 días (~100 años) significa efectivamente sin límite."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val relearningStepsExplanation = "Cuando olvidas una tarjeta (calificas Otra vez), entra en reaprendizaje. Estos pasos funcionan como los pasos de aprendizaje pero para tarjetas que ya conocías. Después de completar todos los pasos de reaprendizaje, la tarjeta vuelve al calendario regular de repasos con estabilidad ajustada."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val resetProgressMessage = "Todo el progreso de repaso de este mazo será borrado. Las tarjetas serán tratadas como nuevas."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val sm2TechnicalDetails = "SM-2 usa un factor de facilidad (EF) que multiplica el intervalo anterior:\n\n• Las tarjetas nuevas comienzan con EF = 2.5\n• Otra vez: reinicia el intervalo, EF -= 0.2\n• Difícil: intervalo × 1.2, EF -= 0.1\n• Bien: intervalo × EF\n• Fácil: intervalo × EF × 1.3, EF += 0.2\n\nEF se limita a [1.3, 4.0]. Los intervalos se limitan a [1, 36500] días."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val statsGuideBodyFsrs = "Nuevas — Tarjetas que aún no has estudiado.\n\nAprendiendo — Tarjetas que están pasando por los pasos de aprendizaje (ej. 1m, 10m) antes de entrar al calendario regular de repasos, o por pasos de reaprendizaje después de ser olvidadas.\n\nJóvenes — Tarjetas en estado de repaso con un intervalo menor a 21 días. FSRS rastrea la estabilidad y dificultad de cada tarjeta para programar repasos óptimos.\n\nMaduras — Tarjetas con un intervalo de 21+ días. Tienen alta estabilidad de memoria.\n\nPendientes — Total de tarjetas listas para repasar ahora (nuevas + atrasadas)."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val statsGuideBodySm2 = "Nuevas — Tarjetas que aún no has estudiado.\n\nAprendiendo — Tarjetas que respondiste mal y estás re-aprendiendo.\n\nJóvenes — Tarjetas que has repasado, pero con un intervalo menor a 21 días. Después de calificar una tarjeta como \"Bien\" por primera vez, se mueve aquí con un intervalo de 1 día.\n\nMaduras — Tarjetas con un intervalo de 21+ días. Son las que conoces bien.\n\nPendientes — Total de tarjetas listas para repasar ahora (nuevas + atrasadas)."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialAddCardsDesc = "Abre un mazo y toca \"Agregar Tarjeta\" para crear tarjetas con un frente y un dorso."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialConnectDesc = "Ve a la pantalla principal y toca \"WiFi\" para conectar tu teléfono al dispositivo KadoLite."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialCreateDeckDesc = "Toca el botón + en la pantalla principal y selecciona \"Crear Mazo\" para hacer un nuevo mazo de tarjetas."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialImportAnkiDesc = "Toca el botón + y selecciona \"Importar .apkg\" para importar un mazo existente de Anki."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialPowerOnDesc = "Enciende tu dispositivo KadoLite. Creará una red WiFi que comienza con \"KadoLite-\"."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialRateRecallDesc = "Después de ver la respuesta, califica qué tan bien la recordaste. Esto ajusta cuándo volverás a ver la tarjeta."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialReviewCardsDesc = "Abre un mazo y toca \"Repasar\" para comenzar a estudiar. Las tarjetas se programan usando repetición espaciada."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialReviewDeviceDesc = "Usa los botones de KadoLite para voltear tarjetas y calificar tu recuerdo directamente en la pantalla."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialSyncBackDesc = "Conéctate nuevamente por WiFi para sincronizar tu progreso de repaso con la app."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val tutorialTransferDeckDesc = "Abre un mazo, toca \"Transferir\" y selecciona el mazo o sub-mazo que quieres enviar al dispositivo."</ID>
+    <ID>PackageNaming:AlgorithmDetailScreen.kt$package com.kado.app.presentation.screens.algorithm_detail</ID>
+    <ID>PackageNaming:BulkEditScreen.kt$package com.kado.app.presentation.screens.bulk_edit</ID>
+    <ID>PackageNaming:BulkEditViewModel.kt$package com.kado.app.presentation.screens.bulk_edit</ID>
+    <ID>PackageNaming:CardEditScreen.kt$package com.kado.app.presentation.screens.card_edit</ID>
+    <ID>PackageNaming:CardEditViewModel.kt$package com.kado.app.presentation.screens.card_edit</ID>
+    <ID>PackageNaming:DeckDetailScreen.kt$package com.kado.app.presentation.screens.deck_detail</ID>
+    <ID>PackageNaming:DeckDetailViewModel.kt$package com.kado.app.presentation.screens.deck_detail</ID>
+    <ID>PackageNaming:DeckEditScreen.kt$package com.kado.app.presentation.screens.deck_edit</ID>
+    <ID>PackageNaming:DeckEditViewModel.kt$package com.kado.app.presentation.screens.deck_edit</ID>
+    <ID>ReturnCount:DeckEditViewModel.kt$DeckEditViewModel$private fun validateSteps(input: String): FieldError?</ID>
+    <ID>ReturnCount:FsrsScheduler.kt$FsrsScheduler$private fun formatInterval(seconds: Long): String</ID>
+    <ID>ReturnCount:SrsEngine.kt$SrsEngine$private fun formatInterval(seconds: Long): String</ID>
+    <ID>SwallowedException:ApplyFindReplaceUseCase.kt$ApplyFindReplaceUseCase$e: Exception</ID>
+    <ID>SwallowedException:TransferViewModel.kt$TransferViewModel$e: Exception</ID>
+    <ID>TooManyFunctions:ApkgParser.kt$ApkgParser</ID>
+    <ID>TooManyFunctions:BulkEditViewModel.kt$BulkEditViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:CardDao.kt$CardDao</ID>
+    <ID>TooManyFunctions:CardStateDao.kt$CardStateDao</ID>
+    <ID>TooManyFunctions:DeckRepository.kt$DeckRepository</ID>
+    <ID>TooManyFunctions:DeckRepositoryImpl.kt$DeckRepositoryImpl : DeckRepository</ID>
+    <ID>TooManyFunctions:Strings.kt$AppStrings</ID>
+    <ID>TooManyFunctions:Strings.kt$EnStrings : AppStrings</ID>
+    <ID>TooManyFunctions:Strings.kt$EsStrings : AppStrings</ID>
+    <ID>UnusedPrivateProperty:FsrsSimulationTest.kt$FsrsSimulationTest.Companion$private const val SECONDS_PER_DAY = 86400L</ID>
+    <ID>UnusedPrivateProperty:SrsEngineTest.kt$SrsEngineTest$val prevInterval = state.interval</ID>
+    <ID>UseCheckOrError:PrepareTransferDeckUseCase.kt$PrepareTransferDeckUseCase$throw IllegalStateException("Deck not found")</ID>
+    <ID>UseCheckOrError:ZipExtractor.ios.kt$ZipExtractor$throw IllegalStateException("inflate failed: $inflateResult")</ID>
+    <ID>UseCheckOrError:ZipExtractor.ios.kt$ZipExtractor$throw IllegalStateException("inflateInit2 failed: $initResult")</ID>
+    <ID>UseRequire:ApkgImporter.kt$ApkgImporter$throw IllegalArgumentException("No cards found in APKG file")</ID>
+  </CurrentIssues>
+</SmellBaseline>

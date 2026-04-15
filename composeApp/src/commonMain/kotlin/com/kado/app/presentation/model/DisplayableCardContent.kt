@@ -13,12 +13,10 @@ sealed class DisplayableCardContent {
     data class RichText(val segments: List<HtmlSegment>) : DisplayableCardContent()
 
     companion object {
-        fun from(content: CardContent, htmlRenderer: HtmlRenderer): DisplayableCardContent {
-            return when (content) {
-                is CardContent.PlainText -> PlainText(content.rawText)
-                is CardContent.ImageMarker -> ImageMarker(content.parts)
-                is CardContent.RichText -> RichText(htmlRenderer.render(content.rawText))
-            }
+        fun from(content: CardContent, htmlRenderer: HtmlRenderer): DisplayableCardContent = when (content) {
+            is CardContent.PlainText -> PlainText(content.rawText)
+            is CardContent.ImageMarker -> ImageMarker(content.parts)
+            is CardContent.RichText -> RichText(htmlRenderer.render(content.rawText))
         }
     }
 }

@@ -24,12 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kado.app.domain.srs.SchedulerType
 import com.kado.app.presentation.components.ConfirmDialog
 import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.presentation.components.LoadingState
 import com.kado.app.presentation.components.StatBar
 import com.kado.app.presentation.localization.S
-import com.kado.app.domain.srs.SchedulerType
 
 @Composable
 fun StatsScreen(

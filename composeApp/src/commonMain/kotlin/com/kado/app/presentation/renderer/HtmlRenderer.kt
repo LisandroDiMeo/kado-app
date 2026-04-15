@@ -58,145 +58,147 @@ class HtmlRenderer {
         return parts
     }
 
-    internal fun parseHtmlToAnnotatedString(html: String): AnnotatedString {
-        return buildAnnotatedString {
-            val styleStack = mutableListOf<SpanStyle>()
-            val blockTags = setOf("div", "p", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6", "br", "br/", "hr", "li", "ul", "ol", "table", "tr", "td", "th", "section", "article", "header", "footer", "nav")
-            var i = 0
-            val len = html.length
-            var afterBlockTag = true // skip leading whitespace and whitespace between block-level tags
+    internal fun parseHtmlToAnnotatedString(html: String): AnnotatedString = buildAnnotatedString {
+        val styleStack = mutableListOf<SpanStyle>()
+        val blockTags = setOf(
+            "div", "p", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6",
+            "br", "br/", "hr", "li", "ul", "ol", "table", "tr", "td", "th",
+            "section", "article", "header", "footer", "nav"
+        )
+        var i = 0
+        val len = html.length
+        var afterBlockTag = true // skip leading whitespace and whitespace between block-level tags
 
-            while (i < len) {
-                when {
-                    html[i] == '<' -> {
-                        val tagEnd = html.indexOf('>', i)
-                        if (tagEnd == -1) {
-                            append(html[i])
-                            i++
-                            continue
-                        }
-
-                        val tagContent = html.substring(i + 1, tagEnd).trim()
-                        val isClosing = tagContent.startsWith("/")
-                        val tagName = (if (isClosing) tagContent.drop(1) else tagContent)
-                            .split("\\s+".toRegex())
-                            .firstOrNull()
-                            ?.lowercase()
-                            ?: ""
-
-                        when {
-                            !isClosing && (tagName == "b" || tagName == "strong") -> {
-                                val style = SpanStyle(fontWeight = FontWeight.Bold)
-                                pushStyle(style)
-                                styleStack.add(style)
-                            }
-                            isClosing && (tagName == "b" || tagName == "strong") -> {
-                                if (styleStack.isNotEmpty()) {
-                                    pop()
-                                    styleStack.removeLastOrNull()
-                                }
-                            }
-                            !isClosing && (tagName == "i" || tagName == "em") -> {
-                                val style = SpanStyle(fontStyle = FontStyle.Italic)
-                                pushStyle(style)
-                                styleStack.add(style)
-                            }
-                            isClosing && (tagName == "i" || tagName == "em") -> {
-                                if (styleStack.isNotEmpty()) {
-                                    pop()
-                                    styleStack.removeLastOrNull()
-                                }
-                            }
-                            !isClosing && tagName == "u" -> {
-                                val style = SpanStyle(textDecoration = TextDecoration.Underline)
-                                pushStyle(style)
-                                styleStack.add(style)
-                            }
-                            isClosing && tagName == "u" -> {
-                                if (styleStack.isNotEmpty()) {
-                                    pop()
-                                    styleStack.removeLastOrNull()
-                                }
-                            }
-                            !isClosing && tagName.startsWith("h") && tagName.length == 2 && tagName[1].isDigit() -> {
-                                val level = tagName[1].digitToInt().coerceIn(1, 6)
-                                val fontSize = when (level) {
-                                    1 -> 28.sp
-                                    2 -> 24.sp
-                                    3 -> 20.sp
-                                    4 -> 18.sp
-                                    5 -> 16.sp
-                                    else -> 14.sp
-                                }
-                                val style = SpanStyle(fontSize = fontSize, fontWeight = FontWeight.Bold)
-                                pushStyle(style)
-                                styleStack.add(style)
-                            }
-                            isClosing && tagName.startsWith("h") && tagName.length == 2 && tagName[1].isDigit() -> {
-                                if (styleStack.isNotEmpty()) {
-                                    pop()
-                                    styleStack.removeLastOrNull()
-                                }
-                                append("\n")
-                            }
-                            tagName == "br" || tagName == "br/" -> {
-                                append("\n")
-                            }
-                            !isClosing && tagName == "hr" -> {
-                                append("\n———\n")
-                            }
-                            isClosing && (tagName == "div" || tagName == "p" || tagName == "blockquote") -> {
-                                append("\n")
-                            }
-                            isClosing && (tagName == "li") -> {
-                                append("\n")
-                            }
-                            !isClosing && tagName == "li" -> {
-                                append("  \u2022 ")
-                            }
-                            !isClosing && tagName.startsWith("span") -> {
-                                val colorStyle = extractColorFromStyle(tagContent)
-                                if (colorStyle != null) {
-                                    pushStyle(colorStyle)
-                                    styleStack.add(colorStyle)
-                                }
-                            }
-                            isClosing && tagName == "span" -> {
-                                if (styleStack.isNotEmpty()) {
-                                    pop()
-                                    styleStack.removeLastOrNull()
-                                }
-                            }
-                            // All other tags: skip silently
-                        }
-
-                        if (tagName in blockTags) {
-                            afterBlockTag = true
-                        }
-                        i = tagEnd + 1
+        while (i < len) {
+            when {
+                html[i] == '<' -> {
+                    val tagEnd = html.indexOf('>', i)
+                    if (tagEnd == -1) {
+                        append(html[i])
+                        i++
+                        continue
                     }
-                    html[i] == '&' -> {
-                        afterBlockTag = false
-                        val semicolon = html.indexOf(';', i)
-                        if (semicolon != -1 && semicolon - i < 10) {
-                            val entity = html.substring(i, semicolon + 1)
-                            append(decodeEntity(entity))
-                            i = semicolon + 1
-                        } else {
-                            append('&')
-                            i++
+
+                    val tagContent = html.substring(i + 1, tagEnd).trim()
+                    val isClosing = tagContent.startsWith("/")
+                    val tagName = (if (isClosing) tagContent.drop(1) else tagContent)
+                        .split("\\s+".toRegex())
+                        .firstOrNull()
+                        ?.lowercase()
+                        ?: ""
+
+                    when {
+                        !isClosing && (tagName == "b" || tagName == "strong") -> {
+                            val style = SpanStyle(fontWeight = FontWeight.Bold)
+                            pushStyle(style)
+                            styleStack.add(style)
                         }
+                        isClosing && (tagName == "b" || tagName == "strong") -> {
+                            if (styleStack.isNotEmpty()) {
+                                pop()
+                                styleStack.removeLastOrNull()
+                            }
+                        }
+                        !isClosing && (tagName == "i" || tagName == "em") -> {
+                            val style = SpanStyle(fontStyle = FontStyle.Italic)
+                            pushStyle(style)
+                            styleStack.add(style)
+                        }
+                        isClosing && (tagName == "i" || tagName == "em") -> {
+                            if (styleStack.isNotEmpty()) {
+                                pop()
+                                styleStack.removeLastOrNull()
+                            }
+                        }
+                        !isClosing && tagName == "u" -> {
+                            val style = SpanStyle(textDecoration = TextDecoration.Underline)
+                            pushStyle(style)
+                            styleStack.add(style)
+                        }
+                        isClosing && tagName == "u" -> {
+                            if (styleStack.isNotEmpty()) {
+                                pop()
+                                styleStack.removeLastOrNull()
+                            }
+                        }
+                        !isClosing && tagName.startsWith("h") && tagName.length == 2 && tagName[1].isDigit() -> {
+                            val level = tagName[1].digitToInt().coerceIn(1, 6)
+                            val fontSize = when (level) {
+                                1 -> 28.sp
+                                2 -> 24.sp
+                                3 -> 20.sp
+                                4 -> 18.sp
+                                5 -> 16.sp
+                                else -> 14.sp
+                            }
+                            val style = SpanStyle(fontSize = fontSize, fontWeight = FontWeight.Bold)
+                            pushStyle(style)
+                            styleStack.add(style)
+                        }
+                        isClosing && tagName.startsWith("h") && tagName.length == 2 && tagName[1].isDigit() -> {
+                            if (styleStack.isNotEmpty()) {
+                                pop()
+                                styleStack.removeLastOrNull()
+                            }
+                            append("\n")
+                        }
+                        tagName == "br" || tagName == "br/" -> {
+                            append("\n")
+                        }
+                        !isClosing && tagName == "hr" -> {
+                            append("\n———\n")
+                        }
+                        isClosing && (tagName == "div" || tagName == "p" || tagName == "blockquote") -> {
+                            append("\n")
+                        }
+                        isClosing && (tagName == "li") -> {
+                            append("\n")
+                        }
+                        !isClosing && tagName == "li" -> {
+                            append("  \u2022 ")
+                        }
+                        !isClosing && tagName.startsWith("span") -> {
+                            val colorStyle = extractColorFromStyle(tagContent)
+                            if (colorStyle != null) {
+                                pushStyle(colorStyle)
+                                styleStack.add(colorStyle)
+                            }
+                        }
+                        isClosing && tagName == "span" -> {
+                            if (styleStack.isNotEmpty()) {
+                                pop()
+                                styleStack.removeLastOrNull()
+                            }
+                        }
+                        // All other tags: skip silently
                     }
-                    else -> {
-                        val ch = html[i]
-                        if (ch == '\n' || ch == '\r' || ch == '\t' || (ch == ' ' && afterBlockTag)) {
-                            // Skip whitespace between tags entirely
-                        } else {
-                            afterBlockTag = false
-                            append(ch)
-                        }
+
+                    if (tagName in blockTags) {
+                        afterBlockTag = true
+                    }
+                    i = tagEnd + 1
+                }
+                html[i] == '&' -> {
+                    afterBlockTag = false
+                    val semicolon = html.indexOf(';', i)
+                    if (semicolon != -1 && semicolon - i < 10) {
+                        val entity = html.substring(i, semicolon + 1)
+                        append(decodeEntity(entity))
+                        i = semicolon + 1
+                    } else {
+                        append('&')
                         i++
                     }
+                }
+                else -> {
+                    val ch = html[i]
+                    if (ch == '\n' || ch == '\r' || ch == '\t' || (ch == ' ' && afterBlockTag)) {
+                        // Skip whitespace between tags entirely
+                    } else {
+                        afterBlockTag = false
+                        append(ch)
+                    }
+                    i++
                 }
             }
         }
@@ -211,54 +213,58 @@ class HtmlRenderer {
         return SpanStyle(color = color)
     }
 
-    private fun parseColor(value: String): Color? {
-        return when {
-            value.startsWith("#") && value.length == 7 -> {
-                try {
-                    Color(
-                        red = value.substring(1, 3).toInt(16) / 255f,
-                        green = value.substring(3, 5).toInt(16) / 255f,
-                        blue = value.substring(5, 7).toInt(16) / 255f
-                    )
-                } catch (_: Exception) { null }
+    private fun parseColor(value: String): Color? = when {
+        value.startsWith("#") && value.length == 7 -> {
+            try {
+                Color(
+                    red = value.substring(1, 3).toInt(16) / 255f,
+                    green = value.substring(3, 5).toInt(16) / 255f,
+                    blue = value.substring(5, 7).toInt(16) / 255f
+                )
+            } catch (_: Exception) {
+                null
             }
-            value.startsWith("rgb(") -> {
-                try {
-                    val parts = value.removePrefix("rgb(").removeSuffix(")").split(",").map { it.trim().toInt() }
-                    if (parts.size == 3) Color(parts[0] / 255f, parts[1] / 255f, parts[2] / 255f) else null
-                } catch (_: Exception) { null }
-            }
-            else -> NAMED_COLORS[value.lowercase()]
         }
+        value.startsWith("rgb(") -> {
+            try {
+                val parts = value.removePrefix("rgb(").removeSuffix(")").split(",").map { it.trim().toInt() }
+                if (parts.size == 3) Color(parts[0] / 255f, parts[1] / 255f, parts[2] / 255f) else null
+            } catch (_: Exception) {
+                null
+            }
+        }
+        else -> NAMED_COLORS[value.lowercase()]
     }
 
-    private fun decodeEntity(entity: String): String {
-        return when (entity) {
-            "&amp;" -> "&"
-            "&lt;" -> "<"
-            "&gt;" -> ">"
-            "&quot;" -> "\""
-            "&#39;", "&apos;" -> "'"
-            "&nbsp;" -> " "
-            "&ndash;" -> "\u2013"
-            "&mdash;" -> "\u2014"
-            "&laquo;" -> "\u00AB"
-            "&raquo;" -> "\u00BB"
-            "&hellip;" -> "\u2026"
-            else -> {
-                if (entity.startsWith("&#x")) {
-                    try {
-                        val code = entity.removePrefix("&#x").removeSuffix(";").toInt(16)
-                        code.toChar().toString()
-                    } catch (_: Exception) { entity }
-                } else if (entity.startsWith("&#")) {
-                    try {
-                        val code = entity.removePrefix("&#").removeSuffix(";").toInt()
-                        code.toChar().toString()
-                    } catch (_: Exception) { entity }
-                } else {
+    private fun decodeEntity(entity: String): String = when (entity) {
+        "&amp;" -> "&"
+        "&lt;" -> "<"
+        "&gt;" -> ">"
+        "&quot;" -> "\""
+        "&#39;", "&apos;" -> "'"
+        "&nbsp;" -> " "
+        "&ndash;" -> "\u2013"
+        "&mdash;" -> "\u2014"
+        "&laquo;" -> "\u00AB"
+        "&raquo;" -> "\u00BB"
+        "&hellip;" -> "\u2026"
+        else -> {
+            if (entity.startsWith("&#x")) {
+                try {
+                    val code = entity.removePrefix("&#x").removeSuffix(";").toInt(16)
+                    code.toChar().toString()
+                } catch (_: Exception) {
                     entity
                 }
+            } else if (entity.startsWith("&#")) {
+                try {
+                    val code = entity.removePrefix("&#").removeSuffix(";").toInt()
+                    code.toChar().toString()
+                } catch (_: Exception) {
+                    entity
+                }
+            } else {
+                entity
             }
         }
     }
@@ -274,7 +280,7 @@ class HtmlRenderer {
             "white" to Color.White,
             "black" to Color.Black,
             "gray" to Color.Gray,
-            "grey" to Color.Gray,
+            "grey" to Color.Gray
         )
     }
 }

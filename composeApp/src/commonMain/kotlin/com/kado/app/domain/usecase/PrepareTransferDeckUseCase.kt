@@ -3,11 +3,7 @@ package com.kado.app.domain.usecase
 import com.kado.app.data.converter.AldConverter
 import com.kado.app.domain.repository.DeckRepository
 
-data class TransferPayload(
-    val aldBytes: ByteArray,
-    val filename: String,
-    val displayName: String
-)
+data class TransferPayload(val aldBytes: ByteArray, val filename: String, val displayName: String)
 
 class PrepareTransferDeckUseCase(private val repository: DeckRepository) {
 
@@ -31,8 +27,9 @@ class PrepareTransferDeckUseCase(private val repository: DeckRepository) {
     }
 
     companion object {
-        fun formatSubDeckName(baseName: String, subDeckIndex: Int?): String {
-            return if (subDeckIndex != null) "$baseName - Part ${subDeckIndex + 1}" else baseName
-        }
+        fun formatSubDeckName(
+            baseName: String,
+            subDeckIndex: Int?
+        ): String = if (subDeckIndex != null) "$baseName - Part ${subDeckIndex + 1}" else baseName
     }
 }

@@ -6,22 +6,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.kado.app.presentation.screens.algorithm_detail.AlgorithmDetailScreen
+import com.kado.app.presentation.screens.bulk_edit.BulkEditScreen
 import com.kado.app.presentation.screens.card_edit.CardEditScreen
 import com.kado.app.presentation.screens.connection.ConnectionScreen
 import com.kado.app.presentation.screens.deck_detail.DeckDetailScreen
 import com.kado.app.presentation.screens.deck_edit.DeckEditScreen
+import com.kado.app.presentation.screens.help.HelpScreen
 import com.kado.app.presentation.screens.home.HomeScreen
+import com.kado.app.presentation.screens.partition.PartitionScreen
 import com.kado.app.presentation.screens.review.ReviewScreen
 import com.kado.app.presentation.screens.settings.AboutScreen
 import com.kado.app.presentation.screens.settings.AppSettingsScreen
 import com.kado.app.presentation.screens.settings.DonateScreen
 import com.kado.app.presentation.screens.settings.SettingsScreen
 import com.kado.app.presentation.screens.stats.StatsScreen
-import com.kado.app.presentation.screens.partition.PartitionScreen
 import com.kado.app.presentation.screens.transfer.TransferScreen
-import com.kado.app.presentation.screens.bulk_edit.BulkEditScreen
-import com.kado.app.presentation.screens.help.HelpScreen
-import com.kado.app.presentation.screens.algorithm_detail.AlgorithmDetailScreen
 
 @Composable
 fun KadoNavHost(
@@ -57,7 +57,9 @@ fun KadoNavHost(
                 onPartition = { navController.navigate(PartitionRoute(route.deckId)) },
                 onBulkEdit = { navController.navigate(BulkEditRoute(route.deckId)) },
                 onReviewSubDeck = { subDeckIndex -> navController.navigate(ReviewRoute(route.deckId, subDeckIndex)) },
-                onTransferSubDeck = { subDeckIndex -> navController.navigate(TransferRoute(route.deckId, subDeckIndex)) }
+                onTransferSubDeck = { subDeckIndex ->
+                    navController.navigate(TransferRoute(route.deckId, subDeckIndex))
+                }
             )
         }
 

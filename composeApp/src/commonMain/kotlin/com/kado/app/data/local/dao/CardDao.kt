@@ -63,10 +63,14 @@ interface CardDao {
     @Query("SELECT COUNT(*) FROM cards WHERE deckId = :deckId AND subDeckIndex = :subDeckIndex")
     suspend fun countByDeckIdAndSubDeck(deckId: Long, subDeckIndex: Int): Int
 
-    @Query("SELECT DISTINCT subDeckIndex FROM cards WHERE deckId = :deckId AND subDeckIndex IS NOT NULL ORDER BY subDeckIndex ASC")
+    @Query(
+        "SELECT DISTINCT subDeckIndex FROM cards WHERE deckId = :deckId AND subDeckIndex IS NOT NULL ORDER BY subDeckIndex ASC"
+    )
     suspend fun getSubDeckIndices(deckId: Long): List<Int>
 
-    @Query("SELECT DISTINCT subDeckIndex FROM cards WHERE deckId = :deckId AND subDeckIndex IS NOT NULL ORDER BY subDeckIndex ASC")
+    @Query(
+        "SELECT DISTINCT subDeckIndex FROM cards WHERE deckId = :deckId AND subDeckIndex IS NOT NULL ORDER BY subDeckIndex ASC"
+    )
     fun observeSubDeckIndices(deckId: Long): Flow<List<Int>>
 
     @Query("UPDATE cards SET subDeckIndex = :subDeckIndex WHERE id = :cardId")

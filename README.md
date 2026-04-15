@@ -81,6 +81,45 @@ iOS builds require building from source via Xcode (see below).
 
 Open the `iosApp/` directory in Xcode and run from there.
 
+## Code Quality
+
+This project enforces code quality through automated tooling:
+
+| Tool | Purpose | Command |
+|---|---|---|
+| [ktlint](https://pinterest.github.io/ktlint/) | Kotlin linter & formatter | `./gradlew ktlintCheck` |
+| [detekt](https://detekt.dev/) | Static analysis | `./gradlew detekt` |
+| [Kover](https://github.com/Kotlin/kotlinx-kover) | Code coverage | `./gradlew :composeApp:koverHtmlReport` |
+
+### Setup Git Hooks
+
+```shell
+./hooks/enable_hooks.sh
+```
+
+This installs:
+- **pre-commit** — runs ktlint + detekt (blocks commit on violations)
+- **pre-push** — runs unit tests + version tag validation (blocks push on failure)
+
+### Auto-fix Formatting
+
+```shell
+./gradlew ktlintFormat
+```
+
+### Running Tests
+
+```shell
+./gradlew :composeApp:testAndroidHostTest
+```
+
+### Coverage Report
+
+```shell
+./gradlew :composeApp:koverHtmlReport
+open composeApp/build/reports/kover/html/index.html
+```
+
 ## Project Structure
 
 | Directory | Purpose |

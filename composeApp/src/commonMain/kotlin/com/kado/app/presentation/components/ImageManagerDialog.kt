@@ -33,10 +33,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import com.kado.app.presentation.localization.S
 
-data class ImageInfo(
-    val filename: String,
-    val path: String
-)
+data class ImageInfo(val filename: String, val path: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,7 +115,7 @@ private fun ImageThumbnail(
                     .data("file://${image.path}")
                     .build(),
                 contentDescription = image.filename,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Crop
             )
             Surface(
                 shape = CircleShape,

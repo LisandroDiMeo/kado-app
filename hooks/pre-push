@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+#
+# pre-push: runs unit tests before pushing and validates version tags.
+# Installed via hooks/enable_hooks.sh
+#
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GRADLE_DIR="$(dirname "$SCRIPT_DIR")"
+
+if [ ! -f "$GRADLE_DIR/gradlew" ]; then
+    echo "ERROR: Cannot find gradlew at $GRADLE_DIR"
+    exit 1
+fi
+
+# ── Version tag validation ──
+GIT_ROOT="$(git rev-parse --show-toplevel)"
+GRADLE_PROPS_REL="$(python3 -c "import os.path; print(os.path.relpath('$GRADLE_DIR/gradle.properties', '$GIT_ROOT'))")"
+
+while read local_ref local_sha remote_ref remote_sha; do
+    if [[ "$local_ref" =~ ^refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+        tag_major="${BASH_REMATCH[1]}"
+        tag_minor="${BASH_REMATCH[2]}"
+        tag_patch="${BASH_REMATCH[3]}"
+
+        props=$(git show "$local_sha:$GRADLE_PROPS_REL" 2>/dev/null)
+        if [ $? -ne 0 ]; then
+            echo "ERROR: Could not read gradle.properties at commit $local_sha"
+            exit 1
+        fi
+
+        gradle_major=$(echo "$props" | grep '^app.version.major=' | cut -d= -f2 | tr -d '[:space:]')
+        gradle_minor=$(echo "$props" | grep '^app.version.minor=' | cut -d= -f2 | tr -d '[:space:]')
+        gradle_patch=$(echo "$props" | grep '^app.version.patch=' | cut -d= -f2 | tr -d '[:space:]')
+
+        gradle_version="${gradle_major}.${gradle_minor}.${gradle_patch}"
+        tag_version="${tag_major}.${tag_minor}.${tag_patch}"
+
+        if [ "$tag_version" != "$gradle_version" ]; then
+            echo "============================================"
+            echo " VERSION MISMATCH DETECTED!"
+            echo " Tag version:    v${tag_version}"
+            echo " Gradle version: v${gradle_version}"
+            echo "============================================"
+            exit 1
+        fi
+        echo "Version check passed: v${tag_version}"
+    fi
+done
+
+# ── Run unit tests ──
+echo "Running unit tests before push..."
+"$GRADLE_DIR/gradlew" -p "$GRADLE_DIR" :composeApp:testAndroidHostTest --daemon 2>&1
+TEST_EXIT=$?
+
+if [ $TEST_EXIT -ne 0 ]; then
+    echo ""
+    echo "================================================"
+    echo " Unit tests failed! Push aborted."
+    echo " Run './gradlew :composeApp:testAndroidHostTest'"
+    echo " to debug."
+    echo "================================================"
+    exit 1
+fi
+
+echo "All pre-push checks passed."
+exit 0

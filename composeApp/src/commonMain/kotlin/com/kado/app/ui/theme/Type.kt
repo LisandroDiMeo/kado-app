@@ -24,7 +24,7 @@ fun MPlus1CodeFontFamily() = FontFamily(
     Font(Res.font.mplus1code_Regular, FontWeight.Normal),
     Font(Res.font.mplus1code_Medium, FontWeight.Medium),
     Font(Res.font.mplus1code_SemiBold, FontWeight.SemiBold),
-    Font(Res.font.mplus1code_Bold, FontWeight.Bold),
+    Font(Res.font.mplus1code_Bold, FontWeight.Bold)
 )
 
 private fun TextUnit.scaled(factor: Float): TextUnit =
@@ -35,20 +35,65 @@ fun AppTypography(scaleFactor: Float = 1.0f): Typography {
     val fontFamily = MPlus1CodeFontFamily()
     val baseline = Typography()
     return Typography(
-        displayLarge = baseline.displayLarge.copy(fontFamily = fontFamily, fontSize = baseline.displayLarge.fontSize.scaled(scaleFactor)),
-        displayMedium = baseline.displayMedium.copy(fontFamily = fontFamily, fontSize = baseline.displayMedium.fontSize.scaled(scaleFactor)),
-        displaySmall = baseline.displaySmall.copy(fontFamily = fontFamily, fontSize = baseline.displaySmall.fontSize.scaled(scaleFactor)),
-        headlineLarge = baseline.headlineLarge.copy(fontFamily = fontFamily, fontSize = baseline.headlineLarge.fontSize.scaled(scaleFactor)),
-        headlineMedium = baseline.headlineMedium.copy(fontFamily = fontFamily, fontSize = baseline.headlineMedium.fontSize.scaled(scaleFactor)),
-        headlineSmall = baseline.headlineSmall.copy(fontFamily = fontFamily, fontSize = baseline.headlineSmall.fontSize.scaled(scaleFactor)),
-        titleLarge = baseline.titleLarge.copy(fontFamily = fontFamily, fontSize = baseline.titleLarge.fontSize.scaled(scaleFactor)),
-        titleMedium = baseline.titleMedium.copy(fontFamily = fontFamily, fontSize = baseline.titleMedium.fontSize.scaled(scaleFactor)),
-        titleSmall = baseline.titleSmall.copy(fontFamily = fontFamily, fontSize = baseline.titleSmall.fontSize.scaled(scaleFactor)),
-        bodyLarge = baseline.bodyLarge.copy(fontFamily = fontFamily, fontSize = baseline.bodyLarge.fontSize.scaled(scaleFactor)),
-        bodyMedium = baseline.bodyMedium.copy(fontFamily = fontFamily, fontSize = baseline.bodyMedium.fontSize.scaled(scaleFactor)),
-        bodySmall = baseline.bodySmall.copy(fontFamily = fontFamily, fontSize = baseline.bodySmall.fontSize.scaled(scaleFactor)),
-        labelLarge = baseline.labelLarge.copy(fontFamily = fontFamily, fontSize = baseline.labelLarge.fontSize.scaled(scaleFactor)),
-        labelMedium = baseline.labelMedium.copy(fontFamily = fontFamily, fontSize = baseline.labelMedium.fontSize.scaled(scaleFactor)),
-        labelSmall = baseline.labelSmall.copy(fontFamily = fontFamily, fontSize = baseline.labelSmall.fontSize.scaled(scaleFactor)),
+        displayLarge = baseline.displayLarge.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.displayLarge.fontSize.scaled(scaleFactor)
+        ),
+        displayMedium = baseline.displayMedium.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.displayMedium.fontSize.scaled(scaleFactor)
+        ),
+        displaySmall = baseline.displaySmall.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.displaySmall.fontSize.scaled(scaleFactor)
+        ),
+        headlineLarge = baseline.headlineLarge.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.headlineLarge.fontSize.scaled(scaleFactor)
+        ),
+        headlineMedium = baseline.headlineMedium.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.headlineMedium.fontSize.scaled(scaleFactor)
+        ),
+        headlineSmall = baseline.headlineSmall.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.headlineSmall.fontSize.scaled(scaleFactor)
+        ),
+        titleLarge = baseline.titleLarge.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.titleLarge.fontSize.scaled(scaleFactor)
+        ),
+        titleMedium = baseline.titleMedium.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.titleMedium.fontSize.scaled(scaleFactor)
+        ),
+        titleSmall = baseline.titleSmall.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.titleSmall.fontSize.scaled(scaleFactor)
+        ),
+        bodyLarge = baseline.bodyLarge.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.bodyLarge.fontSize.scaled(scaleFactor)
+        ),
+        bodyMedium = baseline.bodyMedium.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.bodyMedium.fontSize.scaled(scaleFactor)
+        ),
+        bodySmall = baseline.bodySmall.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.bodySmall.fontSize.scaled(scaleFactor)
+        ),
+        labelLarge = baseline.labelLarge.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.labelLarge.fontSize.scaled(scaleFactor)
+        ),
+        labelMedium = baseline.labelMedium.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.labelMedium.fontSize.scaled(scaleFactor)
+        ),
+        labelSmall = baseline.labelSmall.copy(
+            fontFamily = fontFamily,
+            fontSize = baseline.labelSmall.fontSize.scaled(scaleFactor)
+        )
     )
 }

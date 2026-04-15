@@ -44,8 +44,13 @@ class FakeDeckRepository : DeckRepository {
     override suspend fun getNextReviewCard(deckId: Long, now: Long, newLimit: Int, excludeCardId: Long): ReviewCard? =
         TODO()
 
-    override suspend fun getNextSubDeckReviewCard(deckId: Long, subDeckIndex: Int, now: Long, newLimit: Int, excludeCardId: Long): ReviewCard? =
-        TODO()
+    override suspend fun getNextSubDeckReviewCard(
+        deckId: Long,
+        subDeckIndex: Int,
+        now: Long,
+        newLimit: Int,
+        excludeCardId: Long
+    ): ReviewCard? = TODO()
 
     // Methods not needed by current UseCases — will be implemented as needed
     override fun observeDecks(): Flow<List<Deck>> = TODO()
@@ -62,7 +67,11 @@ class FakeDeckRepository : DeckRepository {
     override suspend fun updateCard(card: Card) = TODO()
     override suspend fun deleteCard(id: Long) = TODO()
     override suspend fun resetProgress(deckId: Long) = TODO()
-    override suspend fun importDeck(name: String, cards: List<Pair<String, String>>, onProgress: (Float) -> Unit): Long = TODO()
+    override suspend fun importDeck(
+        name: String,
+        cards: List<Pair<String, String>>,
+        onProgress: (Float) -> Unit
+    ): Long = TODO()
     override suspend fun getSubDeckIndices(deckId: Long): List<Int> = TODO()
     override fun observeSubDeckIndices(deckId: Long): Flow<List<Int>> = TODO()
     override fun observeSubDeckCards(deckId: Long, subDeckIndex: Int): Flow<List<Card>> = TODO()

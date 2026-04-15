@@ -43,8 +43,11 @@ fun FlashCard(
     )
     val cardScale = LocalCardFontScale.current
     val cardTextStyle = MaterialTheme.typography.headlineSmall.let { style ->
-        if (cardScale == 1.0f) style
-        else style.copy(fontSize = (style.fontSize.value * cardScale).sp)
+        if (cardScale == 1.0f) {
+            style
+        } else {
+            style.copy(fontSize = (style.fontSize.value * cardScale).sp)
+        }
     }
 
     var swipeFired by remember { mutableStateOf(false) }

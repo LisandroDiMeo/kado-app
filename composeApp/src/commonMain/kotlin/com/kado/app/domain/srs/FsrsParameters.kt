@@ -31,8 +31,12 @@ data class FsrsParameters(
                 if (parts.size < 5) return DEFAULT
                 FsrsParameters(
                     desiredRetention = parts[0].toDouble(),
-                    learningStepsSeconds = parts[1].split(",").filter { it.isNotBlank() }.map { it.trim().toLong() }.toLongArray(),
-                    relearningStepsSeconds = parts[2].split(",").filter { it.isNotBlank() }.map { it.trim().toLong() }.toLongArray(),
+                    learningStepsSeconds = parts[1].split(",").filter {
+                        it.isNotBlank()
+                    }.map { it.trim().toLong() }.toLongArray(),
+                    relearningStepsSeconds = parts[2].split(",").filter {
+                        it.isNotBlank()
+                    }.map { it.trim().toLong() }.toLongArray(),
                     maximumInterval = parts[3].toInt(),
                     enableFuzzing = parts[4].toBooleanStrict()
                 )
@@ -41,27 +45,23 @@ data class FsrsParameters(
             }
         }
 
-        fun parseStepsString(text: String): LongArray {
-            return text.split(",")
-                .map { it.trim() }
-                .filter { it.isNotBlank() }
-                .mapNotNull { token ->
-                    when {
-                        token.endsWith("h", ignoreCase = true) -> token.dropLast(1).trim().toLongOrNull()?.times(3600)
-                        token.endsWith("m", ignoreCase = true) -> token.dropLast(1).trim().toLongOrNull()?.times(60)
-                        token.endsWith("s", ignoreCase = true) -> token.dropLast(1).trim().toLongOrNull()
-                        else -> token.toLongOrNull()?.times(60)
-                    }
-                }.toLongArray()
-        }
-
-        fun formatStepsString(steps: LongArray): String {
-            return steps.joinToString(", ") { seconds ->
+        fun parseStepsString(text: String): LongArray = text.split(",")
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .mapNotNull { token ->
                 when {
-                    seconds >= 3600 && seconds % 3600 == 0L -> "${seconds / 3600}h"
-                    seconds >= 60 && seconds % 60 == 0L -> "${seconds / 60}m"
-                    else -> "${seconds}s"
+                    token.endsWith("h", ignoreCase = true) -> token.dropLast(1).trim().toLongOrNull()?.times(3600)
+                    token.endsWith("m", ignoreCase = true) -> token.dropLast(1).trim().toLongOrNull()?.times(60)
+                    token.endsWith("s", ignoreCase = true) -> token.dropLast(1).trim().toLongOrNull()
+                    else -> token.toLongOrNull()?.times(60)
                 }
+            }.toLongArray()
+
+        fun formatStepsString(steps: LongArray): String = steps.joinToString(", ") { seconds ->
+            when {
+                seconds >= 3600 && seconds % 3600 == 0L -> "${seconds / 3600}h"
+                seconds >= 60 && seconds % 60 == 0L -> "${seconds / 60}m"
+                else -> "${seconds}s"
             }
         }
     }
@@ -70,12 +70,12 @@ data class FsrsParameters(
         if (this === other) return true
         if (other !is FsrsParameters) return false
         return weights.contentEquals(other.weights) &&
-                desiredRetention == other.desiredRetention &&
-                learningStepsSeconds.contentEquals(other.learningStepsSeconds) &&
-                relearningStepsSeconds.contentEquals(other.relearningStepsSeconds) &&
-                maximumInterval == other.maximumInterval &&
-                enableFuzzing == other.enableFuzzing &&
-                randomSeed == other.randomSeed
+            desiredRetention == other.desiredRetention &&
+            learningStepsSeconds.contentEquals(other.learningStepsSeconds) &&
+            relearningStepsSeconds.contentEquals(other.relearningStepsSeconds) &&
+            maximumInterval == other.maximumInterval &&
+            enableFuzzing == other.enableFuzzing &&
+            randomSeed == other.randomSeed
     }
 
     override fun hashCode(): Int {

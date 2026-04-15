@@ -198,8 +198,13 @@ class Sm2SchedulerTest {
     @Test
     fun learningCard_ratedGood_treatedAsNewCard() {
         val learningCard = CardState(
-            cardId = 1L, due = 0, interval = 1, ease = 23,
-            reps = 0, lapses = 1, queue = 1
+            cardId = 1L,
+            due = 0,
+            interval = 1,
+            ease = 23,
+            reps = 0,
+            lapses = 1,
+            queue = 1
         )
         val result = scheduler.reviewCard(learningCard, Rating.Good, now)
         assertEquals(1, result.interval)

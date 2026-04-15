@@ -139,8 +139,10 @@ class SrsEngineTest {
 
         // Each interval should be larger than the previous
         for (i in 1 until intervals.size) {
-            assertTrue(intervals[i] > intervals[i - 1],
-                "interval[$i]=${intervals[i]} should be > interval[${i-1}]=${intervals[i-1]}")
+            assertTrue(
+                intervals[i] > intervals[i - 1],
+                "interval[$i]=${intervals[i]} should be > interval[${i - 1}]=${intervals[i - 1]}"
+            )
         }
         // First interval is 1 (new card Good)
         assertEquals(1, intervals[0])
@@ -206,8 +208,13 @@ class SrsEngineTest {
     fun learningCard_ratedGood_treatedAsNewCard() {
         // queue=1, reps=0 → treated as new card (reps==0 branch)
         val learningCard = CardState(
-            cardId = 1L, due = 0, interval = 1, ease = 23,
-            reps = 0, lapses = 1, queue = 1
+            cardId = 1L,
+            due = 0,
+            interval = 1,
+            ease = 23,
+            reps = 0,
+            lapses = 1,
+            queue = 1
         )
         val result = SrsEngine.reviewCard(learningCard, Rating.Good, now)
         assertEquals(1, result.interval)

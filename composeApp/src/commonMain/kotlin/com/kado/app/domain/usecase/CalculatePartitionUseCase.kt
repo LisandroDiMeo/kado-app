@@ -1,9 +1,6 @@
 package com.kado.app.domain.usecase
 
-data class PartitionInfo(
-    val subDeckCount: Int,
-    val lastSubDeckSize: Int
-)
+data class PartitionInfo(val subDeckCount: Int, val lastSubDeckSize: Int)
 
 class CalculatePartitionUseCase {
 

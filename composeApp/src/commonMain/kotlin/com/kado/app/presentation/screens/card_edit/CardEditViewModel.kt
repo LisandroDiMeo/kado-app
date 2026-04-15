@@ -7,10 +7,10 @@ import com.kado.app.di.AppDependencies
 import com.kado.app.domain.model.Card
 import com.kado.app.presentation.components.ImageInfo
 import com.kado.app.presentation.model.DisplayableCardContent
+import kotlin.random.Random
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 enum class ActiveField { FRONT, BACK }
 
@@ -29,10 +29,7 @@ data class CardEditUiState(
     val attachedImages: List<ImageInfo> = emptyList()
 )
 
-class CardEditViewModel(
-    private val deckId: Long,
-    private val cardId: Long
-) : ViewModel() {
+class CardEditViewModel(private val deckId: Long, private val cardId: Long) : ViewModel() {
     private val repository = AppDependencies.deckRepository
     private val parser = AppDependencies.cardContentParser
     private val htmlRenderer = AppDependencies.htmlRenderer
@@ -76,9 +73,10 @@ class CardEditViewModel(
         )
     }
 
-    private fun toDisplayable(raw: String): DisplayableCardContent {
-        return DisplayableCardContent.from(parser.detect(raw), htmlRenderer)
-    }
+    private fun toDisplayable(raw: String): DisplayableCardContent = DisplayableCardContent.from(
+        parser.detect(raw),
+        htmlRenderer
+    )
 
     fun onCursorPositionChange(field: ActiveField, position: Int) {
         _uiState.value = _uiState.value.copy(activeField = field, cursorPosition = position)
@@ -134,8 +132,10 @@ class CardEditViewModel(
 
     fun refreshAttachedImages() {
         val state = _uiState.value
-        val filenames = (parser.extractImageFilenames(state.front) +
-                parser.extractImageFilenames(state.back)).distinct()
+        val filenames = (
+            parser.extractImageFilenames(state.front) +
+                parser.extractImageFilenames(state.back)
+            ).distinct()
         val images = filenames.map { filename ->
             ImageInfo(
                 filename = filename,
@@ -155,10 +155,12 @@ class CardEditViewModel(
                 repository.addCard(deckId, state.front.trim(), state.back.trim())
             } else {
                 existingCard?.let {
-                    repository.updateCard(it.copy(
-                        front = parser.detect(state.front.trim()),
-                        back = parser.detect(state.back.trim())
-                    ))
+                    repository.updateCard(
+                        it.copy(
+                            front = parser.detect(state.front.trim()),
+                            back = parser.detect(state.back.trim())
+                        )
+                    )
                 }
             }
             _uiState.value = _uiState.value.copy(isSaved = true, isLoading = false)
@@ -173,7 +175,5 @@ class CardEditViewModel(
         }
     }
 
-    private fun epochSeconds(): Long {
-        return kotlin.time.Clock.System.now().epochSeconds
-    }
+    private fun epochSeconds(): Long = kotlin.time.Clock.System.now().epochSeconds
 }

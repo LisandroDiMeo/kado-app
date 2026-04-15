@@ -7,9 +7,7 @@ import com.kado.app.domain.repository.BulkEditRuleRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class BulkEditRuleRepositoryImpl(
-    private val dao: BulkEditRuleDao
-) : BulkEditRuleRepository {
+class BulkEditRuleRepositoryImpl(private val dao: BulkEditRuleDao) : BulkEditRuleRepository {
 
     override fun observeAll(): Flow<List<BulkEditRule>> =
         dao.getAll().map { entities -> entities.map { it.toDomain() } }

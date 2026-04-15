@@ -1,0 +1,113 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+complexity:
+  ComplexCondition:
+    active: true
+    threshold: 4
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 15
+    ignoreSingleWhenExpression: true
+    ignoreSimpleWhenEntries: true
+  LargeClass:
+    active: true
+    threshold: 600
+  LongMethod:
+    active: true
+    threshold: 60
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+    constructorThreshold: 10
+    ignoreAnnotated:
+      - "Composable"
+  NestedBlockDepth:
+    active: true
+    threshold: 5
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 30
+    thresholdInClasses: 20
+    thresholdInInterfaces: 15
+    thresholdInObjects: 15
+    thresholdInEnums: 10
+    ignoreAnnotated:
+      - "Composable"
+
+coroutines:
+  active: true
+  GlobalCoroutineUsage:
+    active: true
+  SuspendFunWithCoroutineScopeReceiver:
+    active: true
+
+exceptions:
+  SwallowedException:
+    active: true
+    ignoredExceptionTypes:
+      - "InterruptedException"
+      - "MalformedURLException"
+      - "NumberFormatException"
+      - "ParseException"
+  TooGenericExceptionCaught:
+    active: true
+    exceptionNames:
+      - "ArrayIndexOutOfBoundsException"
+      - "Error"
+      - "IllegalMonitorStateException"
+      - "IndexOutOfBoundsException"
+      - "NullPointerException"
+
+naming:
+  FunctionNaming:
+    active: true
+    ignoreAnnotated:
+      - "Composable"
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: "[A-Z][A-Za-z0-9]*|[A-Z][_A-Z0-9]*"
+
+performance:
+  SpreadOperator:
+    active: false
+  CouldBeSequence:
+    active: true
+    threshold: 4
+
+style:
+  ForbiddenComment:
+    active: false
+  MagicNumber:
+    active: true
+    ignoreNumbers:
+      - "-1"
+      - "0"
+      - "1"
+      - "2"
+      - "0.0"
+      - "1.0"
+    ignoreAnnotated:
+      - "Composable"
+    ignoreEnums: true
+    ignorePropertyDeclaration: true
+    ignoreConstantDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+    excludeCommentStatements: true
+  ReturnCount:
+    active: true
+    max: 4
+    excludeReturnFromLambda: true
+  UnusedPrivateMember:
+    active: true
+    allowedNames: "(_|ignored|expected|serialVersionUID)"
+  WildcardImport:
+    active: false

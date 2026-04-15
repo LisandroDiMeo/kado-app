@@ -181,28 +181,51 @@ fun AlgorithmDetailScreen(
 }
 
 @Composable
-private fun getAlgorithmInfo(algorithmId: String, strings: AppStrings): AlgorithmInfo? {
-    return when (algorithmId) {
-        "sm2" -> AlgorithmInfo(
-            id = "sm2",
-            simpleExplanation = strings.sm2SimpleExplanation,
-            parameters = listOf(
-                ParameterInfo("ease", strings.ease, strings.easeDescription, strings.easeHint)
+private fun getAlgorithmInfo(algorithmId: String, strings: AppStrings): AlgorithmInfo? = when (algorithmId) {
+    "sm2" -> AlgorithmInfo(
+        id = "sm2",
+        simpleExplanation = strings.sm2SimpleExplanation,
+        parameters = listOf(
+            ParameterInfo("ease", strings.ease, strings.easeDescription, strings.easeHint)
+        ),
+        technicalDetails = strings.sm2TechnicalDetails
+    )
+    "fsrs" -> AlgorithmInfo(
+        id = "fsrs",
+        simpleExplanation = strings.fsrsSimpleExplanation,
+        parameters = listOf(
+            ParameterInfo(
+                "desiredRetention",
+                strings.desiredRetention,
+                strings.desiredRetentionExplanation,
+                strings.desiredRetentionHint
             ),
-            technicalDetails = strings.sm2TechnicalDetails
-        )
-        "fsrs" -> AlgorithmInfo(
-            id = "fsrs",
-            simpleExplanation = strings.fsrsSimpleExplanation,
-            parameters = listOf(
-                ParameterInfo("desiredRetention", strings.desiredRetention, strings.desiredRetentionExplanation, strings.desiredRetentionHint),
-                ParameterInfo("learningSteps", strings.learningSteps, strings.learningStepsExplanation, strings.learningStepsHint),
-                ParameterInfo("relearningSteps", strings.relearningSteps, strings.relearningStepsExplanation, strings.relearningStepsHint),
-                ParameterInfo("maxInterval", strings.maxInterval, strings.maxIntervalExplanation, strings.maxIntervalHint),
-                ParameterInfo("enableFuzzing", strings.enableFuzzing, strings.enableFuzzingExplanation, strings.enableFuzzingHint)
+            ParameterInfo(
+                "learningSteps",
+                strings.learningSteps,
+                strings.learningStepsExplanation,
+                strings.learningStepsHint
             ),
-            technicalDetails = strings.fsrsTechnicalDetails
-        )
-        else -> null
-    }
+            ParameterInfo(
+                "relearningSteps",
+                strings.relearningSteps,
+                strings.relearningStepsExplanation,
+                strings.relearningStepsHint
+            ),
+            ParameterInfo(
+                "maxInterval",
+                strings.maxInterval,
+                strings.maxIntervalExplanation,
+                strings.maxIntervalHint
+            ),
+            ParameterInfo(
+                "enableFuzzing",
+                strings.enableFuzzing,
+                strings.enableFuzzingExplanation,
+                strings.enableFuzzingHint
+            )
+        ),
+        technicalDetails = strings.fsrsTechnicalDetails
+    )
+    else -> null
 }

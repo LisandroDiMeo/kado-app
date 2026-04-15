@@ -52,7 +52,13 @@ interface DeckRepository {
     suspend fun clearPartitions(deckId: Long)
     suspend fun removeSubDeck(deckId: Long, subDeckIndex: Int)
     suspend fun getSubDeckSummary(deckId: Long, subDeckIndex: Int, now: Long): SubDeckInfo
-    suspend fun getNextSubDeckReviewCard(deckId: Long, subDeckIndex: Int, now: Long, newLimit: Int, excludeCardId: Long = -1): ReviewCard?
+    suspend fun getNextSubDeckReviewCard(
+        deckId: Long,
+        subDeckIndex: Int,
+        now: Long,
+        newLimit: Int,
+        excludeCardId: Long = -1
+    ): ReviewCard?
     suspend fun cloneSubDeckAsNewDeck(deckId: Long, subDeckIndex: Int, newName: String): Long
     suspend fun createReversedDeck(deckId: Long, newName: String): Long
 }

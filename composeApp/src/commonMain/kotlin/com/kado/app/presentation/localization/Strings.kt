@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:max-line-length")
+
 package com.kado.app.presentation.localization
 
 import androidx.compose.runtime.Composable

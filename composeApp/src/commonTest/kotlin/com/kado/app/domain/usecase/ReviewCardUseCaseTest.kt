@@ -8,9 +8,9 @@ import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SessionSummary
 import com.kado.app.domain.srs.Sm2Scheduler
 import com.kado.app.test.fakes.FakeDeckRepository
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.test.runTest
 
 class ReviewCardUseCaseTest {
 
@@ -19,13 +19,19 @@ class ReviewCardUseCaseTest {
 
     private fun reviewCard(queue: Int = 0, interval: Int = 0, ease: Int = 25) = ReviewCard(
         card = Card(
-            id = 1, deckId = 1,
+            id = 1,
+            deckId = 1,
             front = CardContent.PlainText("front"),
             back = CardContent.PlainText("back")
         ),
         state = CardState(
-            cardId = 1, due = 0, interval = interval,
-            ease = ease, reps = 0, lapses = 0, queue = queue
+            cardId = 1,
+            due = 0,
+            interval = interval,
+            ease = ease,
+            reps = 0,
+            lapses = 0,
+            queue = queue
         )
     )
 

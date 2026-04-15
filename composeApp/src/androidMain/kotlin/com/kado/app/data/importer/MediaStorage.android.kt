@@ -10,9 +10,8 @@ actual object MediaStorage {
         File(dir, filename).writeBytes(bytes)
     }
 
-    actual fun getMediaPath(deckId: Long, filename: String): String {
-        return File(appContext.filesDir, "media/$deckId/$filename").absolutePath
-    }
+    actual fun getMediaPath(deckId: Long, filename: String): String =
+        File(appContext.filesDir, "media/$deckId/$filename").absolutePath
 
     actual fun deleteMediaDir(deckId: Long) {
         val dir = File(appContext.filesDir, "media/$deckId")

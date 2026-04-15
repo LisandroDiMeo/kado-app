@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#
+# pre-commit: runs ktlint check and detekt on staged Kotlin files.
+# Installed via hooks/enable_hooks.sh
+#
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GRADLE_DIR="$(dirname "$SCRIPT_DIR")"
+
+if [ ! -f "$GRADLE_DIR/gradlew" ]; then
+    echo "ERROR: Cannot find gradlew at $GRADLE_DIR"
+    exit 1
+fi
+
+echo "Running ktlint check..."
+"$GRADLE_DIR/gradlew" -p "$GRADLE_DIR" ktlintCheck --daemon --quiet 2>&1
+KTLINT_EXIT=$?
+
+echo "Running detekt..."
+"$GRADLE_DIR/gradlew" -p "$GRADLE_DIR" detekt --daemon --quiet 2>&1
+DETEKT_EXIT=$?
+
+if [ $KTLINT_EXIT -ne 0 ] || [ $DETEKT_EXIT -ne 0 ]; then
+    echo ""
+    echo "================================================"
+    echo " Code quality checks failed!"
+    echo " Run './gradlew ktlintFormat' to auto-fix style."
+    echo " Run './gradlew detekt' to see detekt issues."
+    echo "================================================"
+    exit 1
+fi
+
+echo "Code quality checks passed."
+exit 0

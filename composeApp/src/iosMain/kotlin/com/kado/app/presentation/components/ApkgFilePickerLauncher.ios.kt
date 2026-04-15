@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.kado.app.util.topViewController
+import kotlin.coroutines.resume
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -19,7 +20,6 @@ import platform.UIKit.UIDocumentPickerViewController
 import platform.UniformTypeIdentifiers.UTTypeData
 import platform.darwin.NSObject
 import platform.posix.memcpy
-import kotlin.coroutines.resume
 
 // Strong reference to prevent GC while picker is active.
 // UIDocumentPickerViewController.delegate is a weak property in UIKit.

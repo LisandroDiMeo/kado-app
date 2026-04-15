@@ -5,10 +5,7 @@ import androidx.paging.PagingState
 import com.kado.app.data.local.dao.CardDao
 import com.kado.app.data.local.entity.CardEntity
 
-class CardPagingSource(
-    private val cardDao: CardDao,
-    private val deckId: Long
-) : PagingSource<Int, CardEntity>() {
+class CardPagingSource(private val cardDao: CardDao, private val deckId: Long) : PagingSource<Int, CardEntity>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CardEntity> {
         val page = params.key ?: 0
@@ -25,10 +22,8 @@ class CardPagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, CardEntity>): Int? {
-        return state.anchorPosition?.let { anchor ->
-            state.closestPageToPosition(anchor)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchor)?.nextKey?.minus(1)
-        }
+    override fun getRefreshKey(state: PagingState<Int, CardEntity>): Int? = state.anchorPosition?.let { anchor ->
+        state.closestPageToPosition(anchor)?.prevKey?.plus(1)
+            ?: state.closestPageToPosition(anchor)?.nextKey?.minus(1)
     }
 }

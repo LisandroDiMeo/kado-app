@@ -4,7 +4,8 @@ object TemplateRenderer {
 
     private val FIELD_REGEX = Regex("\\{\\{([^{}#/^!]+?)\\}\\}")
     private val CONDITIONAL_REGEX = Regex("\\{\\{#(.+?)\\}\\}(.*?)\\{\\{/\\1\\}\\}", RegexOption.DOT_MATCHES_ALL)
-    private val INVERSE_CONDITIONAL_REGEX = Regex("\\{\\{\\^(.+?)\\}\\}(.*?)\\{\\{/\\1\\}\\}", RegexOption.DOT_MATCHES_ALL)
+    private val INVERSE_CONDITIONAL_REGEX =
+        Regex("\\{\\{\\^(.+?)\\}\\}(.*?)\\{\\{/\\1\\}\\}", RegexOption.DOT_MATCHES_ALL)
     private val TYPE_FIELD_REGEX = Regex("\\{\\{type:(.+?)\\}\\}")
     private val HINT_REGEX = Regex("\\{\\{hint:(.+?)\\}\\}")
     private val EDIT_FIELD_REGEX = Regex("\\{\\{edit:(.+?)\\}\\}")

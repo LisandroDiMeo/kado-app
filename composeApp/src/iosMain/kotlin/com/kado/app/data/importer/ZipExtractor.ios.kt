@@ -1,6 +1,5 @@
 package com.kado.app.data.importer
 
-import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.UByteVar
 import kotlinx.cinterop.addressOf
@@ -9,7 +8,6 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
-import kotlinx.cinterop.value
 import platform.zlib.Z_FINISH
 import platform.zlib.Z_OK
 import platform.zlib.Z_STREAM_END
@@ -139,13 +137,13 @@ actual object ZipExtractor {
 
     private fun readInt16LE(data: ByteArray, offset: Int): Int =
         (data[offset].toInt() and 0xFF) or
-                ((data[offset + 1].toInt() and 0xFF) shl 8)
+            ((data[offset + 1].toInt() and 0xFF) shl 8)
 
     private fun readInt32LE(data: ByteArray, offset: Int): Int =
         (data[offset].toInt() and 0xFF) or
-                ((data[offset + 1].toInt() and 0xFF) shl 8) or
-                ((data[offset + 2].toInt() and 0xFF) shl 16) or
-                ((data[offset + 3].toInt() and 0xFF) shl 24)
+            ((data[offset + 1].toInt() and 0xFF) shl 8) or
+            ((data[offset + 2].toInt() and 0xFF) shl 16) or
+            ((data[offset + 3].toInt() and 0xFF) shl 24)
 
     private const val LOCAL_FILE_HEADER_SIG = 0x04034B50
 }

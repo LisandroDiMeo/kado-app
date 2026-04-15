@@ -15,12 +15,14 @@ object SrsEngine {
     private fun clampEase(value: Int): Int =
         value.coerceIn(EASE_MIN, EASE_MAX)
 
-    fun previewIntervals(state: CardState, nowEpochSeconds: Long): Map<Rating, String> {
-        return Rating.entries.associateWith { rating ->
+    fun previewIntervals(
+        state: CardState,
+        nowEpochSeconds: Long
+    ): Map<Rating, String> =
+        Rating.entries.associateWith { rating ->
             val newState = reviewCard(state, rating, nowEpochSeconds)
             formatInterval(newState.due - nowEpochSeconds)
         }
-    }
 
     private fun formatInterval(seconds: Long): String {
         if (seconds < 60) return "<1m"

@@ -3,18 +3,18 @@ package com.kado.app.presentation.screens.deck_detail
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,13 +32,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -82,7 +82,10 @@ fun DeckDetailScreen(
             title = S().removeSubDeck,
             message = S().removeSubDeckMessage,
             confirmLabel = S().remove,
-            onConfirm = { vm.removeSubDeck(index); removeSubDeckConfirm = null },
+            onConfirm = {
+                vm.removeSubDeck(index)
+                removeSubDeckConfirm = null
+            },
             onDismiss = { removeSubDeckConfirm = null }
         )
     }
@@ -92,7 +95,10 @@ fun DeckDetailScreen(
             title = S().cloneSubDeck,
             message = S().cloneSubDeckMessage,
             confirmLabel = S().clone,
-            onConfirm = { vm.cloneSubDeck(index); cloneSubDeckConfirm = null },
+            onConfirm = {
+                vm.cloneSubDeck(index)
+                cloneSubDeckConfirm = null
+            },
             onDismiss = { cloneSubDeckConfirm = null }
         )
     }
@@ -102,7 +108,10 @@ fun DeckDetailScreen(
             title = S().createReversedDeck,
             message = S().createReversedDeckMessage,
             confirmLabel = S().confirm,
-            onConfirm = { vm.createReversedDeck(); showReversedDeckConfirm = false },
+            onConfirm = {
+                vm.createReversedDeck()
+                showReversedDeckConfirm = false
+            },
             onDismiss = { showReversedDeckConfirm = false }
         )
     }
@@ -126,19 +135,31 @@ fun DeckDetailScreen(
                         ) {
                             DropdownMenuItem(
                                 text = { Text(S().createReversedDeck) },
-                                onClick = { showMoreMenu = false; showReversedDeckConfirm = true }
+                                onClick = {
+                                    showMoreMenu = false
+                                    showReversedDeckConfirm = true
+                                }
                             )
                             DropdownMenuItem(
                                 text = { Text(S().partitionDeck) },
-                                onClick = { showMoreMenu = false; onPartition() }
+                                onClick = {
+                                    showMoreMenu = false
+                                    onPartition()
+                                }
                             )
                             DropdownMenuItem(
                                 text = { Text(S().bulkEdit) },
-                                onClick = { showMoreMenu = false; onBulkEdit() }
+                                onClick = {
+                                    showMoreMenu = false
+                                    onBulkEdit()
+                                }
                             )
                             DropdownMenuItem(
                                 text = { Text(S().transferToDevice) },
-                                onClick = { showMoreMenu = false; onTransfer() }
+                                onClick = {
+                                    showMoreMenu = false
+                                    onTransfer()
+                                }
                             )
                         }
                     }
@@ -150,8 +171,11 @@ fun DeckDetailScreen(
                 onClick = onAddCard,
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Text("+", style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onPrimary)
+                Text(
+                    "+",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     ) { padding ->
@@ -238,13 +262,21 @@ fun DeckDetailScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                OutlinedButton(modifier = Modifier.weight(1f), onClick = { onTransferSubDeck(subDeck.index) }) {
+                                OutlinedButton(modifier = Modifier.weight(1f), onClick = {
+                                    onTransferSubDeck(subDeck.index)
+                                }) {
                                     Text(S().send, style = MaterialTheme.typography.labelSmall)
                                 }
-                                OutlinedButton(modifier = Modifier.weight(1f), onClick = { cloneSubDeckConfirm = subDeck.index }) {
+                                OutlinedButton(modifier = Modifier.weight(1f), onClick = {
+                                    cloneSubDeckConfirm =
+                                        subDeck.index
+                                }) {
                                     Text(S().clone, style = MaterialTheme.typography.labelSmall)
                                 }
-                                OutlinedButton(modifier = Modifier.weight(1f), onClick = { removeSubDeckConfirm = subDeck.index }) {
+                                OutlinedButton(modifier = Modifier.weight(1f), onClick = {
+                                    removeSubDeckConfirm =
+                                        subDeck.index
+                                }) {
                                     Text(S().remove, style = MaterialTheme.typography.labelSmall)
                                 }
                             }

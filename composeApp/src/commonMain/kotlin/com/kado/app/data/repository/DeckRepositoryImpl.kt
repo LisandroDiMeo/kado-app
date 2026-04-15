@@ -4,6 +4,10 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import androidx.room.RoomDatabase
+import androidx.room.immediateTransaction
+import androidx.room.useWriterConnection
+import com.kado.app.data.importer.MediaStorage
 import com.kado.app.data.local.dao.CardDao
 import com.kado.app.data.local.dao.CardStateDao
 import com.kado.app.data.local.dao.DeckDao
@@ -17,14 +21,10 @@ import com.kado.app.domain.model.Deck
 import com.kado.app.domain.model.DeckSummary
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.SubDeckInfo
-import com.kado.app.domain.srs.FsrsParameters
-import com.kado.app.domain.srs.SchedulerType
-import com.kado.app.data.importer.MediaStorage
 import com.kado.app.domain.parser.CardContentParser
 import com.kado.app.domain.repository.DeckRepository
-import androidx.room.RoomDatabase
-import androidx.room.immediateTransaction
-import androidx.room.useWriterConnection
+import com.kado.app.domain.srs.FsrsParameters
+import com.kado.app.domain.srs.SchedulerType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -47,11 +47,13 @@ class DeckRepositoryImpl(
         deckDao.getById(id)?.toDomain()
 
     override suspend fun createDeck(name: String, dailyLimit: Int): Long =
-        deckDao.insert(DeckEntity(
-            name = name,
-            dailyLimit = dailyLimit,
-            createdAt = kotlin.time.Clock.System.now().epochSeconds
-        ))
+        deckDao.insert(
+            DeckEntity(
+                name = name,
+                dailyLimit = dailyLimit,
+                createdAt = kotlin.time.Clock.System.now().epochSeconds
+            )
+        )
 
     override suspend fun updateDeck(deck: Deck) {
         val fsrsParams = FsrsParameters.serialize(
@@ -63,14 +65,16 @@ class DeckRepositoryImpl(
                 enableFuzzing = deck.fsrsEnableFuzzing
             )
         )
-        deckDao.update(DeckEntity(
-            id = deck.id,
-            name = deck.name,
-            dailyLimit = deck.dailyLimit,
-            createdAt = deck.createdAt,
-            schedulerType = deck.schedulerType.name,
-            fsrsParams = fsrsParams
-        ))
+        deckDao.update(
+            DeckEntity(
+                id = deck.id,
+                name = deck.name,
+                dailyLimit = deck.dailyLimit,
+                createdAt = deck.createdAt,
+                schedulerType = deck.schedulerType.name,
+                fsrsParams = fsrsParams
+            )
+        )
     }
 
     override suspend fun deleteDeck(id: Long) {
@@ -89,16 +93,14 @@ class DeckRepositoryImpl(
     override fun observeCards(deckId: Long): Flow<List<Card>> =
         cardDao.observeByDeckId(deckId).map { entities -> entities.map { it.toDomain() } }
 
-    override fun observeCardsPaged(deckId: Long): Flow<PagingData<Card>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = PAGE_SIZE,
-                prefetchDistance = PAGE_SIZE / 2,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { CardPagingSource(cardDao, deckId) }
-        ).flow.map { pagingData -> pagingData.map { it.toDomain() } }
-    }
+    override fun observeCardsPaged(deckId: Long): Flow<PagingData<Card>> = Pager(
+        config = PagingConfig(
+            pageSize = PAGE_SIZE,
+            prefetchDistance = PAGE_SIZE / 2,
+            enablePlaceholders = false
+        ),
+        pagingSourceFactory = { CardPagingSource(cardDao, deckId) }
+    ).flow.map { pagingData -> pagingData.map { it.toDomain() } }
 
     override fun observeCardCount(deckId: Long): Flow<Int> =
         cardDao.observeCountByDeckId(deckId)
@@ -114,42 +116,48 @@ class DeckRepositoryImpl(
 
     override suspend fun addCard(deckId: Long, front: String, back: String): Long {
         val position = cardDao.nextPosition(deckId)
-        val cardId = cardDao.insert(CardEntity(
-            deckId = deckId,
-            front = front,
-            back = back,
-            position = position,
-            createdAt = kotlin.time.Clock.System.now().epochSeconds
-        ))
+        val cardId = cardDao.insert(
+            CardEntity(
+                deckId = deckId,
+                front = front,
+                back = back,
+                position = position,
+                createdAt = kotlin.time.Clock.System.now().epochSeconds
+            )
+        )
         cardStateDao.upsert(CardStateEntity(cardId = cardId))
         return cardId
     }
 
     override suspend fun updateCard(card: Card) =
-        cardDao.update(CardEntity(
-            id = card.id,
-            deckId = card.deckId,
-            front = card.front.rawText,
-            back = card.back.rawText,
-            position = card.position,
-            createdAt = card.createdAt
-        ))
+        cardDao.update(
+            CardEntity(
+                id = card.id,
+                deckId = card.deckId,
+                front = card.front.rawText,
+                back = card.back.rawText,
+                position = card.position,
+                createdAt = card.createdAt
+            )
+        )
 
     override suspend fun bulkUpdateCards(cards: List<Card>) {
         database.useWriterConnection { transactor ->
             transactor.immediateTransaction {
                 cards.chunked(CHUNK_SIZE).forEach { chunk ->
-                    cardDao.updateAll(chunk.map { card ->
-                        CardEntity(
-                            id = card.id,
-                            deckId = card.deckId,
-                            front = card.front.rawText,
-                            back = card.back.rawText,
-                            position = card.position,
-                            createdAt = card.createdAt,
-                            subDeckIndex = card.subDeckIndex
-                        )
-                    })
+                    cardDao.updateAll(
+                        chunk.map { card ->
+                            CardEntity(
+                                id = card.id,
+                                deckId = card.deckId,
+                                front = card.front.rawText,
+                                back = card.back.rawText,
+                                position = card.position,
+                                createdAt = card.createdAt,
+                                subDeckIndex = card.subDeckIndex
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -167,20 +175,22 @@ class DeckRepositoryImpl(
         cardStateDao.getByDeckId(deckId).map { it.toDomain() }
 
     override suspend fun updateCardState(state: CardState) =
-        cardStateDao.upsert(CardStateEntity(
-            cardId = state.cardId,
-            due = state.due,
-            interval = state.interval,
-            ease = state.ease,
-            reps = state.reps,
-            lapses = state.lapses,
-            queue = state.queue,
-            stability = state.stability,
-            difficulty = state.difficulty,
-            fsrsState = state.fsrsState,
-            step = state.step,
-            lastReview = state.lastReview
-        ))
+        cardStateDao.upsert(
+            CardStateEntity(
+                cardId = state.cardId,
+                due = state.due,
+                interval = state.interval,
+                ease = state.ease,
+                reps = state.reps,
+                lapses = state.lapses,
+                queue = state.queue,
+                stability = state.stability,
+                difficulty = state.difficulty,
+                fsrsState = state.fsrsState,
+                step = state.step,
+                lastReview = state.lastReview
+            )
+        )
 
     override suspend fun resetProgress(deckId: Long) {
         database.useWriterConnection { transactor ->
@@ -286,10 +296,24 @@ class DeckRepositoryImpl(
         return SubDeckInfo(subDeckIndex, cardCount, dueCount, newCount)
     }
 
-    override suspend fun getNextSubDeckReviewCard(deckId: Long, subDeckIndex: Int, now: Long, newLimit: Int, excludeCardId: Long): ReviewCard? {
+    override suspend fun getNextSubDeckReviewCard(
+        deckId: Long,
+        subDeckIndex: Int,
+        now: Long,
+        newLimit: Int,
+        excludeCardId: Long
+    ): ReviewCard? {
         val state = cardStateDao.getNextLearningByDeckIdAndSubDeck(deckId, subDeckIndex, now, excludeCardId)
             ?: cardStateDao.getNextReviewByDeckIdAndSubDeck(deckId, subDeckIndex, now, excludeCardId)
-            ?: (if (newLimit > 0) cardStateDao.getNextNewByDeckIdAndSubDeck(deckId, subDeckIndex, excludeCardId) else null)
+            ?: (
+                if (newLimit >
+                    0
+                ) {
+                    cardStateDao.getNextNewByDeckIdAndSubDeck(deckId, subDeckIndex, excludeCardId)
+                } else {
+                    null
+                }
+                )
             ?: return null
         val card = cardDao.getById(state.cardId) ?: return null
         return ReviewCard(card.toDomain(), state.toDomain())
@@ -300,13 +324,15 @@ class DeckRepositoryImpl(
         val newDeckId = deckDao.insert(DeckEntity(name = newName, dailyLimit = 20, createdAt = now))
         val cardEntities = cardDao.getByDeckIdAndSubDeck(deckId, subDeckIndex)
         cardEntities.forEachIndexed { i, card ->
-            val newCardId = cardDao.insert(CardEntity(
-                deckId = newDeckId,
-                front = card.front,
-                back = card.back,
-                position = i,
-                createdAt = now
-            ))
+            val newCardId = cardDao.insert(
+                CardEntity(
+                    deckId = newDeckId,
+                    front = card.front,
+                    back = card.back,
+                    position = i,
+                    createdAt = now
+                )
+            )
             cardStateDao.upsert(CardStateEntity(cardId = newCardId))
         }
         return newDeckId
@@ -317,20 +343,26 @@ class DeckRepositoryImpl(
         val newDeckId = deckDao.insert(DeckEntity(name = newName, dailyLimit = 20, createdAt = now))
         val cardEntities = cardDao.getByDeckId(deckId)
         cardEntities.forEachIndexed { i, card ->
-            val newCardId = cardDao.insert(CardEntity(
-                deckId = newDeckId,
-                front = card.back,
-                back = card.front,
-                position = i,
-                createdAt = now
-            ))
+            val newCardId = cardDao.insert(
+                CardEntity(
+                    deckId = newDeckId,
+                    front = card.back,
+                    back = card.front,
+                    position = i,
+                    createdAt = now
+                )
+            )
             cardStateDao.upsert(CardStateEntity(cardId = newCardId))
         }
         return newDeckId
     }
 
     private fun DeckEntity.toDomain(): Deck {
-        val parsedType = try { SchedulerType.valueOf(schedulerType) } catch (_: Exception) { SchedulerType.SM2 }
+        val parsedType = try {
+            SchedulerType.valueOf(schedulerType)
+        } catch (_: Exception) {
+            SchedulerType.SM2
+        }
         val params = FsrsParameters.deserialize(fsrsParams)
         return Deck(
             id = id,
@@ -345,8 +377,19 @@ class DeckRepositoryImpl(
             fsrsEnableFuzzing = params.enableFuzzing
         )
     }
-    private fun CardEntity.toDomain() = Card(id, deckId, contentParser.detect(front), contentParser.detect(back), position, createdAt, subDeckIndex)
-    private fun CardStateEntity.toDomain() = CardState(cardId, due, interval, ease, reps, lapses, queue, stability, difficulty, fsrsState, step, lastReview)
+    private fun CardEntity.toDomain() = Card(
+        id,
+        deckId,
+        contentParser.detect(front),
+        contentParser.detect(back),
+        position,
+        createdAt,
+        subDeckIndex
+    )
+    private fun CardStateEntity.toDomain() = CardState(
+        cardId, due, interval, ease, reps, lapses, queue,
+        stability, difficulty, fsrsState, step, lastReview
+    )
 
     companion object {
         const val CHUNK_SIZE = 5000

@@ -37,10 +37,16 @@ data class DeckEditUiState(
 )
 
 val DeckEditUiState.hasValidationErrors: Boolean get() =
-    dailyLimitError != null || (schedulerType == SchedulerType.FSRS && (
-        desiredRetentionError != null || learningStepsError != null ||
-        relearningStepsError != null || maxIntervalError != null
-    ))
+    dailyLimitError != null ||
+        (
+            schedulerType == SchedulerType.FSRS &&
+                (
+                    desiredRetentionError != null ||
+                        learningStepsError != null ||
+                        relearningStepsError != null ||
+                        maxIntervalError != null
+                    )
+            )
 
 class DeckEditViewModel(private val deckId: Long) : ViewModel() {
     private val repository = AppDependencies.deckRepository
@@ -146,28 +152,32 @@ class DeckEditViewModel(private val deckId: Long) : ViewModel() {
                 // Update with scheduler settings after creation
                 if (state.schedulerType == SchedulerType.FSRS) {
                     repository.getDeck(deckId)?.let { createdDeck ->
-                        repository.updateDeck(createdDeck.copy(
+                        repository.updateDeck(
+                            createdDeck.copy(
+                                schedulerType = state.schedulerType,
+                                fsrsDesiredRetention = clampedRetention,
+                                fsrsLearningSteps = state.learningSteps.trim(),
+                                fsrsRelearningSteps = state.relearningSteps.trim(),
+                                fsrsMaxInterval = maxInterval,
+                                fsrsEnableFuzzing = state.enableFuzzing
+                            )
+                        )
+                    }
+                }
+            } else {
+                existingDeck?.let {
+                    repository.updateDeck(
+                        it.copy(
+                            name = state.name.trim(),
+                            dailyLimit = limit,
                             schedulerType = state.schedulerType,
                             fsrsDesiredRetention = clampedRetention,
                             fsrsLearningSteps = state.learningSteps.trim(),
                             fsrsRelearningSteps = state.relearningSteps.trim(),
                             fsrsMaxInterval = maxInterval,
                             fsrsEnableFuzzing = state.enableFuzzing
-                        ))
-                    }
-                }
-            } else {
-                existingDeck?.let {
-                    repository.updateDeck(it.copy(
-                        name = state.name.trim(),
-                        dailyLimit = limit,
-                        schedulerType = state.schedulerType,
-                        fsrsDesiredRetention = clampedRetention,
-                        fsrsLearningSteps = state.learningSteps.trim(),
-                        fsrsRelearningSteps = state.relearningSteps.trim(),
-                        fsrsMaxInterval = maxInterval,
-                        fsrsEnableFuzzing = state.enableFuzzing
-                    ))
+                        )
+                    )
                 }
             }
             _uiState.value = _uiState.value.copy(isSaved = true, isLoading = false)

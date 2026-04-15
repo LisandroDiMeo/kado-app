@@ -5,14 +5,14 @@ import com.kado.app.domain.model.CardContent
 import com.kado.app.domain.model.Deck
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class AldConverterTest {
 
     private val deck = Deck(id = 1, name = "Test Deck", dailyLimit = 20, createdAt = 0)
 
     private fun plainCard(id: Long, front: String, back: String) = Card(
-        id = id, deckId = 1,
+        id = id,
+        deckId = 1,
         front = CardContent.PlainText(front),
         back = CardContent.PlainText(back)
     )
@@ -41,7 +41,12 @@ class AldConverterTest {
     fun toAldSkipsImageOnlyCards() {
         val cards = listOf(
             plainCard(1, "France", "Paris"),
-            Card(id = 2, deckId = 1, front = CardContent.PlainText("[img:flag.svg]"), back = CardContent.PlainText("France")),
+            Card(
+                id = 2,
+                deckId = 1,
+                front = CardContent.PlainText("[img:flag.svg]"),
+                back = CardContent.PlainText("France")
+            ),
             plainCard(3, "Germany", "Berlin")
         )
         val ald = AldConverter.toAld(deck, cards).decodeToString()
@@ -57,7 +62,12 @@ class AldConverterTest {
     @Test
     fun toAldSkipsCardsWithImageOnlyBack() {
         val cards = listOf(
-            Card(id = 1, deckId = 1, front = CardContent.PlainText("France"), back = CardContent.PlainText("[img:map.png]"))
+            Card(
+                id = 1,
+                deckId = 1,
+                front = CardContent.PlainText("France"),
+                back = CardContent.PlainText("[img:map.png]")
+            )
         )
         val ald = AldConverter.toAld(deck, cards).decodeToString()
         val lines = ald.lines()
@@ -68,7 +78,12 @@ class AldConverterTest {
     @Test
     fun toAldMixedContentPreservesText() {
         val cards = listOf(
-            Card(id = 1, deckId = 1, front = CardContent.PlainText("[img:flag.svg] France"), back = CardContent.PlainText("Paris"))
+            Card(
+                id = 1,
+                deckId = 1,
+                front = CardContent.PlainText("[img:flag.svg] France"),
+                back = CardContent.PlainText("Paris")
+            )
         )
         val ald = AldConverter.toAld(deck, cards).decodeToString()
         val lines = ald.lines()
@@ -97,8 +112,18 @@ class AldConverterTest {
     @Test
     fun toAldAllImageCardsProducesEmptyDeck() {
         val cards = listOf(
-            Card(id = 1, deckId = 1, front = CardContent.PlainText("[img:flag.svg]"), back = CardContent.PlainText("France")),
-            Card(id = 2, deckId = 1, front = CardContent.PlainText("[img:map.png]"), back = CardContent.PlainText("France"))
+            Card(
+                id = 1,
+                deckId = 1,
+                front = CardContent.PlainText("[img:flag.svg]"),
+                back = CardContent.PlainText("France")
+            ),
+            Card(
+                id = 2,
+                deckId = 1,
+                front = CardContent.PlainText("[img:map.png]"),
+                back = CardContent.PlainText("France")
+            )
         )
         val ald = AldConverter.toAld(deck, cards).decodeToString()
         val lines = ald.lines()
@@ -125,7 +150,8 @@ class AldConverterTest {
     fun toAldStripsHtmlFromRichContent() {
         val cards = listOf(
             Card(
-                id = 1, deckId = 1,
+                id = 1,
+                deckId = 1,
                 front = CardContent.RichText("<b>France</b>"),
                 back = CardContent.RichText("<i>Paris</i>")
             )

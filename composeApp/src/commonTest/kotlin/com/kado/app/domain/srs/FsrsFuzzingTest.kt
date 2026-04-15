@@ -4,8 +4,6 @@ import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Rating
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -137,8 +135,8 @@ class FsrsFuzzingTest {
                         assertTrue(
                             fuzzedDays >= lowerBound - 1 && fuzzedDays <= upperBound + 1,
                             "fuzzed interval ($fuzzedDays days) should be within range " +
-                                    "[$lowerBound, $upperBound] of unfuzzed ($unfuzzedDays days) " +
-                                    "at review $i with seed $seed"
+                                "[$lowerBound, $upperBound] of unfuzzed ($unfuzzedDays days) " +
+                                "at review $i with seed $seed"
                         )
                     }
                 }
@@ -182,11 +180,13 @@ class FsrsFuzzingTest {
         val unfuzzedResult = unfuzzedScheduler.reviewCard(newCard(), Rating.Good, BASE_TIME)
 
         assertEquals(
-            unfuzzedResult.due, fuzzedResult.due,
+            unfuzzedResult.due,
+            fuzzedResult.due,
             "learning step intervals should not be affected by fuzzing"
         )
         assertEquals(
-            unfuzzedResult.step, fuzzedResult.step,
+            unfuzzedResult.step,
+            fuzzedResult.step,
             "learning step should be the same regardless of fuzzing"
         )
     }

@@ -177,7 +177,7 @@ class FsrsSimulationTest {
                 assertTrue(
                     currentStability > previousStability,
                     "stability should grow with consecutive GOOD reviews: " +
-                            "$currentStability should be > $previousStability at review $i"
+                        "$currentStability should be > $previousStability at review $i"
                 )
             }
             previousStability = currentStability
@@ -242,7 +242,7 @@ class FsrsSimulationTest {
             assertTrue(
                 reviewStateIntervals[i] >= reviewStateIntervals[i - 1],
                 "review intervals should be non-decreasing: " +
-                        "${reviewStateIntervals[i]} should be >= ${reviewStateIntervals[i - 1]} at index $i"
+                    "${reviewStateIntervals[i]} should be >= ${reviewStateIntervals[i - 1]} at index $i"
             )
         }
     }

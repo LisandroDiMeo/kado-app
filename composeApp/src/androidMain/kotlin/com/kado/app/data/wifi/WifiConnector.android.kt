@@ -8,8 +8,8 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
 import com.kado.app.domain.model.ConnectionState
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 actual class WifiConnector(private val context: Context) {
     private val connectivityManager =

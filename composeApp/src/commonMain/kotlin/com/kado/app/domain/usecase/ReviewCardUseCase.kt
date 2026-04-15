@@ -7,16 +7,9 @@ import com.kado.app.domain.model.SessionSummary
 import com.kado.app.domain.repository.DeckRepository
 import com.kado.app.domain.srs.Scheduler
 
-data class ReviewResult(
-    val newState: CardState,
-    val updatedNewLimit: Int,
-    val updatedSummary: SessionSummary
-)
+data class ReviewResult(val newState: CardState, val updatedNewLimit: Int, val updatedSummary: SessionSummary)
 
-class ReviewCardUseCase(
-    private val repository: DeckRepository,
-    private val scheduler: Scheduler
-) {
+class ReviewCardUseCase(private val repository: DeckRepository, private val scheduler: Scheduler) {
 
     suspend operator fun invoke(
         card: ReviewCard,

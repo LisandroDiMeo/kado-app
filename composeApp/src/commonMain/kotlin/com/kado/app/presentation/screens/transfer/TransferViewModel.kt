@@ -42,7 +42,8 @@ class TransferViewModel(private val deckId: Long, private val subDeckIndex: Int?
                 deckRepository.getCards(deckId)
             }
             val displayName = PrepareTransferDeckUseCase.formatSubDeckName(
-                deck?.name ?: "Unknown", subDeckIndex
+                deck?.name ?: "Unknown",
+                subDeckIndex
             )
             _uiState.value = _uiState.value.copy(
                 deckName = displayName,

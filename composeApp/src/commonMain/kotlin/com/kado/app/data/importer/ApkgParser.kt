@@ -16,27 +16,22 @@ data class ApkgImportData(
 
 data class NoteType(
     val id: Long,
-    val fields: List<String>,  // field names in order
+    val fields: List<String>, // field names in order
     val templates: List<CardTemplate>
 )
 
 data class CardTemplate(
     val ord: Int,
     val name: String,
-    val qfmt: String,  // question format
-    val afmt: String   // answer format
+    // question format
+    val qfmt: String,
+    // answer format
+    val afmt: String
 )
 
-internal data class AnkiNote(
-    val id: Long,
-    val mid: Long,
-    val fieldValues: List<String>
-)
+internal data class AnkiNote(val id: Long, val mid: Long, val fieldValues: List<String>)
 
-internal data class AnkiCard(
-    val nid: Long,
-    val ord: Int
-)
+internal data class AnkiCard(val nid: Long, val ord: Int)
 
 object ApkgParser {
 
@@ -291,20 +286,20 @@ object ApkgParser {
     private fun readDeckName(
         connection: SQLiteConnection,
         fallbackName: String
-    ): String {
-        return try {
-            val stmt = connection.prepare("SELECT decks FROM col LIMIT 1")
-            try {
-                if (stmt.step()) {
-                    val decksJson = stmt.getText(0)
-                    extractDeckNameFromJson(decksJson) ?: fallbackName
-                } else fallbackName
-            } finally {
-                stmt.close()
+    ): String = try {
+        val stmt = connection.prepare("SELECT decks FROM col LIMIT 1")
+        try {
+            if (stmt.step()) {
+                val decksJson = stmt.getText(0)
+                extractDeckNameFromJson(decksJson) ?: fallbackName
+            } else {
+                fallbackName
             }
-        } catch (_: Exception) {
-            fallbackName
+        } finally {
+            stmt.close()
         }
+    } catch (_: Exception) {
+        fallbackName
     }
 
     private fun extractDeckNameFromJson(json: String): String? {
@@ -338,30 +333,26 @@ object ApkgParser {
         return cards
     }
 
-    internal fun cleanHtml(html: String): String {
-        return html
-            .replace(Regex("\\[sound:[^]]*]"), "")
-            .replace("&nbsp;", " ")
-            .trim()
-    }
+    internal fun cleanHtml(html: String): String = html
+        .replace(Regex("\\[sound:[^]]*]"), "")
+        .replace("&nbsp;", " ")
+        .trim()
 
-    internal fun stripHtml(html: String): String {
-        return html
-            .replace(Regex("\\[sound:[^]]*]"), "")
-            .replace(Regex(">\\s+<"), "><")                // Collapse whitespace between HTML tags
-            .replace(Regex("<hr\\b[^>]*/?>", RegexOption.IGNORE_CASE), "\n")
-            .replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
-            .replace(Regex("</(div|p|li|tr|blockquote|h[1-6])>", RegexOption.IGNORE_CASE), "\n")
-            .replace(Regex("<(div|p|li|tr|blockquote|h[1-6])\\b[^>]*>", RegexOption.IGNORE_CASE), "")
-            .replace(HTML_TAG_REGEX, "")
-            .replace("&nbsp;", " ")
-            .replace("&amp;", "&")
-            .replace("&lt;", "<")
-            .replace("&gt;", ">")
-            .replace("&quot;", "\"")
-            .replace("&#39;", "'")
-            .replace(Regex("[ \\t]*\\n"), "\n")            // Remove trailing spaces on lines
-            .replace(Regex("\\n{3,}"), "\n\n")
-            .trim()
-    }
+    internal fun stripHtml(html: String): String = html
+        .replace(Regex("\\[sound:[^]]*]"), "")
+        .replace(Regex(">\\s+<"), "><") // Collapse whitespace between HTML tags
+        .replace(Regex("<hr\\b[^>]*/?>", RegexOption.IGNORE_CASE), "\n")
+        .replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
+        .replace(Regex("</(div|p|li|tr|blockquote|h[1-6])>", RegexOption.IGNORE_CASE), "\n")
+        .replace(Regex("<(div|p|li|tr|blockquote|h[1-6])\\b[^>]*>", RegexOption.IGNORE_CASE), "")
+        .replace(HTML_TAG_REGEX, "")
+        .replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace(Regex("[ \\t]*\\n"), "\n") // Remove trailing spaces on lines
+        .replace(Regex("\\n{3,}"), "\n\n")
+        .trim()
 }

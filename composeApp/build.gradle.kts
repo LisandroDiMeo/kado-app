@@ -9,6 +9,9 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.kover)
 }
 
 val appVersionName: String = providers.gradleProperty("app.version.major").get() + "." +
@@ -41,6 +44,7 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
         androidResources.enable = true
+        withHostTestBuilder {}
     }
 
     listOf(
@@ -55,9 +59,11 @@ kotlin {
 
     sourceSets {
         commonMain {
-            kotlin.srcDir(generateAppInfo.map {
-                layout.buildDirectory.dir("generated/appinfo/commonMain/kotlin").get()
-            })
+            kotlin.srcDir(
+                generateAppInfo.map {
+                    layout.buildDirectory.dir("generated/appinfo/commonMain/kotlin").get()
+                }
+            )
         }
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -110,5 +116,48 @@ dependencies {
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_11)
+    }
+}
+
+ktlint {
+    version.set("1.5.0")
+    android.set(true)
+    outputToConsole.set(true)
+}
+
+detekt {
+    config.setFrom(files("${rootProject.projectDir}/detekt.yml"))
+    buildUponDefaultConfig = true
+    parallel = true
+    baseline = file("detekt-baseline.xml")
+    source.setFrom(
+        "src/commonMain/kotlin",
+        "src/androidMain/kotlin",
+        "src/iosMain/kotlin",
+        "src/commonTest/kotlin"
+    )
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                classes(
+                    "*.BuildConfig",
+                    "*.ComposableSingletons*",
+                    "com.kado.app.di.*",
+                    "com.kado.app.ui.theme.*",
+                    "com.kado.app.AppInfo",
+                    "com.kado.app.MainViewController*",
+                    "com.kado.app.Platform*"
+                )
+                annotatedBy("androidx.compose.runtime.Composable")
+            }
+        }
+        verify {
+            rule {
+                minBound(14)
+            }
+        }
     }
 }

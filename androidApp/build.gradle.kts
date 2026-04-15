@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
 }
 
 val major = providers.gradleProperty("app.version.major").get().toInt()
@@ -66,4 +68,15 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     debugImplementation(libs.compose.uiTooling)
+}
+
+ktlint {
+    version.set("1.5.0")
+    android.set(true)
+    outputToConsole.set(true)
+}
+
+detekt {
+    config.setFrom(files("${rootProject.projectDir}/detekt.yml"))
+    buildUponDefaultConfig = true
 }

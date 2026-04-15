@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.kado.app.util.topViewController
+import kotlin.coroutines.resume
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -22,7 +23,6 @@ import platform.UIKit.UIImagePickerControllerSourceType
 import platform.UIKit.UINavigationControllerDelegateProtocol
 import platform.darwin.NSObject
 import platform.posix.memcpy
-import kotlin.coroutines.resume
 
 // Strong reference to prevent GC while picker is active.
 // UIImagePickerController.delegate is a weak property in UIKit.
@@ -47,7 +47,9 @@ private suspend fun pickImage(): ByteArray? = withContext(Dispatchers.Main) {
         val picker = UIImagePickerController()
         picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypePhotoLibrary
 
-        val delegate = object : NSObject(), UIImagePickerControllerDelegateProtocol,
+        val delegate = object :
+            NSObject(),
+            UIImagePickerControllerDelegateProtocol,
             UINavigationControllerDelegateProtocol {
             override fun imagePickerController(
                 picker: UIImagePickerController,
@@ -55,8 +57,10 @@ private suspend fun pickImage(): ByteArray? = withContext(Dispatchers.Main) {
             ) {
                 retainedImageDelegate = null
                 picker.dismissViewControllerAnimated(true, completion = null)
-                val image = (didFinishPickingMediaWithInfo[UIImagePickerControllerEditedImage]
-                    ?: didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage]) as? UIImage
+                val image = (
+                    didFinishPickingMediaWithInfo[UIImagePickerControllerEditedImage]
+                        ?: didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage]
+                    ) as? UIImage
                 if (image == null) {
                     if (continuation.isActive) continuation.resume(null)
                     return
