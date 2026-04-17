@@ -103,13 +103,38 @@ Access bulk editing from the deck detail screen menu.
 
 ## Statistics and Analytics
 
-Each deck has a statistics screen showing:
+Kado records every review and visualizes your activity on a dedicated **Stats** screen with animated charts.
 
-- **Card state breakdown** — New, learning, young (interval < 21 days), and mature (interval >= 21 days) cards
+### Opening Stats
+
+- **Global** — tap the stats icon in the home screen top bar to see aggregated stats across all decks.
+- **Per deck** — opening stats from a deck detail screen preselects that deck in the filter.
+
+### Filters
+
+- **Deck filter chips** — multi-select which decks to include; leave empty for all decks.
+- **Range selector** — choose **30 days**, **90 days**, or **1 year** of history.
+
+### Charts
+
+Stats are organized across four tabs:
+
+| Tab | Description |
+|-----|-------------|
+| **Heatmap** | Weekday × week calendar grid. Cell intensity scales with review count, so you can spot streaks and gaps at a glance. |
+| **Daily Review** | Per-day bar chart of reviews completed, with a cumulative-line overlay to track running totals over the selected range. |
+| **Ratings** | Stacked bars per day breaking down Again / Hard / Good / Easy responses, so you can see how your answer mix trends over time. |
+| **Hour of Day** | Distribution of reviews across the 24-hour clock — useful for understanding when you actually study. |
+
+### Per-deck stats
+
+Each deck's detail screen still shows its own summary:
+
+- **Card state breakdown** — New, learning, young (interval < 21 days), and mature (interval ≥ 21 days) cards
 - **Due cards** — Number of cards due for review right now
-- **Review progress** — Track your retention over time
+- **Review progress** — Retention over time
 
-You can reset all review progress for a deck from the statistics screen.
+You can reset all review progress for a deck from that screen.
 
 ## Anki Import
 

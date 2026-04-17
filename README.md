@@ -72,7 +72,7 @@ Kado is an open-source spaced repetition flashcard app built with Kotlin Multipl
 - Kotlin Multiplatform — shared logic across Android and iOS
 
 **Analytics & Hardware**
-- Learning statistics — track review progress, card states, and retention
+- Learning statistics — calendar heatmap, daily review history with cumulative trend, rating breakdowns, and hour-of-day distribution, filterable by deck and 30d / 90d / 1y range
 - Sync decks to an [ESP32 hardware device](docs/esp32-guide.md) over WiFi
 
 ## Documentation
