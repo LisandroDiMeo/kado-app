@@ -21,7 +21,7 @@ data class BulkEditRoute(val deckId: Long)
 data class ReviewRoute(val deckId: Long, val subDeckIndex: Int = -1)
 
 @Serializable
-data class StatsRoute(val deckId: Long)
+data class StatsRoute(val deckIds: List<Long> = emptyList())
 
 @Serializable
 object ConnectionRoute

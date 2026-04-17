@@ -49,6 +49,7 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
     private var prefetchedBack: DisplayableCardContent? = null
     private var prefetchedIntervals: Map<Rating, String> = emptyMap()
     private var hasPrefetch = false
+    private var cardShownAt: Long = 0L
 
     init {
         viewModelScope.launch {
@@ -101,6 +102,7 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
     private suspend fun showCard(card: ReviewCard) {
         val now = kotlin.time.Clock.System.now().epochSeconds
         val intervals = scheduler.previewIntervals(card.state, now)
+        cardShownAt = kotlin.time.Clock.System.now().toEpochMilliseconds()
         _uiState.value = _uiState.value.copy(
             currentCard = card,
             frontContent = DisplayableCardContent.from(card.card.front, htmlRenderer),
@@ -145,7 +147,9 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
 
         viewModelScope.launch {
             val now = kotlin.time.Clock.System.now().epochSeconds
-            val result = reviewCardUseCase(card, rating, now, newLimit, summary)
+            val nowMs = kotlin.time.Clock.System.now().toEpochMilliseconds()
+            val duration = if (cardShownAt > 0) nowMs - cardShownAt else 0L
+            val result = reviewCardUseCase(card, rating, now, newLimit, summary, duration)
 
             newLimit = result.updatedNewLimit
             summary = result.updatedSummary
@@ -153,6 +157,7 @@ class ReviewViewModel(private val deckId: Long, private val subDeckIndex: Int? =
             if (hasPrefetch) {
                 // Show prefetched card instantly, prefetch next in background
                 val nextCard = prefetchedCard!!
+                cardShownAt = kotlin.time.Clock.System.now().toEpochMilliseconds()
                 _uiState.value = _uiState.value.copy(
                     currentCard = nextCard,
                     frontContent = prefetchedFront,

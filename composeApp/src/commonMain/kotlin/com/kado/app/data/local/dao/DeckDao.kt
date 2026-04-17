@@ -12,6 +12,9 @@ interface DeckDao {
     @Query("SELECT * FROM decks ORDER BY createdAt DESC")
     fun observeAll(): Flow<List<DeckEntity>>
 
+    @Query("SELECT * FROM decks ORDER BY createdAt DESC")
+    suspend fun getAll(): List<DeckEntity>
+
     @Query("SELECT * FROM decks WHERE id = :id")
     suspend fun getById(id: Long): DeckEntity?
 

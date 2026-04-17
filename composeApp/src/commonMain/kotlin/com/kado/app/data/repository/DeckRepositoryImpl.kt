@@ -11,15 +11,20 @@ import com.kado.app.data.importer.MediaStorage
 import com.kado.app.data.local.dao.CardDao
 import com.kado.app.data.local.dao.CardStateDao
 import com.kado.app.data.local.dao.DeckDao
+import com.kado.app.data.local.dao.ReviewHistoryDao
 import com.kado.app.data.local.entity.CardEntity
 import com.kado.app.data.local.entity.CardStateEntity
 import com.kado.app.data.local.entity.DeckEntity
+import com.kado.app.data.local.entity.ReviewHistoryEntity
 import com.kado.app.data.paging.CardPagingSource
 import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Deck
 import com.kado.app.domain.model.DeckSummary
+import com.kado.app.domain.model.Rating
 import com.kado.app.domain.model.ReviewCard
+import com.kado.app.domain.model.ReviewEvent
+import com.kado.app.domain.model.ReviewLogEntry
 import com.kado.app.domain.model.SubDeckInfo
 import com.kado.app.domain.parser.CardContentParser
 import com.kado.app.domain.repository.DeckRepository
@@ -33,6 +38,7 @@ class DeckRepositoryImpl(
     private val deckDao: DeckDao,
     private val cardDao: CardDao,
     private val cardStateDao: CardStateDao,
+    private val reviewHistoryDao: ReviewHistoryDao,
     private val contentParser: CardContentParser
 ) : DeckRepository {
 
@@ -173,6 +179,60 @@ class DeckRepositoryImpl(
 
     override suspend fun getCardStates(deckId: Long): List<CardState> =
         cardStateDao.getByDeckId(deckId).map { it.toDomain() }
+
+    override suspend fun getCardStates(deckIds: List<Long>): List<CardState> =
+        if (deckIds.isEmpty()) {
+            deckDao.getAll().flatMap { cardStateDao.getByDeckId(it.id) }.map { it.toDomain() }
+        } else {
+            deckIds.flatMap { cardStateDao.getByDeckId(it) }.map { it.toDomain() }
+        }
+
+    override suspend fun recordReview(event: ReviewEvent) {
+        reviewHistoryDao.insert(
+            ReviewHistoryEntity(
+                cardId = event.cardId,
+                deckId = event.deckId,
+                reviewedAt = event.reviewedAt,
+                rating = event.rating.value,
+                durationMs = event.durationMs,
+                previousInterval = event.previousInterval,
+                newInterval = event.newInterval,
+                previousQueue = event.previousQueue,
+                newQueue = event.newQueue
+            )
+        )
+    }
+
+    override fun observeReviewHistory(
+        deckIds: List<Long>,
+        fromEpoch: Long,
+        toEpoch: Long
+    ): Flow<List<ReviewLogEntry>> {
+        val flow = if (deckIds.isEmpty()) {
+            reviewHistoryDao.observeAll(fromEpoch, toEpoch)
+        } else {
+            reviewHistoryDao.observeForDecks(deckIds, fromEpoch, toEpoch)
+        }
+        return flow.map { rows ->
+            rows.map { row ->
+                ReviewLogEntry(
+                    deckId = row.deckId,
+                    reviewedAt = row.reviewedAt,
+                    rating = ratingFromValue(row.rating)
+                )
+            }
+        }
+    }
+
+    override suspend fun reviewHistoryCount(deckIds: List<Long>): Int =
+        if (deckIds.isEmpty()) reviewHistoryDao.totalCount() else reviewHistoryDao.totalCountForDecks(deckIds)
+
+    private fun ratingFromValue(value: Int): Rating = when (value) {
+        Rating.Again.value -> Rating.Again
+        Rating.Hard.value -> Rating.Hard
+        Rating.Easy.value -> Rating.Easy
+        else -> Rating.Good
+    }
 
     override suspend fun updateCardState(state: CardState) =
         cardStateDao.upsert(

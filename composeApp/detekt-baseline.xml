@@ -25,7 +25,7 @@
     <ID>LongMethod:DeckEditScreen.kt$@Composable fun DeckEditScreen( deckId: Long, onBack: () -&gt; Unit, onDeleted: () -&gt; Unit = {}, onAlgorithmDetail: (algorithmId: String, focusParameter: String) -&gt; Unit = { _, _ -&gt; }, vm: DeckEditViewModel = viewModel { DeckEditViewModel(deckId) } )</ID>
     <ID>LongMethod:FlashCard.kt$@Composable fun FlashCard( front: DisplayableCardContent, back: DisplayableCardContent, isFlipped: Boolean, onFlip: () -&gt; Unit, modifier: Modifier = Modifier, deckId: Long = 0 )</ID>
     <ID>LongMethod:FsrsScheduler.kt$FsrsScheduler$override fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
-    <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onDeckClick: (Long) -&gt; Unit, onCreateDeck: () -&gt; Unit, onConnectionClick: () -&gt; Unit, onSettingsClick: () -&gt; Unit, onHelpClick: () -&gt; Unit, vm: HomeViewModel = viewModel { HomeViewModel() } )</ID>
+    <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onDeckClick: (Long) -&gt; Unit, onCreateDeck: () -&gt; Unit, onConnectionClick: () -&gt; Unit, onSettingsClick: () -&gt; Unit, onHelpClick: () -&gt; Unit, onStatsClick: () -&gt; Unit, vm: HomeViewModel = viewModel { HomeViewModel() } )</ID>
     <ID>LongMethod:HtmlRenderer.kt$HtmlRenderer$internal fun parseHtmlToAnnotatedString(html: String): AnnotatedString</ID>
     <ID>LongMethod:ImportProgressDialog.kt$@Composable fun ImportProgressDialog( progress: ImportProgress, onDismiss: () -&gt; Unit )</ID>
     <ID>LongMethod:KadoNavHost.kt$@Composable fun KadoNavHost( navController: NavHostController, modifier: Modifier = Modifier )</ID>

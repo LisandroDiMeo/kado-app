@@ -6,9 +6,13 @@ import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Deck
 import com.kado.app.domain.model.DeckSummary
 import com.kado.app.domain.model.ReviewCard
+import com.kado.app.domain.model.ReviewEvent
+import com.kado.app.domain.model.ReviewLogEntry
 import com.kado.app.domain.model.SubDeckInfo
 import com.kado.app.domain.repository.DeckRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 class FakeDeckRepository : DeckRepository {
 
@@ -16,12 +20,35 @@ class FakeDeckRepository : DeckRepository {
     var cards = mutableListOf<Card>()
     var cardStates = mutableListOf<CardState>()
     var updatedCardStates = mutableListOf<CardState>()
+    val recordedReviews = mutableListOf<ReviewEvent>()
+    private val reviewHistoryFlow = MutableStateFlow<List<ReviewLogEntry>>(emptyList())
 
     override suspend fun getDeck(id: Long): Deck? = decks.find { it.id == id }
     override suspend fun getCardCount(deckId: Long): Int = cards.count { it.deckId == deckId }
     override suspend fun getCards(deckId: Long): List<Card> = cards.filter { it.deckId == deckId }
     override suspend fun getCard(id: Long): Card? = cards.find { it.id == id }
     override suspend fun getCardStates(deckId: Long): List<CardState> = cardStates.toList()
+    override suspend fun getCardStates(deckIds: List<Long>): List<CardState> = cardStates.toList()
+
+    override suspend fun recordReview(event: ReviewEvent) {
+        recordedReviews.add(event)
+        reviewHistoryFlow.value = reviewHistoryFlow.value +
+            ReviewLogEntry(event.deckId, event.reviewedAt, event.rating)
+    }
+
+    override fun observeReviewHistory(
+        deckIds: List<Long>,
+        fromEpoch: Long,
+        toEpoch: Long
+    ): Flow<List<ReviewLogEntry>> = reviewHistoryFlow.map { all ->
+        all.filter { entry ->
+            (deckIds.isEmpty() || entry.deckId in deckIds) &&
+                entry.reviewedAt in fromEpoch..toEpoch
+        }
+    }
+
+    override suspend fun reviewHistoryCount(deckIds: List<Long>): Int =
+        reviewHistoryFlow.value.count { deckIds.isEmpty() || it.deckId in deckIds }
     override suspend fun getCardState(cardId: Long): CardState =
         cardStates.find { it.cardId == cardId } ?: CardState(cardId = cardId)
 
@@ -52,8 +79,7 @@ class FakeDeckRepository : DeckRepository {
         excludeCardId: Long
     ): ReviewCard? = TODO()
 
-    // Methods not needed by current UseCases — will be implemented as needed
-    override fun observeDecks(): Flow<List<Deck>> = TODO()
+    override fun observeDecks(): Flow<List<Deck>> = MutableStateFlow(decks.toList())
     override fun observeCardCount(): Flow<Int> = TODO()
     override fun observeCardStateCount(): Flow<Int> = TODO()
     override suspend fun createDeck(name: String, dailyLimit: Int): Long = TODO()
@@ -66,7 +92,9 @@ class FakeDeckRepository : DeckRepository {
     override suspend fun addCard(deckId: Long, front: String, back: String): Long = TODO()
     override suspend fun updateCard(card: Card) = TODO()
     override suspend fun deleteCard(id: Long) = TODO()
-    override suspend fun resetProgress(deckId: Long) = TODO()
+    override suspend fun resetProgress(deckId: Long) {
+        cardStates.removeAll { it.cardId in cards.filter { c -> c.deckId == deckId }.map { c -> c.id } }
+    }
     override suspend fun importDeck(
         name: String,
         cards: List<Pair<String, String>>,

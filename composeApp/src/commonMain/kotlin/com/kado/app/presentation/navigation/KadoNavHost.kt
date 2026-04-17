@@ -39,7 +39,8 @@ fun KadoNavHost(
                 onCreateDeck = { navController.navigate(DeckEditRoute()) },
                 onConnectionClick = { navController.navigate(ConnectionRoute) },
                 onSettingsClick = { navController.navigate(SettingsRoute) },
-                onHelpClick = { navController.navigate(HelpRoute) }
+                onHelpClick = { navController.navigate(HelpRoute) },
+                onStatsClick = { navController.navigate(StatsRoute()) }
             )
         }
 
@@ -52,7 +53,7 @@ fun KadoNavHost(
                 onAddCard = { navController.navigate(CardEditRoute(route.deckId)) },
                 onEditCard = { cardId -> navController.navigate(CardEditRoute(route.deckId, cardId)) },
                 onReview = { navController.navigate(ReviewRoute(route.deckId)) },
-                onStats = { navController.navigate(StatsRoute(route.deckId)) },
+                onStats = { navController.navigate(StatsRoute(listOf(route.deckId))) },
                 onTransfer = { navController.navigate(TransferRoute(route.deckId)) },
                 onPartition = { navController.navigate(PartitionRoute(route.deckId)) },
                 onBulkEdit = { navController.navigate(BulkEditRoute(route.deckId)) },
@@ -105,7 +106,7 @@ fun KadoNavHost(
         composable<StatsRoute> { backStackEntry ->
             val route = backStackEntry.toRoute<StatsRoute>()
             StatsScreen(
-                deckId = route.deckId,
+                initialDeckIds = route.deckIds,
                 onBack = { navController.popBackStack() }
             )
         }

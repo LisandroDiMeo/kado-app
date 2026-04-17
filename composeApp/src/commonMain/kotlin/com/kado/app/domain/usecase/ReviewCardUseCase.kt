@@ -3,6 +3,7 @@ package com.kado.app.domain.usecase
 import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Rating
 import com.kado.app.domain.model.ReviewCard
+import com.kado.app.domain.model.ReviewEvent
 import com.kado.app.domain.model.SessionSummary
 import com.kado.app.domain.repository.DeckRepository
 import com.kado.app.domain.srs.Scheduler
@@ -11,12 +12,14 @@ data class ReviewResult(val newState: CardState, val updatedNewLimit: Int, val u
 
 class ReviewCardUseCase(private val repository: DeckRepository, private val scheduler: Scheduler) {
 
+    @Suppress("LongParameterList")
     suspend operator fun invoke(
         card: ReviewCard,
         rating: Rating,
         now: Long,
         currentNewLimit: Int,
-        currentSummary: SessionSummary
+        currentSummary: SessionSummary,
+        durationMs: Long = 0L
     ): ReviewResult {
         val newState = scheduler.reviewCard(card.state, rating, now)
 
@@ -31,6 +34,19 @@ class ReviewCardUseCase(private val repository: DeckRepository, private val sche
         )
 
         repository.updateCardState(newState)
+        repository.recordReview(
+            ReviewEvent(
+                cardId = card.card.id,
+                deckId = card.card.deckId,
+                reviewedAt = now,
+                rating = rating,
+                durationMs = durationMs,
+                previousInterval = card.state.interval,
+                newInterval = newState.interval,
+                previousQueue = card.state.queue,
+                newQueue = newState.queue
+            )
+        )
 
         return ReviewResult(
             newState = newState,

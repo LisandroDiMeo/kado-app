@@ -43,6 +43,7 @@ fun HomeScreen(
     onConnectionClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
+    onStatsClick: () -> Unit,
     vm: HomeViewModel = viewModel { HomeViewModel() }
 ) {
     val uiState by vm.uiState.collectAsState()
@@ -93,15 +94,12 @@ fun HomeScreen(
             KadoTopBar(
                 title = S().appName,
                 actions = {
-                    IconButton(onClick = onHelpClick) {
-                        Text("❓", style = MaterialTheme.typography.labelSmall)
-                    }
-                    IconButton(onClick = onConnectionClick) {
-                        Text("🛜", style = MaterialTheme.typography.labelSmall)
-                    }
-                    IconButton(onClick = onSettingsClick) {
-                        Text("⚙️", style = MaterialTheme.typography.labelSmall)
-                    }
+                    HomeTopBarActions(
+                        onHelpClick = onHelpClick,
+                        onStatsClick = onStatsClick,
+                        onConnectionClick = onConnectionClick,
+                        onSettingsClick = onSettingsClick
+                    )
                 }
             )
         },
@@ -148,4 +146,17 @@ fun HomeScreen(
             )
         }
     }
+}
+
+@Composable
+private fun HomeTopBarActions(
+    onHelpClick: () -> Unit,
+    onStatsClick: () -> Unit,
+    onConnectionClick: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
+    IconButton(onClick = onHelpClick) { Text("❓", style = MaterialTheme.typography.labelSmall) }
+    IconButton(onClick = onStatsClick) { Text("📊", style = MaterialTheme.typography.labelSmall) }
+    IconButton(onClick = onConnectionClick) { Text("🛜", style = MaterialTheme.typography.labelSmall) }
+    IconButton(onClick = onSettingsClick) { Text("⚙️", style = MaterialTheme.typography.labelSmall) }
 }

@@ -6,6 +6,8 @@ import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Deck
 import com.kado.app.domain.model.DeckSummary
 import com.kado.app.domain.model.ReviewCard
+import com.kado.app.domain.model.ReviewEvent
+import com.kado.app.domain.model.ReviewLogEntry
 import com.kado.app.domain.model.SubDeckInfo
 import kotlinx.coroutines.flow.Flow
 
@@ -32,8 +34,13 @@ interface DeckRepository {
 
     suspend fun getCardState(cardId: Long): CardState
     suspend fun getCardStates(deckId: Long): List<CardState>
+    suspend fun getCardStates(deckIds: List<Long>): List<CardState>
     suspend fun updateCardState(state: CardState)
     suspend fun resetProgress(deckId: Long)
+
+    suspend fun recordReview(event: ReviewEvent)
+    fun observeReviewHistory(deckIds: List<Long>, fromEpoch: Long, toEpoch: Long): Flow<List<ReviewLogEntry>>
+    suspend fun reviewHistoryCount(deckIds: List<Long>): Int
     suspend fun getNextReviewCard(deckId: Long, now: Long, newLimit: Int, excludeCardId: Long = -1): ReviewCard?
 
     suspend fun importDeck(

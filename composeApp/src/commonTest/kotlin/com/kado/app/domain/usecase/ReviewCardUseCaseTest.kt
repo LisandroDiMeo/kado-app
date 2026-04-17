@@ -148,4 +148,34 @@ class ReviewCardUseCaseTest {
         // SrsEngine for new card Good: interval=1, queue=2
         assertEquals(1L, result.newState.cardId)
     }
+
+    @Test
+    fun rateCard_recordsReviewEvent() = runTest {
+        val repo = FakeDeckRepository()
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
+
+        useCase(reviewCard(queue = 0), Rating.Good, now, 20, emptySummary, durationMs = 1234L)
+
+        assertEquals(1, repo.recordedReviews.size)
+        val event = repo.recordedReviews[0]
+        assertEquals(1L, event.cardId)
+        assertEquals(1L, event.deckId)
+        assertEquals(now, event.reviewedAt)
+        assertEquals(Rating.Good, event.rating)
+        assertEquals(1234L, event.durationMs)
+        assertEquals(0, event.previousQueue)
+    }
+
+    @Test
+    fun rateCard_recordsPreviousStateSnapshot() = runTest {
+        val repo = FakeDeckRepository()
+        val useCase = ReviewCardUseCase(repo, Sm2Scheduler)
+
+        useCase(reviewCard(queue = 2, interval = 10), Rating.Again, now, 20, emptySummary)
+
+        val event = repo.recordedReviews.single()
+        assertEquals(10, event.previousInterval)
+        assertEquals(2, event.previousQueue)
+        assertEquals(Rating.Again, event.rating)
+    }
 }

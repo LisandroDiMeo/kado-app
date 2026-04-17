@@ -26,6 +26,7 @@ object AppDependencies {
             deckDao = database.deckDao(),
             cardDao = database.cardDao(),
             cardStateDao = database.cardStateDao(),
+            reviewHistoryDao = database.reviewHistoryDao(),
             contentParser = cardContentParser
         )
     }
