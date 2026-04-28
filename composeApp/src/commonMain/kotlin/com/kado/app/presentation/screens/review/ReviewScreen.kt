@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -15,11 +16,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kado.app.presentation.components.DrawingCanvas
 import com.kado.app.presentation.components.FlashCard
 import com.kado.app.presentation.components.KadoTopBar
 import com.kado.app.presentation.components.LoadingState
@@ -36,6 +41,7 @@ fun ReviewScreen(
 ) {
     val uiState by vm.uiState.collectAsState()
     val animatedAlpha by animateFloatAsState(if (uiState.hasBeenFlipped) 1f else 0f)
+    var showCanvas by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -45,6 +51,9 @@ fun ReviewScreen(
                 actions = {
                     val currentCardId = uiState.currentCard?.card?.id
                     if (currentCardId != null && !uiState.isFinished) {
+                        IconButton(onClick = { showCanvas = !showCanvas }) {
+                            Text(if (showCanvas) "🖍️" else "🖌️")
+                        }
                         IconButton(onClick = { onEditCard(currentCardId) }) {
                             Text("✏️") // pencil emoji, matches the existing emoji-icon style (eg. preview eye 👁️)
                         }
@@ -88,7 +97,17 @@ fun ReviewScreen(
                         onFlip = vm::flip,
                         deckId = card.card.deckId
                     )
-                    Spacer(Modifier.weight(1f))
+                    if (showCanvas) {
+                        DrawingCanvas(
+                            cardId = card.card.id,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(vertical = 12.dp)
+                        )
+                    } else {
+                        Spacer(Modifier.weight(1f))
+                    }
                     RatingBar(
                         onRate = vm::rate,
                         intervals = uiState.intervals,

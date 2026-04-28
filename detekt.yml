@@ -83,6 +83,9 @@ performance:
 style:
   ForbiddenComment:
     active: false
+  LoopWithTooManyJumpStatements:
+    active: true
+    maxJumpCount: 3
   MagicNumber:
     active: true
     ignoreNumbers:
