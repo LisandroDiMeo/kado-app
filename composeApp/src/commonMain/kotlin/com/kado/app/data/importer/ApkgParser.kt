@@ -10,9 +10,11 @@ import kotlinx.serialization.json.jsonPrimitive
 
 data class ApkgImportData(
     val deckName: String,
-    val cards: List<Pair<String, String>>,
+    val cards: List<ParsedCard>,
     val referencedMedia: Set<String> = emptySet()
 )
+
+data class ParsedCard(val front: String, val back: String, val ankiGuid: String? = null)
 
 data class NoteType(
     val id: Long,
@@ -29,7 +31,7 @@ data class CardTemplate(
     val afmt: String
 )
 
-internal data class AnkiNote(val id: Long, val mid: Long, val fieldValues: List<String>)
+internal data class AnkiNote(val id: Long, val mid: Long, val guid: String, val fieldValues: List<String>)
 
 internal data class AnkiCard(val nid: Long, val ord: Int)
 
@@ -78,8 +80,8 @@ object ApkgParser {
         noteTypes: Map<Long, NoteType>,
         notes: Map<Long, AnkiNote>,
         ankiCards: List<AnkiCard>
-    ): Pair<List<Pair<String, String>>, Set<String>> {
-        val cards = mutableListOf<Pair<String, String>>()
+    ): Pair<List<ParsedCard>, Set<String>> {
+        val cards = mutableListOf<ParsedCard>()
         val referencedMedia = mutableSetOf<String>()
 
         for (ankiCard in ankiCards) {
@@ -110,7 +112,14 @@ object ApkgParser {
             val back = cleanHtml(backWithMarkers)
 
             if (front.isNotBlank() && back.isNotBlank()) {
-                cards.add(front to back)
+                // Anki cards are uniquely identified by (note.guid, template.ord). For decks where
+                // a note produces multiple cards we suffix the ord so each card gets a stable id.
+                val ankiGuid = if (noteType.templates.size > 1) {
+                    "${note.guid}#${template.ord}"
+                } else {
+                    note.guid
+                }
+                cards.add(ParsedCard(front = front, back = back, ankiGuid = ankiGuid))
             }
         }
 
@@ -246,13 +255,14 @@ object ApkgParser {
 
     private fun readNotes(connection: SQLiteConnection): Map<Long, AnkiNote> {
         val notes = mutableMapOf<Long, AnkiNote>()
-        val stmt = connection.prepare("SELECT id, mid, flds FROM notes")
+        val stmt = connection.prepare("SELECT id, mid, guid, flds FROM notes")
         try {
             while (stmt.step()) {
                 val id = stmt.getLong(0)
                 val mid = stmt.getLong(1)
-                val flds = stmt.getText(2)
-                notes[id] = AnkiNote(id, mid, flds.split(FIELD_SEPARATOR))
+                val guid = stmt.getText(2)
+                val flds = stmt.getText(3)
+                notes[id] = AnkiNote(id, mid, guid, flds.split(FIELD_SEPARATOR))
             }
         } finally {
             stmt.close()
@@ -312,18 +322,19 @@ object ApkgParser {
     }
 
     /** Legacy parsing: reads only notes table, field[0] as front, field[1] as back */
-    private fun readCardsLegacy(connection: SQLiteConnection): List<Pair<String, String>> {
-        val cards = mutableListOf<Pair<String, String>>()
-        val stmt = connection.prepare("SELECT flds FROM notes")
+    private fun readCardsLegacy(connection: SQLiteConnection): List<ParsedCard> {
+        val cards = mutableListOf<ParsedCard>()
+        val stmt = connection.prepare("SELECT guid, flds FROM notes")
         try {
             while (stmt.step()) {
-                val flds = stmt.getText(0)
+                val guid = stmt.getText(0)
+                val flds = stmt.getText(1)
                 val fields = flds.split(FIELD_SEPARATOR)
                 if (fields.size >= 2) {
                     val front = cleanHtml(fields[0])
                     val back = cleanHtml(fields[1])
                     if (front.isNotBlank() && back.isNotBlank()) {
-                        cards.add(front to back)
+                        cards.add(ParsedCard(front = front, back = back, ankiGuid = guid))
                     }
                 }
             }

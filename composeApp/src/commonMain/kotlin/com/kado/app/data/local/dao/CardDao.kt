@@ -34,7 +34,7 @@ interface CardDao {
     suspend fun insert(card: CardEntity): Long
 
     @Insert
-    suspend fun insertAll(cards: List<CardEntity>)
+    suspend fun insertAll(cards: List<CardEntity>): List<Long>
 
     @Update
     suspend fun update(card: CardEntity)
@@ -84,4 +84,27 @@ interface CardDao {
 
     @Query("UPDATE cards SET subDeckIndex = subDeckIndex - 1 WHERE deckId = :deckId AND subDeckIndex > :removedIndex")
     suspend fun shiftSubDeckIndicesDown(deckId: Long, removedIndex: Int)
+
+    @Query("DELETE FROM cards WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Long>)
+
+    @Query("SELECT COUNT(*) FROM cards WHERE deckId = :deckId AND ankiGuid IS NULL")
+    suspend fun countNullGuid(deckId: Long): Int
+
+    @Query(
+        "SELECT * FROM cards WHERE deckId = :deckId AND ankiGuid IS NULL AND id > :afterId " +
+            "ORDER BY id ASC LIMIT :limit"
+    )
+    suspend fun pageNullGuidByDeck(deckId: Long, afterId: Long, limit: Int): List<CardEntity>
+
+    @Query(
+        "SELECT * FROM cards WHERE deckId = :deckId AND id > :afterId ORDER BY id ASC LIMIT :limit"
+    )
+    suspend fun pageByDeck(deckId: Long, afterId: Long, limit: Int): List<CardEntity>
+
+    @Query("UPDATE cards SET ankiGuid = :guid WHERE id = :cardId")
+    suspend fun setAnkiGuid(cardId: Long, guid: String)
+
+    @Query("UPDATE cards SET front = :front, back = :back WHERE id = :cardId")
+    suspend fun updateContent(cardId: Long, front: String, back: String)
 }

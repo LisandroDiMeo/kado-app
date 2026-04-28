@@ -8,6 +8,7 @@ import com.kado.app.data.local.MIGRATION_3_4
 import com.kado.app.data.local.MIGRATION_4_5
 import com.kado.app.data.local.MIGRATION_5_6
 import com.kado.app.data.local.MIGRATION_6_7
+import com.kado.app.data.local.MIGRATION_7_8
 import com.kado.app.data.local.getDatabaseBuilder
 import com.kado.app.di.AppDependencies
 
@@ -22,7 +23,8 @@ fun MainViewController() = ComposeUIViewController {
                 MIGRATION_3_4,
                 MIGRATION_4_5,
                 MIGRATION_5_6,
-                MIGRATION_6_7
+                MIGRATION_6_7,
+                MIGRATION_7_8
             )
             .setDriver(BundledSQLiteDriver())
             .build()

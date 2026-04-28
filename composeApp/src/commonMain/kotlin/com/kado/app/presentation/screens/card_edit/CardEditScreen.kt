@@ -13,6 +13,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +44,10 @@ fun CardEditScreen(
 ) {
     val uiState by vm.uiState.collectAsState()
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showResetDialog by remember { mutableStateOf(false) }
     var isPreviewFlipped by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val resetSnackbarMessage = S().resetProgress
 
     val launchImagePicker = rememberImagePickerLauncher { bytes ->
         bytes?.let { vm.onImagePicked(it) }
@@ -50,6 +55,13 @@ fun CardEditScreen(
 
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) onBack()
+    }
+
+    LaunchedEffect(uiState.progressJustReset) {
+        if (uiState.progressJustReset) {
+            snackbarHostState.showSnackbar(resetSnackbarMessage)
+            vm.consumeProgressResetSignal()
+        }
     }
 
     if (showDeleteDialog) {
@@ -62,6 +74,19 @@ fun CardEditScreen(
                 vm.delete()
             },
             onDismiss = { showDeleteDialog = false }
+        )
+    }
+
+    if (showResetDialog) {
+        ConfirmDialog(
+            title = S().resetProgress,
+            message = S().resetCardProgressMessage,
+            confirmLabel = S().reset,
+            onConfirm = {
+                showResetDialog = false
+                vm.resetProgress()
+            },
+            onDismiss = { showResetDialog = false }
         )
     }
 
@@ -95,7 +120,8 @@ fun CardEditScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -132,6 +158,13 @@ fun CardEditScreen(
                 Text(if (uiState.isNew) S().addCard else S().saveCard)
             }
             if (!uiState.isNew) {
+                Spacer(Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { showResetDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(S().resetProgress, color = MaterialTheme.colorScheme.tertiary)
+                }
                 Spacer(Modifier.height(8.dp))
                 OutlinedButton(
                     onClick = { showDeleteDialog = true },

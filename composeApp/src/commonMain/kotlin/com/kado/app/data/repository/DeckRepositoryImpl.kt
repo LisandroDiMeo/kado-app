@@ -8,19 +8,27 @@ import androidx.room.RoomDatabase
 import androidx.room.immediateTransaction
 import androidx.room.useWriterConnection
 import com.kado.app.data.importer.MediaStorage
+import com.kado.app.data.importer.ParsedCard
 import com.kado.app.data.local.dao.CardDao
 import com.kado.app.data.local.dao.CardStateDao
 import com.kado.app.data.local.dao.DeckDao
+import com.kado.app.data.local.dao.PatchDiffDao
 import com.kado.app.data.local.dao.ReviewHistoryDao
 import com.kado.app.data.local.entity.CardEntity
 import com.kado.app.data.local.entity.CardStateEntity
 import com.kado.app.data.local.entity.DeckEntity
+import com.kado.app.data.local.entity.PatchDiffEntryEntity
 import com.kado.app.data.local.entity.ReviewHistoryEntity
 import com.kado.app.data.paging.CardPagingSource
+import com.kado.app.domain.model.BackfillResult
 import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Deck
+import com.kado.app.domain.model.DeckPatchGate
+import com.kado.app.domain.model.DeckPatchHandle
+import com.kado.app.domain.model.DeckPatchPreviewItem
 import com.kado.app.domain.model.DeckSummary
+import com.kado.app.domain.model.PatchCounts
 import com.kado.app.domain.model.Rating
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.ReviewEvent
@@ -30,6 +38,7 @@ import com.kado.app.domain.parser.CardContentParser
 import com.kado.app.domain.repository.DeckRepository
 import com.kado.app.domain.srs.FsrsParameters
 import com.kado.app.domain.srs.SchedulerType
+import kotlin.random.Random
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -39,6 +48,7 @@ class DeckRepositoryImpl(
     private val cardDao: CardDao,
     private val cardStateDao: CardStateDao,
     private val reviewHistoryDao: ReviewHistoryDao,
+    private val patchDiffDao: PatchDiffDao,
     private val contentParser: CardContentParser
 ) : DeckRepository {
 
@@ -172,6 +182,17 @@ class DeckRepositoryImpl(
     override suspend fun deleteCard(id: Long) =
         cardDao.deleteById(id)
 
+    override suspend fun deleteCards(cardIds: List<Long>) {
+        if (cardIds.isEmpty()) return
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                cardIds.chunked(CHUNK_SIZE).forEach { chunk ->
+                    cardDao.deleteByIds(chunk)
+                }
+            }
+        }
+    }
+
     override suspend fun getCardState(cardId: Long): CardState {
         val entity = cardStateDao.getByCardId(cardId)
         return entity?.toDomain() ?: CardState(cardId = cardId)
@@ -264,6 +285,10 @@ class DeckRepositoryImpl(
         }
     }
 
+    override suspend fun resetCardProgress(cardId: Long) {
+        cardStateDao.upsert(CardStateEntity(cardId = cardId))
+    }
+
     override suspend fun getNextReviewCard(deckId: Long, now: Long, newLimit: Int, excludeCardId: Long): ReviewCard? {
         // Priority: learning (due now) > review (due now) > new (up to limit)
         val state = cardStateDao.getNextLearningByDeckId(deckId, now, excludeCardId)
@@ -276,7 +301,7 @@ class DeckRepositoryImpl(
 
     override suspend fun importDeck(
         name: String,
-        cards: List<Pair<String, String>>,
+        cards: List<ParsedCard>,
         onProgress: (Float) -> Unit
     ): Long {
         val now = kotlin.time.Clock.System.now().epochSeconds
@@ -287,13 +312,14 @@ class DeckRepositoryImpl(
                 // Phase 1: Insert all cards in batches
                 val cardChunks = cards.chunked(CHUNK_SIZE)
                 cardChunks.forEachIndexed { chunkIndex, chunk ->
-                    val cardEntities = chunk.mapIndexed { i, (front, back) ->
+                    val cardEntities = chunk.mapIndexed { i, parsed ->
                         CardEntity(
                             deckId = deckId,
-                            front = front,
-                            back = back,
+                            front = parsed.front,
+                            back = parsed.back,
                             position = chunkIndex * CHUNK_SIZE + i,
-                            createdAt = now
+                            createdAt = now,
+                            ankiGuid = parsed.ankiGuid
                         )
                     }
                     cardDao.insertAll(cardEntities)
@@ -312,6 +338,321 @@ class DeckRepositoryImpl(
         }
 
         return deckId
+    }
+
+    // ==================== Deck patch / update flow ====================
+
+    override suspend fun rebuildPatchHandle(sessionId: String, deckId: Long): DeckPatchHandle? {
+        val deck = deckDao.getById(deckId) ?: return null
+        val added = patchDiffDao.countByKind(sessionId, PatchDiffEntryEntity.KIND_ADDED)
+        val modified = patchDiffDao.countByKind(sessionId, PatchDiffEntryEntity.KIND_MODIFIED)
+        val removed = patchDiffDao.countByKind(sessionId, PatchDiffEntryEntity.KIND_REMOVED)
+        if (added == 0 && modified == 0 && removed == 0) return null
+        return DeckPatchHandle(
+            sessionId = sessionId,
+            deckId = deckId,
+            deckName = deck.name,
+            counts = PatchCounts(added = added, modified = modified, removed = removed, unchanged = 0)
+        )
+    }
+
+    override suspend fun checkDeckPatchGate(deckId: Long): DeckPatchGate {
+        val nullCount = cardDao.countNullGuid(deckId)
+        return if (nullCount == 0) DeckPatchGate.Ready else DeckPatchGate.NeedsBackfill(nullCount)
+    }
+
+    override suspend fun backfillAnkiGuids(
+        deckId: Long,
+        parsedCards: List<ParsedCard>
+    ): BackfillResult {
+        // Build hash -> guid map from the user-supplied APKG (bounded by file size).
+        val hashToGuid = HashMap<String, String>(parsedCards.size)
+        for (parsed in parsedCards) {
+            val guid = parsed.ankiGuid ?: continue
+            hashToGuid[contentHash(parsed.front, parsed.back)] = guid
+        }
+
+        var matched = 0
+        var unmatched = 0
+        // Track guids already used so two legacy rows don't both claim the same guid.
+        val usedGuids = HashSet<String>()
+
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                var afterId = -1L
+                while (true) {
+                    val chunk = cardDao.pageNullGuidByDeck(deckId, afterId, CHUNK_SIZE)
+                    if (chunk.isEmpty()) break
+                    afterId = chunk.last().id
+                    for (row in chunk) {
+                        val hash = contentHash(row.front, row.back)
+                        val guid = hashToGuid[hash]
+                        if (guid != null && usedGuids.add(guid)) {
+                            cardDao.setAnkiGuid(row.id, guid)
+                            matched++
+                        } else {
+                            unmatched++
+                        }
+                    }
+                }
+            }
+        }
+        return BackfillResult(matched = matched, unmatched = unmatched)
+    }
+
+    override suspend fun previewDeckPatch(
+        deckId: Long,
+        parsedCards: List<ParsedCard>
+    ): DeckPatchHandle {
+        val deck = deckDao.getById(deckId) ?: error("Deck $deckId not found")
+        val sessionId = generateSessionId()
+        val now = kotlin.time.Clock.System.now().epochSeconds
+
+        // Vacuum stale sessions older than 24 h up front.
+        patchDiffDao.vacuumOlderThan(now - 24L * 60 * 60)
+
+        // Index incoming APKG by guid. Cards from a patch APKG are expected to have guids — skip
+        // any without (they cannot be matched).
+        val parsedByGuid = HashMap<String, ParsedCard>(parsedCards.size)
+        for (parsed in parsedCards) {
+            val guid = parsed.ankiGuid ?: continue
+            parsedByGuid[guid] = parsed
+        }
+
+        var addedCount = 0
+        var modifiedCount = 0
+        var removedCount = 0
+        var unchangedCount = 0
+        val seenGuids = HashSet<String>(parsedByGuid.size)
+
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                var afterId = -1L
+                while (true) {
+                    val chunk = cardDao.pageByDeck(deckId, afterId, CHUNK_SIZE)
+                    if (chunk.isEmpty()) break
+                    afterId = chunk.last().id
+
+                    val diffEntries = ArrayList<PatchDiffEntryEntity>()
+                    for (row in chunk) {
+                        val guid = row.ankiGuid
+                        val parsed = if (guid != null) parsedByGuid[guid] else null
+                        if (parsed != null && guid != null) {
+                            seenGuids.add(guid)
+                            if (parsed.front == row.front && parsed.back == row.back) {
+                                unchangedCount++
+                            } else {
+                                modifiedCount++
+                                diffEntries.add(
+                                    PatchDiffEntryEntity(
+                                        sessionId = sessionId,
+                                        kind = PatchDiffEntryEntity.KIND_MODIFIED,
+                                        existingCardId = row.id,
+                                        newAnkiGuid = guid,
+                                        newFront = parsed.front,
+                                        newBack = parsed.back,
+                                        createdAt = now
+                                    )
+                                )
+                            }
+                        } else {
+                            removedCount++
+                            diffEntries.add(
+                                PatchDiffEntryEntity(
+                                    sessionId = sessionId,
+                                    kind = PatchDiffEntryEntity.KIND_REMOVED,
+                                    existingCardId = row.id,
+                                    newAnkiGuid = null,
+                                    newFront = row.front,
+                                    newBack = row.back,
+                                    createdAt = now
+                                )
+                            )
+                        }
+                    }
+                    if (diffEntries.isNotEmpty()) patchDiffDao.insertAll(diffEntries)
+                }
+
+                // Drain remaining APKG entries -> added.
+                val addedEntries = ArrayList<PatchDiffEntryEntity>(parsedByGuid.size - seenGuids.size)
+                for ((guid, parsed) in parsedByGuid) {
+                    if (guid in seenGuids) continue
+                    addedCount++
+                    addedEntries.add(
+                        PatchDiffEntryEntity(
+                            sessionId = sessionId,
+                            kind = PatchDiffEntryEntity.KIND_ADDED,
+                            existingCardId = null,
+                            newAnkiGuid = guid,
+                            newFront = parsed.front,
+                            newBack = parsed.back,
+                            createdAt = now
+                        )
+                    )
+                    if (addedEntries.size >= CHUNK_SIZE) {
+                        patchDiffDao.insertAll(addedEntries)
+                        addedEntries.clear()
+                    }
+                }
+                if (addedEntries.isNotEmpty()) patchDiffDao.insertAll(addedEntries)
+            }
+        }
+
+        return DeckPatchHandle(
+            sessionId = sessionId,
+            deckId = deckId,
+            deckName = deck.name,
+            counts = PatchCounts(
+                added = addedCount,
+                modified = modifiedCount,
+                removed = removedCount,
+                unchanged = unchangedCount
+            )
+        )
+    }
+
+    override suspend fun pageAddedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Added> =
+        patchDiffDao.page(handle.sessionId, PatchDiffEntryEntity.KIND_ADDED, offset, limit).map {
+            DeckPatchPreviewItem.Added(front = it.newFront.orEmpty(), back = it.newBack.orEmpty())
+        }
+
+    override suspend fun pageModifiedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Modified> {
+        val rows = patchDiffDao.page(handle.sessionId, PatchDiffEntryEntity.KIND_MODIFIED, offset, limit)
+        return rows.mapNotNull { row ->
+            val cardId = row.existingCardId ?: return@mapNotNull null
+            val current = cardDao.getById(cardId) ?: return@mapNotNull null
+            DeckPatchPreviewItem.Modified(
+                cardId = cardId,
+                oldFront = current.front,
+                oldBack = current.back,
+                newFront = row.newFront.orEmpty(),
+                newBack = row.newBack.orEmpty()
+            )
+        }
+    }
+
+    override suspend fun pageRemovedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Removed> =
+        patchDiffDao.page(handle.sessionId, PatchDiffEntryEntity.KIND_REMOVED, offset, limit).mapNotNull {
+            val id = it.existingCardId ?: return@mapNotNull null
+            DeckPatchPreviewItem.Removed(
+                cardId = id,
+                front = it.newFront.orEmpty(),
+                back = it.newBack.orEmpty()
+            )
+        }
+
+    override suspend fun applyDeckPatch(handle: DeckPatchHandle, keepRemovedIds: Set<Long>) {
+        val now = kotlin.time.Clock.System.now().epochSeconds
+
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                // 1) Modified — update content in place, preserve card_states untouched.
+                var offset = 0
+                while (true) {
+                    val rows = patchDiffDao.page(
+                        handle.sessionId,
+                        PatchDiffEntryEntity.KIND_MODIFIED,
+                        offset,
+                        CHUNK_SIZE
+                    )
+                    if (rows.isEmpty()) break
+                    for (row in rows) {
+                        val cardId = row.existingCardId ?: continue
+                        cardDao.updateContent(
+                            cardId = cardId,
+                            front = row.newFront.orEmpty(),
+                            back = row.newBack.orEmpty()
+                        )
+                    }
+                    offset += rows.size
+                    if (rows.size < CHUNK_SIZE) break
+                }
+
+                // 2) Added — insert cards with default states, append at the end.
+                var nextPosition = cardDao.nextPosition(handle.deckId)
+                offset = 0
+                while (true) {
+                    val rows = patchDiffDao.page(
+                        handle.sessionId,
+                        PatchDiffEntryEntity.KIND_ADDED,
+                        offset,
+                        CHUNK_SIZE
+                    )
+                    if (rows.isEmpty()) break
+                    val cardEntities = rows.map { row ->
+                        CardEntity(
+                            deckId = handle.deckId,
+                            front = row.newFront.orEmpty(),
+                            back = row.newBack.orEmpty(),
+                            position = nextPosition++,
+                            createdAt = now,
+                            ankiGuid = row.newAnkiGuid
+                        )
+                    }
+                    val insertedIds = cardDao.insertAll(cardEntities)
+                    if (insertedIds.isNotEmpty()) {
+                        cardStateDao.insertAll(insertedIds.map { CardStateEntity(cardId = it) })
+                    }
+                    offset += rows.size
+                    if (rows.size < CHUNK_SIZE) break
+                }
+
+                // 3) Removed — delete only the ones the user did NOT mark to keep.
+                offset = 0
+                while (true) {
+                    val ids = patchDiffDao.pageExistingCardIds(
+                        handle.sessionId,
+                        PatchDiffEntryEntity.KIND_REMOVED,
+                        offset,
+                        CHUNK_SIZE
+                    )
+                    if (ids.isEmpty()) break
+                    val toDelete = ids.filterNot { it in keepRemovedIds }
+                    if (toDelete.isNotEmpty()) cardDao.deleteByIds(toDelete)
+                    offset += ids.size
+                    if (ids.size < CHUNK_SIZE) break
+                }
+
+                // 4) Clean up the session.
+                patchDiffDao.deleteSession(handle.sessionId)
+            }
+        }
+    }
+
+    override suspend fun discardDeckPatch(handle: DeckPatchHandle) {
+        patchDiffDao.deleteSession(handle.sessionId)
+    }
+
+    private fun contentHash(front: String, back: String): String {
+        // Lightweight stable hash for content matching during legacy backfill. We only need
+        // collision-resistance within a single deck (a few thousand rows), so a 64-bit fnv-1a
+        // with a separator covers it without depending on a crypto library.
+        val combined = front + "" + back
+        var h = 0xcbf29ce484222325uL
+        val prime = 0x100000001b3uL
+        for (i in combined.indices) {
+            h = (h xor combined[i].code.toULong()) * prime
+        }
+        return h.toString(16)
+    }
+
+    private fun generateSessionId(): String {
+        val r = Random.Default
+        val a = r.nextLong()
+        val b = r.nextLong()
+        return a.toString(16) + "-" + b.toString(16)
     }
 
     // Sub-deck operations

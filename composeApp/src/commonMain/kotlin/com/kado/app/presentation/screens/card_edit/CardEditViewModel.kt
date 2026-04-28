@@ -26,7 +26,8 @@ data class CardEditUiState(
     val showImageDialog: Boolean = false,
     val activeField: ActiveField = ActiveField.FRONT,
     val cursorPosition: Int = 0,
-    val attachedImages: List<ImageInfo> = emptyList()
+    val attachedImages: List<ImageInfo> = emptyList(),
+    val progressJustReset: Boolean = false
 )
 
 class CardEditViewModel(private val deckId: Long, private val cardId: Long) : ViewModel() {
@@ -173,6 +174,18 @@ class CardEditViewModel(private val deckId: Long, private val cardId: Long) : Vi
             repository.deleteCard(cardId)
             _uiState.value = _uiState.value.copy(isSaved = true)
         }
+    }
+
+    fun resetProgress() {
+        if (cardId <= 0) return
+        viewModelScope.launch {
+            repository.resetCardProgress(cardId)
+            _uiState.value = _uiState.value.copy(progressJustReset = true)
+        }
+    }
+
+    fun consumeProgressResetSignal() {
+        _uiState.value = _uiState.value.copy(progressJustReset = false)
     }
 
     private fun epochSeconds(): Long = kotlin.time.Clock.System.now().epochSeconds

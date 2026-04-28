@@ -5,13 +5,15 @@
     <ID>ComplexCondition:FsrsScheduler.kt$FsrsScheduler$learningSteps.isEmpty() || ( step!! &gt;= learningSteps.size &amp;&amp; (rating == Rating.Hard || rating == Rating.Good || rating == Rating.Easy) )</ID>
     <ID>ComplexCondition:FsrsScheduler.kt$FsrsScheduler$relearningSteps.isEmpty() || ( step!! &gt;= relearningSteps.size &amp;&amp; (rating == Rating.Hard || rating == Rating.Good || rating == Rating.Easy) )</ID>
     <ID>ComplexCondition:HtmlRenderer.kt$HtmlRenderer$ch == '\n' || ch == '\r' || ch == '\t' || (ch == ' ' &amp;&amp; afterBlockTag)</ID>
+    <ID>CyclomaticComplexMethod:DeckDetailScreen.kt$@OptIn(ExperimentalFoundationApi::class) @Composable fun DeckDetailScreen( deckId: Long, onBack: () -&gt; Unit, onEditDeck: () -&gt; Unit, onAddCard: () -&gt; Unit, onEditCard: (Long) -&gt; Unit, onReview: () -&gt; Unit, onStats: () -&gt; Unit, onTransfer: () -&gt; Unit, onPartition: () -&gt; Unit = {}, onBulkEdit: () -&gt; Unit = {}, onPatchReady: (sessionId: String) -&gt; Unit = {}, onReviewSubDeck: (Int) -&gt; Unit = {}, onTransferSubDeck: (Int) -&gt; Unit = {}, vm: DeckDetailViewModel = viewModel { DeckDetailViewModel(deckId) } )</ID>
     <ID>CyclomaticComplexMethod:DeckEditScreen.kt$@Composable fun DeckEditScreen( deckId: Long, onBack: () -&gt; Unit, onDeleted: () -&gt; Unit = {}, onAlgorithmDetail: (algorithmId: String, focusParameter: String) -&gt; Unit = { _, _ -&gt; }, vm: DeckEditViewModel = viewModel { DeckEditViewModel(deckId) } )</ID>
+    <ID>CyclomaticComplexMethod:DeckPatchPreviewScreen.kt$@Composable fun DeckPatchPreviewScreen( sessionId: String, deckId: Long, onDone: () -&gt; Unit, vm: DeckPatchPreviewViewModel = viewModel { DeckPatchPreviewViewModel(sessionId, deckId) } )</ID>
+    <ID>CyclomaticComplexMethod:DeckRepositoryImpl.kt$DeckRepositoryImpl$override suspend fun applyDeckPatch(handle: DeckPatchHandle, keepRemovedIds: Set&lt;Long&gt;)</ID>
+    <ID>CyclomaticComplexMethod:DeckRepositoryImpl.kt$DeckRepositoryImpl$override suspend fun previewDeckPatch( deckId: Long, parsedCards: List&lt;ParsedCard&gt; ): DeckPatchHandle</ID>
     <ID>CyclomaticComplexMethod:FsrsScheduler.kt$FsrsScheduler$override fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
     <ID>CyclomaticComplexMethod:HtmlRenderer.kt$HtmlRenderer$internal fun parseHtmlToAnnotatedString(html: String): AnnotatedString</ID>
-    <ID>CyclomaticComplexMethod:HtmlRenderer.kt$HtmlRenderer$private fun decodeEntity(entity: String): String</ID>
-    <ID>CyclomaticComplexMethod:ImportProgressDialog.kt$@Composable fun ImportProgressDialog( progress: ImportProgress, onDismiss: () -&gt; Unit )</ID>
-    <ID>CyclomaticComplexMethod:SrsEngine.kt$SrsEngine$fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
     <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
+    <ID>LargeClass:DeckRepositoryImpl.kt$DeckRepositoryImpl : DeckRepository</ID>
     <ID>LongMethod:AlgorithmDetailScreen.kt$@Composable fun AlgorithmDetailScreen( algorithmId: String, focusParameter: String?, onBack: () -&gt; Unit )</ID>
     <ID>LongMethod:ApkgImporter.kt$ApkgImporter$suspend fun import( fileBytes: ByteArray, onProgress: (ImportProgress) -&gt; Unit ): Long</ID>
     <ID>LongMethod:ApkgParser.kt$ApkgParser$private fun readNoteTypesFromTable(connection: SQLiteConnection): Map&lt;Long, NoteType&gt;</ID>
@@ -21,8 +23,11 @@
     <ID>LongMethod:BulkEditScreen.kt$@Composable private fun EditingPhase( uiState: BulkEditUiState, vm: BulkEditViewModel, onBack: () -&gt; Unit )</ID>
     <ID>LongMethod:CardEditScreen.kt$@Composable fun CardEditScreen( deckId: Long, cardId: Long, onBack: () -&gt; Unit, vm: CardEditViewModel = viewModel { CardEditViewModel(deckId, cardId) } )</ID>
     <ID>LongMethod:ConnectionScreen.kt$@Composable fun ConnectionScreen( onBack: () -&gt; Unit, vm: ConnectionViewModel = viewModel { ConnectionViewModel() } )</ID>
-    <ID>LongMethod:DeckDetailScreen.kt$@Composable fun DeckDetailScreen( deckId: Long, onBack: () -&gt; Unit, onEditDeck: () -&gt; Unit, onAddCard: () -&gt; Unit, onEditCard: (Long) -&gt; Unit, onReview: () -&gt; Unit, onStats: () -&gt; Unit, onTransfer: () -&gt; Unit, onPartition: () -&gt; Unit = {}, onBulkEdit: () -&gt; Unit = {}, onReviewSubDeck: (Int) -&gt; Unit = {}, onTransferSubDeck: (Int) -&gt; Unit = {}, vm: DeckDetailViewModel = viewModel { DeckDetailViewModel(deckId) } )</ID>
+    <ID>LongMethod:DeckDetailScreen.kt$@OptIn(ExperimentalFoundationApi::class) @Composable fun DeckDetailScreen( deckId: Long, onBack: () -&gt; Unit, onEditDeck: () -&gt; Unit, onAddCard: () -&gt; Unit, onEditCard: (Long) -&gt; Unit, onReview: () -&gt; Unit, onStats: () -&gt; Unit, onTransfer: () -&gt; Unit, onPartition: () -&gt; Unit = {}, onBulkEdit: () -&gt; Unit = {}, onPatchReady: (sessionId: String) -&gt; Unit = {}, onReviewSubDeck: (Int) -&gt; Unit = {}, onTransferSubDeck: (Int) -&gt; Unit = {}, vm: DeckDetailViewModel = viewModel { DeckDetailViewModel(deckId) } )</ID>
     <ID>LongMethod:DeckEditScreen.kt$@Composable fun DeckEditScreen( deckId: Long, onBack: () -&gt; Unit, onDeleted: () -&gt; Unit = {}, onAlgorithmDetail: (algorithmId: String, focusParameter: String) -&gt; Unit = { _, _ -&gt; }, vm: DeckEditViewModel = viewModel { DeckEditViewModel(deckId) } )</ID>
+    <ID>LongMethod:DeckPatchPreviewScreen.kt$@Composable fun DeckPatchPreviewScreen( sessionId: String, deckId: Long, onDone: () -&gt; Unit, vm: DeckPatchPreviewViewModel = viewModel { DeckPatchPreviewViewModel(sessionId, deckId) } )</ID>
+    <ID>LongMethod:DeckRepositoryImpl.kt$DeckRepositoryImpl$override suspend fun applyDeckPatch(handle: DeckPatchHandle, keepRemovedIds: Set&lt;Long&gt;)</ID>
+    <ID>LongMethod:DeckRepositoryImpl.kt$DeckRepositoryImpl$override suspend fun previewDeckPatch( deckId: Long, parsedCards: List&lt;ParsedCard&gt; ): DeckPatchHandle</ID>
     <ID>LongMethod:FlashCard.kt$@Composable fun FlashCard( front: DisplayableCardContent, back: DisplayableCardContent, isFlipped: Boolean, onFlip: () -&gt; Unit, modifier: Modifier = Modifier, deckId: Long = 0 )</ID>
     <ID>LongMethod:FsrsScheduler.kt$FsrsScheduler$override fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
     <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onDeckClick: (Long) -&gt; Unit, onCreateDeck: () -&gt; Unit, onConnectionClick: () -&gt; Unit, onSettingsClick: () -&gt; Unit, onHelpClick: () -&gt; Unit, onStatsClick: () -&gt; Unit, vm: HomeViewModel = viewModel { HomeViewModel() } )</ID>
@@ -30,13 +35,14 @@
     <ID>LongMethod:ImportProgressDialog.kt$@Composable fun ImportProgressDialog( progress: ImportProgress, onDismiss: () -&gt; Unit )</ID>
     <ID>LongMethod:KadoNavHost.kt$@Composable fun KadoNavHost( navController: NavHostController, modifier: Modifier = Modifier )</ID>
     <ID>LongMethod:PartitionScreen.kt$@Composable fun PartitionScreen( deckId: Long, onBack: () -&gt; Unit, vm: PartitionViewModel = viewModel { PartitionViewModel(deckId) } )</ID>
+    <ID>LongMethod:ReviewScreen.kt$@Composable fun ReviewScreen( deckId: Long, subDeckIndex: Int? = null, onBack: () -&gt; Unit, onEditCard: (Long) -&gt; Unit = {}, vm: ReviewViewModel = viewModel { ReviewViewModel(deckId, subDeckIndex) } )</ID>
     <ID>LongMethod:SrsEngine.kt$SrsEngine$fun reviewCard(state: CardState, rating: Rating, nowEpochSeconds: Long): CardState</ID>
-    <ID>LongMethod:StatsScreen.kt$@Composable fun StatsScreen( deckId: Long, onBack: () -&gt; Unit, vm: StatsViewModel = viewModel { StatsViewModel(deckId) } )</ID>
     <ID>LongMethod:TransferScreen.kt$@Composable fun TransferScreen( deckId: Long, subDeckIndex: Int? = null, onBack: () -&gt; Unit, vm: TransferViewModel = viewModel { TransferViewModel(deckId, subDeckIndex) } )</ID>
     <ID>LongMethod:TutorialDialog.kt$@Composable fun TutorialDialog( tutorial: Tutorial, onDismiss: () -&gt; Unit )</ID>
     <ID>LongMethod:Type.kt$@Composable fun AppTypography(scaleFactor: Float = 1.0f): Typography</ID>
     <ID>LongParameterList:ApplyFindReplaceUseCaseTest.kt$ApplyFindReplaceUseCaseTest$( frontFind: String = "", frontReplace: String = "", frontIsRegex: Boolean = false, frontEnabled: Boolean = true, backFind: String = "", backReplace: String = "", backIsRegex: Boolean = false, backEnabled: Boolean = true )</ID>
     <ID>LoopWithTooManyJumpStatements:ApkgParser.kt$ApkgParser$for</ID>
+    <ID>LoopWithTooManyJumpStatements:DeckRepositoryImpl.kt$DeckRepositoryImpl$while</ID>
     <ID>MagicNumber:ApkgImporter.kt$ApkgImporter$0.15f</ID>
     <ID>MagicNumber:ApkgImporter.kt$ApkgImporter$0.25f</ID>
     <ID>MagicNumber:ApkgImporter.kt$ApkgImporter$0.35f</ID>
@@ -52,6 +58,9 @@
     <ID>MagicNumber:DeckEditViewModel.kt$DeckEditViewModel$36500</ID>
     <ID>MagicNumber:DeckRepositoryImpl.kt$DeckRepositoryImpl$0.3f</ID>
     <ID>MagicNumber:DeckRepositoryImpl.kt$DeckRepositoryImpl$0.7f</ID>
+    <ID>MagicNumber:DeckRepositoryImpl.kt$DeckRepositoryImpl$16</ID>
+    <ID>MagicNumber:DeckRepositoryImpl.kt$DeckRepositoryImpl$24L</ID>
+    <ID>MagicNumber:DeckRepositoryImpl.kt$DeckRepositoryImpl$60</ID>
     <ID>MagicNumber:DeviceApi.kt$DeviceApi$200</ID>
     <ID>MagicNumber:DeviceApi.kt$DeviceApi$299</ID>
     <ID>MagicNumber:FsrsParameters.kt$FsrsParameters$600L</ID>
@@ -140,6 +149,7 @@
     <ID>MaxLineLength:Strings.kt$EnStrings$override val learningStepsExplanation = "When you see a new card for the first time, it goes through learning steps before entering the regular review schedule. Each step defines how long to wait before showing the card again. For example, '1m, 10m' means show the card again after 1 minute, then after 10 minutes, before scheduling a full review."</ID>
     <ID>MaxLineLength:Strings.kt$EnStrings$override val maxIntervalExplanation = "The maximum number of days between reviews. Even if the algorithm calculates a longer interval, it will be capped at this value. The default of 36500 days (~100 years) effectively means no limit."</ID>
     <ID>MaxLineLength:Strings.kt$EnStrings$override val relearningStepsExplanation = "When you forget a card (rate Again), it enters relearning. These steps work like learning steps but for cards you previously knew. After completing all relearning steps, the card returns to the regular review schedule with adjusted stability."</ID>
+    <ID>MaxLineLength:Strings.kt$EnStrings$override val resetCardProgressMessage = "This card's review progress will be erased. It will be treated as a new card."</ID>
     <ID>MaxLineLength:Strings.kt$EnStrings$override val resetProgressMessage = "All review progress for this deck will be erased. Cards will be treated as new."</ID>
     <ID>MaxLineLength:Strings.kt$EnStrings$override val sm2TechnicalDetails = "SM-2 uses an ease factor (EF) that multiplies the previous interval:\n\n• New cards start with EF = 2.5\n• Again: resets interval, EF -= 0.2\n• Hard: interval × 1.2, EF -= 0.1\n• Good: interval × EF\n• Easy: interval × EF × 1.3, EF += 0.2\n\nEF is clamped to [1.3, 4.0]. Intervals are clamped to [1, 36500] days."</ID>
     <ID>MaxLineLength:Strings.kt$EnStrings$override val statsGuideBodyFsrs = "New — Cards you haven't studied yet.\n\nLearning — Cards going through learning steps (e.g., 1m, 10m) before entering the regular review schedule, or relearning steps after being forgotten.\n\nYoung — Cards in the review state with an interval under 21 days. FSRS tracks each card's stability and difficulty to schedule optimal reviews.\n\nMature — Cards with an interval of 21+ days. These have high memory stability.\n\nDue Now — Total cards ready for review right now (new + overdue)."</ID>
@@ -166,7 +176,9 @@
     <ID>MaxLineLength:Strings.kt$EsStrings$override val kadoLiteDescription = "También desarrollamos una versión Lite para microcontroladores ESP32 (específicamente el ESP32-C6 con pantalla táctil Waveshare 1.47\") para que puedas estudiar tus tarjetas con un dispositivo dedicado."</ID>
     <ID>MaxLineLength:Strings.kt$EsStrings$override val learningStepsExplanation = "Cuando ves una tarjeta nueva por primera vez, pasa por pasos de aprendizaje antes de entrar al calendario regular de repasos. Cada paso define cuánto esperar antes de mostrar la tarjeta de nuevo. Por ejemplo, '1m, 10m' significa mostrar la tarjeta después de 1 minuto, luego después de 10 minutos, antes de programar un repaso completo."</ID>
     <ID>MaxLineLength:Strings.kt$EsStrings$override val maxIntervalExplanation = "El número máximo de días entre repasos. Incluso si el algoritmo calcula un intervalo más largo, se limitará a este valor. El valor predeterminado de 36500 días (~100 años) significa efectivamente sin límite."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val patchNoChangesMessage = "Este mazo ya coincide con el APKG que seleccionaste. No hay nada que actualizar."</ID>
     <ID>MaxLineLength:Strings.kt$EsStrings$override val relearningStepsExplanation = "Cuando olvidas una tarjeta (calificas Otra vez), entra en reaprendizaje. Estos pasos funcionan como los pasos de aprendizaje pero para tarjetas que ya conocías. Después de completar todos los pasos de reaprendizaje, la tarjeta vuelve al calendario regular de repasos con estabilidad ajustada."</ID>
+    <ID>MaxLineLength:Strings.kt$EsStrings$override val resetCardProgressMessage = "El progreso de repaso de esta tarjeta será borrado. Será tratada como una tarjeta nueva."</ID>
     <ID>MaxLineLength:Strings.kt$EsStrings$override val resetProgressMessage = "Todo el progreso de repaso de este mazo será borrado. Las tarjetas serán tratadas como nuevas."</ID>
     <ID>MaxLineLength:Strings.kt$EsStrings$override val sm2TechnicalDetails = "SM-2 usa un factor de facilidad (EF) que multiplica el intervalo anterior:\n\n• Las tarjetas nuevas comienzan con EF = 2.5\n• Otra vez: reinicia el intervalo, EF -= 0.2\n• Difícil: intervalo × 1.2, EF -= 0.1\n• Bien: intervalo × EF\n• Fácil: intervalo × EF × 1.3, EF += 0.2\n\nEF se limita a [1.3, 4.0]. Los intervalos se limitan a [1, 36500] días."</ID>
     <ID>MaxLineLength:Strings.kt$EsStrings$override val statsGuideBodyFsrs = "Nuevas — Tarjetas que aún no has estudiado.\n\nAprendiendo — Tarjetas que están pasando por los pasos de aprendizaje (ej. 1m, 10m) antes de entrar al calendario regular de repasos, o por pasos de reaprendizaje después de ser olvidadas.\n\nJóvenes — Tarjetas en estado de repaso con un intervalo menor a 21 días. FSRS rastrea la estabilidad y dificultad de cada tarjeta para programar repasos óptimos.\n\nMaduras — Tarjetas con un intervalo de 21+ días. Tienen alta estabilidad de memoria.\n\nPendientes — Total de tarjetas listas para repasar ahora (nuevas + atrasadas)."</ID>
@@ -190,6 +202,8 @@
     <ID>PackageNaming:DeckDetailViewModel.kt$package com.kado.app.presentation.screens.deck_detail</ID>
     <ID>PackageNaming:DeckEditScreen.kt$package com.kado.app.presentation.screens.deck_edit</ID>
     <ID>PackageNaming:DeckEditViewModel.kt$package com.kado.app.presentation.screens.deck_edit</ID>
+    <ID>PackageNaming:DeckPatchPreviewScreen.kt$package com.kado.app.presentation.screens.deck_patch</ID>
+    <ID>PackageNaming:DeckPatchPreviewViewModel.kt$package com.kado.app.presentation.screens.deck_patch</ID>
     <ID>ReturnCount:DeckEditViewModel.kt$DeckEditViewModel$private fun validateSteps(input: String): FieldError?</ID>
     <ID>ReturnCount:FsrsScheduler.kt$FsrsScheduler$private fun formatInterval(seconds: Long): String</ID>
     <ID>ReturnCount:SrsEngine.kt$SrsEngine$private fun formatInterval(seconds: Long): String</ID>

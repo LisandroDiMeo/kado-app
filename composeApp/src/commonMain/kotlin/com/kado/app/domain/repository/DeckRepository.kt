@@ -1,9 +1,13 @@
 package com.kado.app.domain.repository
 
 import androidx.paging.PagingData
+import com.kado.app.data.importer.ParsedCard
 import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Deck
+import com.kado.app.domain.model.DeckPatchGate
+import com.kado.app.domain.model.DeckPatchHandle
+import com.kado.app.domain.model.DeckPatchPreviewItem
 import com.kado.app.domain.model.DeckSummary
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.ReviewEvent
@@ -31,12 +35,14 @@ interface DeckRepository {
     suspend fun updateCard(card: Card)
     suspend fun bulkUpdateCards(cards: List<Card>)
     suspend fun deleteCard(id: Long)
+    suspend fun deleteCards(cardIds: List<Long>)
 
     suspend fun getCardState(cardId: Long): CardState
     suspend fun getCardStates(deckId: Long): List<CardState>
     suspend fun getCardStates(deckIds: List<Long>): List<CardState>
     suspend fun updateCardState(state: CardState)
     suspend fun resetProgress(deckId: Long)
+    suspend fun resetCardProgress(cardId: Long)
 
     suspend fun recordReview(event: ReviewEvent)
     fun observeReviewHistory(deckIds: List<Long>, fromEpoch: Long, toEpoch: Long): Flow<List<ReviewLogEntry>>
@@ -45,9 +51,38 @@ interface DeckRepository {
 
     suspend fun importDeck(
         name: String,
-        cards: List<Pair<String, String>>,
+        cards: List<ParsedCard>,
         onProgress: (Float) -> Unit = {}
     ): Long
+
+    // Deck patch / update flow
+    suspend fun rebuildPatchHandle(sessionId: String, deckId: Long): DeckPatchHandle?
+    suspend fun checkDeckPatchGate(deckId: Long): DeckPatchGate
+    suspend fun backfillAnkiGuids(
+        deckId: Long,
+        parsedCards: List<ParsedCard>
+    ): com.kado.app.domain.model.BackfillResult
+    suspend fun previewDeckPatch(
+        deckId: Long,
+        parsedCards: List<ParsedCard>
+    ): DeckPatchHandle
+    suspend fun pageAddedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Added>
+    suspend fun pageModifiedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Modified>
+    suspend fun pageRemovedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Removed>
+    suspend fun applyDeckPatch(handle: DeckPatchHandle, keepRemovedIds: Set<Long>)
+    suspend fun discardDeckPatch(handle: DeckPatchHandle)
 
     // Sub-deck operations
     suspend fun getSubDeckIndices(deckId: Long): List<Int>

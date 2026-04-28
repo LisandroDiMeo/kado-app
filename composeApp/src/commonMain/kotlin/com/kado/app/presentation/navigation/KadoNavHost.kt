@@ -12,6 +12,7 @@ import com.kado.app.presentation.screens.card_edit.CardEditScreen
 import com.kado.app.presentation.screens.connection.ConnectionScreen
 import com.kado.app.presentation.screens.deck_detail.DeckDetailScreen
 import com.kado.app.presentation.screens.deck_edit.DeckEditScreen
+import com.kado.app.presentation.screens.deck_patch.DeckPatchPreviewScreen
 import com.kado.app.presentation.screens.help.HelpScreen
 import com.kado.app.presentation.screens.home.HomeScreen
 import com.kado.app.presentation.screens.partition.PartitionScreen
@@ -57,6 +58,9 @@ fun KadoNavHost(
                 onTransfer = { navController.navigate(TransferRoute(route.deckId)) },
                 onPartition = { navController.navigate(PartitionRoute(route.deckId)) },
                 onBulkEdit = { navController.navigate(BulkEditRoute(route.deckId)) },
+                onPatchReady = { sessionId ->
+                    navController.navigate(DeckPatchPreviewRoute(sessionId, route.deckId))
+                },
                 onReviewSubDeck = { subDeckIndex -> navController.navigate(ReviewRoute(route.deckId, subDeckIndex)) },
                 onTransferSubDeck = { subDeckIndex ->
                     navController.navigate(TransferRoute(route.deckId, subDeckIndex))
@@ -99,7 +103,10 @@ fun KadoNavHost(
             ReviewScreen(
                 deckId = route.deckId,
                 subDeckIndex = subDeckIndex,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onEditCard = { cardId ->
+                    navController.navigate(CardEditRoute(route.deckId, cardId))
+                }
             )
         }
 
@@ -167,6 +174,15 @@ fun KadoNavHost(
                 algorithmId = route.algorithmId,
                 focusParameter = focusParameter,
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<DeckPatchPreviewRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<DeckPatchPreviewRoute>()
+            DeckPatchPreviewScreen(
+                sessionId = route.sessionId,
+                deckId = route.deckId,
+                onDone = { navController.popBackStack() }
             )
         }
     }

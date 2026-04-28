@@ -1,9 +1,14 @@
 package com.kado.app.test.fakes
 
 import androidx.paging.PagingData
+import com.kado.app.data.importer.ParsedCard
+import com.kado.app.domain.model.BackfillResult
 import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.CardState
 import com.kado.app.domain.model.Deck
+import com.kado.app.domain.model.DeckPatchGate
+import com.kado.app.domain.model.DeckPatchHandle
+import com.kado.app.domain.model.DeckPatchPreviewItem
 import com.kado.app.domain.model.DeckSummary
 import com.kado.app.domain.model.ReviewCard
 import com.kado.app.domain.model.ReviewEvent
@@ -92,14 +97,44 @@ class FakeDeckRepository : DeckRepository {
     override suspend fun addCard(deckId: Long, front: String, back: String): Long = TODO()
     override suspend fun updateCard(card: Card) = TODO()
     override suspend fun deleteCard(id: Long) = TODO()
+    override suspend fun deleteCards(cardIds: List<Long>) {
+        cards.removeAll { it.id in cardIds }
+        cardStates.removeAll { it.cardId in cardIds }
+    }
     override suspend fun resetProgress(deckId: Long) {
         cardStates.removeAll { it.cardId in cards.filter { c -> c.deckId == deckId }.map { c -> c.id } }
     }
+    override suspend fun resetCardProgress(cardId: Long) {
+        val index = cardStates.indexOfFirst { it.cardId == cardId }
+        val fresh = CardState(cardId = cardId)
+        if (index >= 0) cardStates[index] = fresh else cardStates.add(fresh)
+    }
     override suspend fun importDeck(
         name: String,
-        cards: List<Pair<String, String>>,
+        cards: List<ParsedCard>,
         onProgress: (Float) -> Unit
     ): Long = TODO()
+    override suspend fun rebuildPatchHandle(sessionId: String, deckId: Long): DeckPatchHandle? = null
+    override suspend fun checkDeckPatchGate(deckId: Long): DeckPatchGate = TODO()
+    override suspend fun backfillAnkiGuids(deckId: Long, parsedCards: List<ParsedCard>): BackfillResult = TODO()
+    override suspend fun previewDeckPatch(deckId: Long, parsedCards: List<ParsedCard>): DeckPatchHandle = TODO()
+    override suspend fun pageAddedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Added> = TODO()
+    override suspend fun pageModifiedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Modified> = TODO()
+    override suspend fun pageRemovedCards(
+        handle: DeckPatchHandle,
+        offset: Int,
+        limit: Int
+    ): List<DeckPatchPreviewItem.Removed> = TODO()
+    override suspend fun applyDeckPatch(handle: DeckPatchHandle, keepRemovedIds: Set<Long>) = TODO()
+    override suspend fun discardDeckPatch(handle: DeckPatchHandle) = TODO()
     override suspend fun getSubDeckIndices(deckId: Long): List<Int> = TODO()
     override fun observeSubDeckIndices(deckId: Long): Flow<List<Int>> = TODO()
     override fun observeSubDeckCards(deckId: Long, subDeckIndex: Int): Flow<List<Card>> = TODO()

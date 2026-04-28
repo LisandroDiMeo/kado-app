@@ -17,7 +17,8 @@ import androidx.room.PrimaryKey
     ],
     indices = [
         Index("deckId"),
-        Index(value = ["deckId", "subDeckIndex"])
+        Index(value = ["deckId", "subDeckIndex"]),
+        Index(value = ["deckId", "ankiGuid"])
     ]
 )
 data class CardEntity(
@@ -27,5 +28,6 @@ data class CardEntity(
     val back: String,
     val position: Int,
     val createdAt: Long,
-    val subDeckIndex: Int? = null
+    val subDeckIndex: Int? = null,
+    val ankiGuid: String? = null
 )

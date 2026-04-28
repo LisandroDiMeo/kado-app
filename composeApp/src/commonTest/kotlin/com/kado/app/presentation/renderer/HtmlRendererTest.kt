@@ -161,6 +161,18 @@ class HtmlRendererTest {
     }
 
     @Test
+    fun renderPreservesMeaningfulNewlinesInTextContent() {
+        val html = "学生 (がくせい)<hr id=answer>Estudiante\n\nKanji:\n• 学 (がく) — estudio"
+        val segments = renderer.render(html)
+        assertEquals(1, segments.size)
+        val text = (segments[0] as HtmlSegment.StyledText).annotatedString.text
+        assertTrue(text.contains("Estudiante\n"), "Newline after 'Estudiante' should be preserved, got: $text")
+        assertTrue(text.contains("\nKanji:"), "Newline before 'Kanji:' should be preserved, got: $text")
+        assertTrue(text.contains("Kanji:\n"), "Newline before bullet should be preserved, got: $text")
+        assertTrue(!text.contains("EstudianteKanji"), "'Estudiante' and 'Kanji' must not be joined, got: $text")
+    }
+
+    @Test
     fun renderEmptyString() {
         val segments = renderer.render("")
         assertTrue(segments.isEmpty())

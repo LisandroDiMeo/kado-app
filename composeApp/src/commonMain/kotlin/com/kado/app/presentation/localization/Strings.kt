@@ -93,6 +93,7 @@ interface AppStrings {
     val statistics: String
     val resetProgress: String
     val resetProgressMessage: String
+    val resetCardProgressMessage: String
     val reset: String
     val statsGuide: String
     val statsGuideBodySm2: String
@@ -254,6 +255,45 @@ interface AppStrings {
     val technicalDetails: String
     val parameters: String
 
+    // Bulk select / delete
+    val selectCards: String
+    fun selectedCount(count: Int): String
+    val deleteSelected: String
+    fun deleteSelectedMessage(count: Int): String
+    val updateFromApkg: String
+
+    // Deck patch / update
+    val updateDeckTitle: String
+    fun patchNeedsBackfillMessage(nullCount: Int): String
+    val patchReimportOriginal: String
+    fun patchBackfillResult(matched: Int, unmatched: Int): String
+    val patchContinue: String
+    val patchInvalidApkg: String
+    val patchReadDbFailed: String
+    val patchNoCards: String
+    val patchParseFailed: String
+    val patchClose: String
+    val patchSessionMissing: String
+    val patchNoChangesTitle: String
+    val patchNoChangesMessage: String
+    val patchPreviewIntro: String
+    fun patchAddedSection(count: Int): String
+    fun patchModifiedSection(count: Int): String
+    fun patchRemovedSection(count: Int): String
+    val patchKeepHint: String
+    fun patchMoreItems(count: Int): String
+    fun patchLoadMoreLeft(count: Int): String
+    fun patchKeptCount(count: Int): String
+    val patchApply: String
+    val patchApplying: String
+    val patchDiscard: String
+    val patchBefore: String
+    val patchAfter: String
+    val patchWillKeep: String
+    val patchWillDelete: String
+    val patchParsing: String
+    val patchBackfilling: String
+
     // Bulk Edit
     val bulkEdit: String
     val cardFrontRule: String
@@ -362,6 +402,7 @@ object EnStrings : AppStrings {
     override val statistics = "Statistics"
     override val resetProgress = "Reset Progress"
     override val resetProgressMessage = "All review progress for this deck will be erased. Cards will be treated as new."
+    override val resetCardProgressMessage = "This card's review progress will be erased. It will be treated as a new card."
     override val reset = "Reset"
     override val statsGuide = "Stats Guide"
     override val statsGuideBodySm2 = "New — Cards you haven't studied yet.\n\nLearning — Cards you got wrong and are re-learning.\n\nYoung — Cards you've reviewed, but with an interval under 21 days. After rating a card \"Good\" for the first time, it moves here with a 1-day interval.\n\nMature — Cards with an interval of 21+ days. These are well-known.\n\nDue Now — Total cards ready for review right now (new + overdue)."
@@ -527,6 +568,55 @@ object EnStrings : AppStrings {
     override val parameters = "Parameters"
 
     // Bulk Edit
+    override val selectCards = "Select cards"
+    override fun selectedCount(count: Int) = "$count selected"
+    override val deleteSelected = "Delete selected"
+    override fun deleteSelectedMessage(count: Int) =
+        if (count == 1) "1 card will be deleted." else "$count cards will be deleted."
+    override val updateFromApkg = "Update from APKG…"
+    override val updateDeckTitle = "Update deck"
+    override fun patchNeedsBackfillMessage(nullCount: Int): String =
+        "This deck was imported before stable card IDs were tracked ($nullCount cards). " +
+            "To safely apply an update, please re-import the original APKG first to backfill " +
+            "identifiers. Your progress will be preserved."
+    override val patchReimportOriginal = "Re-import original"
+    override fun patchBackfillResult(matched: Int, unmatched: Int): String {
+        val base = "Backfilled $matched cards. $unmatched unmatched."
+        return if (unmatched == 0) {
+            "$base You can now apply the update."
+        } else {
+            "$base Unmatched cards can't be patched."
+        }
+    }
+    override val patchContinue = "Continue"
+    override val patchInvalidApkg = "Not a valid APKG file"
+    override val patchReadDbFailed = "Failed to read APKG database"
+    override val patchNoCards = "No cards found in APKG"
+    override val patchParseFailed = "Failed to parse APKG"
+    override val patchClose = "Close"
+    override val patchSessionMissing = "Patch session expired"
+    override val patchNoChangesTitle = "Already up to date"
+    override val patchNoChangesMessage = "This deck already matches the APKG you selected. Nothing to update."
+    override val patchPreviewIntro =
+        "Review the changes before applying. Modified cards keep their progress; " +
+            "added cards start fresh; removed cards will be deleted unless you tick to keep."
+    override fun patchAddedSection(count: Int) = "Added ($count)"
+    override fun patchModifiedSection(count: Int) = "Modified ($count)"
+    override fun patchRemovedSection(count: Int) = "Removed ($count)"
+    override val patchKeepHint = "Tick a card to keep it instead of deleting."
+    override fun patchMoreItems(count: Int) = "+$count more"
+    override fun patchLoadMoreLeft(count: Int) = "Load more ($count left)"
+    override fun patchKeptCount(count: Int) =
+        if (count == 1) "1 card will be kept." else "$count cards will be kept."
+    override val patchApply = "Apply update"
+    override val patchApplying = "Applying…"
+    override val patchDiscard = "Discard"
+    override val patchBefore = "Before:"
+    override val patchAfter = "After:"
+    override val patchWillKeep = "Will be kept"
+    override val patchWillDelete = "Will be deleted"
+    override val patchParsing = "Reading APKG…"
+    override val patchBackfilling = "Backfilling identifiers…"
     override val bulkEdit = "Bulk Edit"
     override val cardFrontRule = "Replace on Front"
     override val cardBackRule = "Replace on Back"
@@ -634,6 +724,7 @@ object EsStrings : AppStrings {
     override val statistics = "Estadísticas"
     override val resetProgress = "Reiniciar Progreso"
     override val resetProgressMessage = "Todo el progreso de repaso de este mazo será borrado. Las tarjetas serán tratadas como nuevas."
+    override val resetCardProgressMessage = "El progreso de repaso de esta tarjeta será borrado. Será tratada como una tarjeta nueva."
     override val reset = "Reiniciar"
     override val statsGuide = "Guía de Estadísticas"
     override val statsGuideBodySm2 = "Nuevas — Tarjetas que aún no has estudiado.\n\nAprendiendo — Tarjetas que respondiste mal y estás re-aprendiendo.\n\nJóvenes — Tarjetas que has repasado, pero con un intervalo menor a 21 días. Después de calificar una tarjeta como \"Bien\" por primera vez, se mueve aquí con un intervalo de 1 día.\n\nMaduras — Tarjetas con un intervalo de 21+ días. Son las que conoces bien.\n\nPendientes — Total de tarjetas listas para repasar ahora (nuevas + atrasadas)."
@@ -799,6 +890,55 @@ object EsStrings : AppStrings {
     override val parameters = "Parámetros"
 
     // Bulk Edit
+    override val selectCards = "Seleccionar tarjetas"
+    override fun selectedCount(count: Int) = "$count seleccionadas"
+    override val deleteSelected = "Eliminar seleccionadas"
+    override fun deleteSelectedMessage(count: Int) =
+        if (count == 1) "Se eliminará 1 tarjeta." else "Se eliminarán $count tarjetas."
+    override val updateFromApkg = "Actualizar desde APKG…"
+    override val updateDeckTitle = "Actualizar mazo"
+    override fun patchNeedsBackfillMessage(nullCount: Int): String =
+        "Este mazo se importó antes de que se rastrearan IDs estables de tarjeta ($nullCount tarjetas). " +
+            "Para aplicar una actualización de forma segura, primero vuelve a importar el APKG original " +
+            "para rellenar los identificadores. Tu progreso se conservará."
+    override val patchReimportOriginal = "Reimportar original"
+    override fun patchBackfillResult(matched: Int, unmatched: Int): String {
+        val base = "Se rellenaron $matched tarjetas. $unmatched sin coincidencia."
+        return if (unmatched == 0) {
+            "$base Ya puedes aplicar la actualización."
+        } else {
+            "$base Las tarjetas sin coincidencia no se pueden parchear."
+        }
+    }
+    override val patchContinue = "Continuar"
+    override val patchInvalidApkg = "Archivo APKG no válido"
+    override val patchReadDbFailed = "No se pudo leer la base de datos del APKG"
+    override val patchNoCards = "No se encontraron tarjetas en el APKG"
+    override val patchParseFailed = "No se pudo analizar el APKG"
+    override val patchClose = "Cerrar"
+    override val patchSessionMissing = "La sesión de parche caducó"
+    override val patchNoChangesTitle = "Ya está al día"
+    override val patchNoChangesMessage = "Este mazo ya coincide con el APKG que seleccionaste. No hay nada que actualizar."
+    override val patchPreviewIntro =
+        "Revisa los cambios antes de aplicarlos. Las tarjetas modificadas conservan su progreso; " +
+            "las añadidas empiezan desde cero; las eliminadas se borrarán salvo que las marques para conservar."
+    override fun patchAddedSection(count: Int) = "Añadidas ($count)"
+    override fun patchModifiedSection(count: Int) = "Modificadas ($count)"
+    override fun patchRemovedSection(count: Int) = "Eliminadas ($count)"
+    override val patchKeepHint = "Marca una tarjeta para conservarla en lugar de eliminarla."
+    override fun patchMoreItems(count: Int) = "+$count más"
+    override fun patchLoadMoreLeft(count: Int) = "Cargar más (quedan $count)"
+    override fun patchKeptCount(count: Int) =
+        if (count == 1) "Se conservará 1 tarjeta." else "Se conservarán $count tarjetas."
+    override val patchApply = "Aplicar actualización"
+    override val patchApplying = "Aplicando…"
+    override val patchDiscard = "Descartar"
+    override val patchBefore = "Antes:"
+    override val patchAfter = "Después:"
+    override val patchWillKeep = "Se conservará"
+    override val patchWillDelete = "Se eliminará"
+    override val patchParsing = "Leyendo APKG…"
+    override val patchBackfilling = "Rellenando identificadores…"
     override val bulkEdit = "Edición Masiva"
     override val cardFrontRule = "Reemplazar en el Frente"
     override val cardBackRule = "Reemplazar en el Dorso"

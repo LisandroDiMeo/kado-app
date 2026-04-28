@@ -192,11 +192,17 @@ class HtmlRenderer {
                 }
                 else -> {
                     val ch = html[i]
-                    if (ch == '\n' || ch == '\r' || ch == '\t' || (ch == ' ' && afterBlockTag)) {
-                        // Skip whitespace between tags entirely
-                    } else {
-                        afterBlockTag = false
-                        append(ch)
+                    when {
+                        ch == '\r' -> { /* always skip */ }
+                        afterBlockTag && (ch == '\n' || ch == '\t' || ch == ' ') -> {
+                            // Collapse whitespace immediately following a block tag
+                        }
+                        ch == '\n' -> append('\n')
+                        ch == '\t' -> append(' ')
+                        else -> {
+                            afterBlockTag = false
+                            append(ch)
+                        }
                     }
                     i++
                 }

@@ -4,9 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.kado.app.data.importer.ApkgParser
+import com.kado.app.data.importer.ParsedCard
+import com.kado.app.data.importer.ZipExtractor
 import com.kado.app.di.AppDependencies
+import com.kado.app.domain.model.BackfillResult
 import com.kado.app.domain.model.Card
 import com.kado.app.domain.model.Deck
+import com.kado.app.domain.model.DeckPatchGate
+import com.kado.app.domain.model.DeckPatchHandle
 import com.kado.app.domain.model.SubDeckInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +21,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
+enum class PatchErrorCode { InvalidApkg, ReadDbFailed, NoCards, ParseFailed }
+
+sealed interface PatchPhase {
+    data object Idle : PatchPhase
+    data object ParsingApkg : PatchPhase
+    data class NeedsBackfill(val nullGuidCount: Int) : PatchPhase
+    data object RunningBackfill : PatchPhase
+    data class BackfillDone(val result: BackfillResult) : PatchPhase
+    data object NoChanges : PatchPhase
+    data class PatchReady(val handle: DeckPatchHandle) : PatchPhase
+    data class Error(val code: PatchErrorCode, val cause: String? = null) : PatchPhase
+}
+
 data class DeckDetailUiState(
     val deck: Deck? = null,
     val cardCount: Int = 0,
@@ -22,7 +41,10 @@ data class DeckDetailUiState(
     val newCount: Int = 0,
     val isLoading: Boolean = true,
     val subDecks: List<SubDeckInfo> = emptyList(),
-    val hasPartitions: Boolean = false
+    val hasPartitions: Boolean = false,
+    val selectionMode: Boolean = false,
+    val selectedCardIds: Set<Long> = emptySet(),
+    val patchPhase: PatchPhase = PatchPhase.Idle
 )
 
 class DeckDetailViewModel(private val deckId: Long) : ViewModel() {
@@ -87,6 +109,40 @@ class DeckDetailViewModel(private val deckId: Long) : ViewModel() {
         }
     }
 
+    fun enterSelectionMode() {
+        _uiState.value = _uiState.value.copy(selectionMode = true, selectedCardIds = emptySet())
+    }
+
+    fun enterSelectionWith(cardId: Long) {
+        _uiState.value = _uiState.value.copy(
+            selectionMode = true,
+            selectedCardIds = setOf(cardId)
+        )
+    }
+
+    fun toggleSelection(cardId: Long) {
+        val current = _uiState.value.selectedCardIds
+        val updated = if (cardId in current) current - cardId else current + cardId
+        if (updated.isEmpty()) {
+            clearSelection()
+        } else {
+            _uiState.value = _uiState.value.copy(selectedCardIds = updated)
+        }
+    }
+
+    fun clearSelection() {
+        _uiState.value = _uiState.value.copy(selectionMode = false, selectedCardIds = emptySet())
+    }
+
+    fun deleteSelected() {
+        val ids = _uiState.value.selectedCardIds.toList()
+        if (ids.isEmpty()) return
+        viewModelScope.launch {
+            repository.deleteCards(ids)
+            clearSelection()
+        }
+    }
+
     fun removeSubDeck(subDeckIndex: Int) {
         viewModelScope.launch {
             repository.removeSubDeck(deckId, subDeckIndex)
@@ -106,6 +162,78 @@ class DeckDetailViewModel(private val deckId: Long) : ViewModel() {
         viewModelScope.launch {
             val deckName = _uiState.value.deck?.name ?: "Deck"
             repository.createReversedDeck(deckId, "$deckName (Reversed)")
+        }
+    }
+
+    fun startUpdate(apkgBytes: ByteArray) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(patchPhase = PatchPhase.ParsingApkg)
+            val parsed = parseApkg(apkgBytes) ?: return@launch
+            when (val gate = repository.checkDeckPatchGate(deckId)) {
+                is DeckPatchGate.NeedsBackfill ->
+                    _uiState.value = _uiState.value.copy(
+                        patchPhase = PatchPhase.NeedsBackfill(gate.nullGuidCount)
+                    )
+                DeckPatchGate.Ready -> {
+                    val handle = repository.previewDeckPatch(deckId, parsed)
+                    if (handle.counts.totalChanges == 0) {
+                        // No-op patch — drop the empty session and surface a friendly notice.
+                        repository.discardDeckPatch(handle)
+                        _uiState.value = _uiState.value.copy(patchPhase = PatchPhase.NoChanges)
+                    } else {
+                        _uiState.value = _uiState.value.copy(patchPhase = PatchPhase.PatchReady(handle))
+                    }
+                }
+            }
+        }
+    }
+
+    fun runBackfill(apkgBytes: ByteArray) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(patchPhase = PatchPhase.RunningBackfill)
+            val parsed = parseApkg(apkgBytes) ?: return@launch
+            val result = repository.backfillAnkiGuids(deckId, parsed)
+            _uiState.value = _uiState.value.copy(patchPhase = PatchPhase.BackfillDone(result))
+        }
+    }
+
+    fun dismissPatchPhase() {
+        _uiState.value = _uiState.value.copy(patchPhase = PatchPhase.Idle)
+    }
+
+    private suspend fun parseApkg(fileBytes: ByteArray): List<ParsedCard>? {
+        return try {
+            val entries = ZipExtractor.listEntries(fileBytes)
+            val dbEntryName = entries.firstOrNull {
+                it == "collection.anki21" || it == "collection.anki2" || it == "collection.anki21b"
+            }
+            if (dbEntryName == null) {
+                _uiState.value = _uiState.value.copy(
+                    patchPhase = PatchPhase.Error(PatchErrorCode.InvalidApkg)
+                )
+                return null
+            }
+            val extracted = ZipExtractor.extractEntries(fileBytes, setOf(dbEntryName))
+            val dbBytes = extracted[dbEntryName]
+            if (dbBytes == null) {
+                _uiState.value = _uiState.value.copy(
+                    patchPhase = PatchPhase.Error(PatchErrorCode.ReadDbFailed)
+                )
+                return null
+            }
+            val data = ApkgParser.parse(dbBytes)
+            if (data.cards.isEmpty()) {
+                _uiState.value = _uiState.value.copy(
+                    patchPhase = PatchPhase.Error(PatchErrorCode.NoCards)
+                )
+                return null
+            }
+            data.cards
+        } catch (e: Exception) {
+            _uiState.value = _uiState.value.copy(
+                patchPhase = PatchPhase.Error(PatchErrorCode.ParseFailed, cause = e.message)
+            )
+            null
         }
     }
 }

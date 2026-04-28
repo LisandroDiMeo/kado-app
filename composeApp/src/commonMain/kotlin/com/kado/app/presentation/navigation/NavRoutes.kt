@@ -49,3 +49,6 @@ object HelpRoute
 
 @Serializable
 data class AlgorithmDetailRoute(val algorithmId: String, val focusParameter: String = "")
+
+@Serializable
+data class DeckPatchPreviewRoute(val sessionId: String, val deckId: Long)

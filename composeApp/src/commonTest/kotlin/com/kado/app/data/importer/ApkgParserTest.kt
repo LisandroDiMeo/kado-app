@@ -352,9 +352,9 @@ class ApkgParserTest {
                 insertCol.close()
             }
 
-            // Create notes table
+            // Create notes table (includes guid as in real Anki schemas)
             connection.exec(
-                "CREATE TABLE notes (id INTEGER PRIMARY KEY, mid INTEGER, flds TEXT)"
+                "CREATE TABLE notes (id INTEGER PRIMARY KEY, mid INTEGER, guid TEXT, flds TEXT)"
             )
 
             val sep = '\u001F' // Anki field separator
@@ -383,11 +383,12 @@ class ApkgParserTest {
             ).joinToString(sep.toString())
 
             val insertNote = connection.prepare(
-                "INSERT INTO notes (id, mid, flds) VALUES (?, ?, ?)"
+                "INSERT INTO notes (id, mid, guid, flds) VALUES (?, ?, ?, ?)"
             )
             insertNote.bindLong(1, 1001)
             insertNote.bindLong(2, 1574587964637)
-            insertNote.bindText(3, englandFields)
+            insertNote.bindText(3, "guid-england")
+            insertNote.bindText(4, englandFields)
             try {
                 insertNote.step()
             } finally {
@@ -395,11 +396,12 @@ class ApkgParserTest {
             }
 
             val insertNote2 = connection.prepare(
-                "INSERT INTO notes (id, mid, flds) VALUES (?, ?, ?)"
+                "INSERT INTO notes (id, mid, guid, flds) VALUES (?, ?, ?, ?)"
             )
             insertNote2.bindLong(1, 1002)
             insertNote2.bindLong(2, 1574587964637)
-            insertNote2.bindText(3, japanFields)
+            insertNote2.bindText(3, "guid-japan")
+            insertNote2.bindText(4, japanFields)
             try {
                 insertNote2.step()
             } finally {
@@ -443,19 +445,23 @@ class ApkgParserTest {
             assertEquals("Ultimate Geography", result.deckName)
 
             // Verify England Country-Capital card (template 0) — HTML is now preserved
-            val englandCapitalQ = result.cards[0].first
-            val englandCapitalA = result.cards[0].second
+            val englandCapitalQ = result.cards[0].front
+            val englandCapitalA = result.cards[0].back
             // Front/back now contain HTML tags (not stripped)
             assertTrue(englandCapitalQ.contains("England"))
             assertTrue(englandCapitalQ.contains("Capital"))
             assertTrue(englandCapitalA.contains("London"))
 
+            // Stable guid is preserved per (note.guid, template.ord) since this note has 4 templates.
+            assertEquals("guid-england#0", result.cards[0].ankiGuid)
+            assertEquals("guid-england#1", result.cards[1].ankiGuid)
+
             // Verify England Flag-Country card (template 2) has image marker
-            val englandFlagQ = result.cards[2].first
+            val englandFlagQ = result.cards[2].front
             assertTrue(englandFlagQ.contains("[img:ug-flag-england.svg]"))
 
             // Verify England Map-Country card (template 3) has image marker
-            val englandMapQ = result.cards[3].first
+            val englandMapQ = result.cards[3].front
             assertTrue(englandMapQ.contains("[img:ug-map-england.png]"))
 
             // Verify referenced media

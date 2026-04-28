@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,13 +31,27 @@ fun ReviewScreen(
     deckId: Long,
     subDeckIndex: Int? = null,
     onBack: () -> Unit,
+    onEditCard: (Long) -> Unit = {},
     vm: ReviewViewModel = viewModel { ReviewViewModel(deckId, subDeckIndex) }
 ) {
     val uiState by vm.uiState.collectAsState()
     val animatedAlpha by animateFloatAsState(if (uiState.hasBeenFlipped) 1f else 0f)
 
     Scaffold(
-        topBar = { KadoTopBar(title = S().review, onBack = onBack) }
+        topBar = {
+            KadoTopBar(
+                title = S().review,
+                onBack = onBack,
+                actions = {
+                    val currentCardId = uiState.currentCard?.card?.id
+                    if (currentCardId != null && !uiState.isFinished) {
+                        IconButton(onClick = { onEditCard(currentCardId) }) {
+                            Text("✏️") // pencil emoji, matches the existing emoji-icon style (eg. preview eye 👁️)
+                        }
+                    }
+                }
+            )
+        }
     ) { padding ->
         when {
             uiState.isLoading -> LoadingState(Modifier.padding(padding))
